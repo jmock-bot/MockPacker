@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    overflow-x: hidden;
+  }
+  body {
+    @apply bg-paper text-ink antialiased;
+    overscroll-behavior-y: none;
+  }
+  /* Prevent iOS zoom-on-focus by keeping inputs at 16px+. */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+  :focus-visible {
+    outline: 2px solid #6e1423;
+    outline-offset: 2px;
+  }
+}
