@@ -43,6 +43,32 @@ trip planning.
 2. In **SQL Editor**, run the migrations in order:
    1. [`supabase/migrations/001_schema.sql`](supabase/migrations/001_schema.sql) — tables, enums, triggers, RLS, storage buckets
    2. [`supabase/migrations/002_demo.sql`](supabase/migrations/002_demo.sql) — the `seed_demo_trip()` function behind the "Load a demo trip" button
+
+   > **Seeing `relation "trip_members" does not exist`?** The SQL Editor runs a
+   > file as a single transaction: if any statement fails, the *entire*
+   > migration rolls back and no tables are created, so every query afterwards
+   > fails with an error like this. Pull the latest `001_schema.sql` (an older
+   > version created a `profiles` policy before the `trip_members` table it
+   > references) and re-run it in full, then `002_demo.sql`. If a piecemeal
+   > run left partial objects behind, reset first:
+   >
+   > <details><summary>Reset snippet (deletes all MockPacker data!)</summary>
+   >
+   > ```sql
+   > drop table if exists trip_feed, notifications, shipments, reactions,
+   >   comments, photos, votes, themes, outfits, packing_items, activities,
+   >   trip_stops, trip_members, trips, profiles cascade;
+   > drop trigger if exists on_auth_user_created on auth.users;
+   > drop function if exists handle_new_user, handle_new_trip, is_trip_member,
+   >   trip_role_of, can_organize, can_contribute, redeem_trip_invite,
+   >   seed_demo_trip cascade;
+   > drop type if exists trip_role, trip_kind, bag_status, shipment_status, theme_status;
+   > drop policy if exists "anyone reads avatars" on storage.objects;
+   > drop policy if exists "user writes own avatar" on storage.objects;
+   > drop policy if exists "user updates own avatar" on storage.objects;
+   > drop policy if exists "user deletes own avatar" on storage.objects;
+   > ```
+   > </details>
 3. **Authentication → Providers**: enable **Email**, **Google**, and **Apple**.
    For each OAuth provider, add its client ID/secret and set the Supabase
    callback URL in the provider's console:

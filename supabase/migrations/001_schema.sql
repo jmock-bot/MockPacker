@@ -44,15 +44,8 @@ create table profiles (
 
 alter table profiles enable row level security;
 
-create policy "read own profile or co-travelers" on profiles for select
-  using (
-    id = auth.uid()
-    or exists (
-      select 1 from trip_members a
-      join trip_members b on a.trip_id = b.trip_id
-      where a.user_id = auth.uid() and b.user_id = profiles.id
-    )
-  );
+-- The select policy ("read own profile or co-travelers") is created in the
+-- trips section below — it references trip_members, which must exist first.
 create policy "update own profile" on profiles for update using (id = auth.uid());
 create policy "insert own profile" on profiles for insert with check (id = auth.uid());
 
@@ -157,6 +150,19 @@ create policy "members read members" on trip_members for select using (public.is
 create policy "organizers add members" on trip_members for insert with check (public.can_organize(trip_id));
 create policy "organizers edit members" on trip_members for update using (public.can_organize(trip_id));
 create policy "organizers remove members" on trip_members for delete using (public.can_organize(trip_id));
+
+-- Profiles are visible to yourself and to people who share a trip with you.
+-- create policy resolves referenced tables immediately, so this must come
+-- after trip_members exists (not in the profiles section above).
+create policy "read own profile or co-travelers" on profiles for select
+  using (
+    id = auth.uid()
+    or exists (
+      select 1 from trip_members a
+      join trip_members b on a.trip_id = b.trip_id
+      where a.user_id = auth.uid() and b.user_id = profiles.id
+    )
+  );
 
 -- The trip owner automatically becomes a joined member.
 create or replace function public.handle_new_trip()
