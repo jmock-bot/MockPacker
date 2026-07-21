@@ -75,8 +75,16 @@ trip planning.
    `https://YOUR_PROJECT_REF.supabase.co/auth/v1/callback`
 4. **Authentication → URL Configuration → Redirect URLs**: add your production
    Netlify domain, `http://localhost:8888`, and any preview URL pattern.
-5. Copy the **Project URL**, **anon public key**, and **service_role key**
-   (server-side only!) from **Project Settings → API**.
+5. Copy the **Project URL** and your **API keys** from **Project Settings →
+   API Keys**. MockPacker uses Supabase's new key format:
+   - **publishable key** (`sb_publishable_…`) — the browser key, replaces the
+     old anon key. Safe to expose; RLS protects the data.
+   - **secret key** (`sb_secret_…`) — server-side only, replaces the old
+     service-role key. Bypasses RLS. Only used by the Netlify Functions, and
+     only for the legacy token-verification fallback (see below).
+
+   The legacy **anon** and **service_role** keys still work as a fallback, so
+   you can migrate on your own schedule.
 
 ### Security model (RLS)
 
@@ -89,7 +97,12 @@ trip planning.
 - **Photos are private**: they live in the `trip-photos` bucket under
   `<trip_id>/…`, storage policies only allow that trip's members, and the app
   displays them through short-lived signed URLs. Avatars are public.
-- The service-role key is used **only** inside Netlify Functions.
+- **Function auth**: the Netlify Functions authenticate the caller with
+  [`@supabase/server`](https://www.npmjs.com/package/@supabase/server), which
+  verifies the user's JWT locally against the project's JWKS — no round-trip to
+  the auth server and no secret key needed. The shared helper lives in
+  `netlify/functions/_supabaseAuth.ts`. A secret / service-role key is used
+  only for the legacy fallback that covers projects still issuing HS256 tokens.
 
 ---
 
@@ -103,9 +116,11 @@ the `/api/*` alias.
 | Variable | Scope | Value |
 | --- | --- | --- |
 | `VITE_SUPABASE_URL` | Builds + Functions | Supabase project URL |
-| `VITE_SUPABASE_ANON_KEY` | Builds | Anon public key (safe in browser — RLS protects data) |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Builds | Publishable key `sb_publishable_…` (browser key, safe to expose). Falls back to `VITE_SUPABASE_ANON_KEY` |
 | `VITE_AUTH_REDIRECT_URL` | Builds | Optional; defaults to the current origin |
-| `SUPABASE_SERVICE_ROLE_KEY` | **Functions only** | Service-role key. **Never referenced by frontend code** |
+| `SUPABASE_URL` | Functions | Optional — Functions fall back to `VITE_SUPABASE_URL` |
+| `SUPABASE_JWKS_URL` | Functions | Optional — derived from the project URL (`…/auth/v1/.well-known/jwks.json`) when unset |
+| `SUPABASE_SECRET_KEY` | **Functions only** | Secret key `sb_secret_…`. **Never referenced by frontend code.** Optional — only the legacy HS256 fallback needs it. Falls back to `SUPABASE_SERVICE_ROLE_KEY` |
 | `SERPAPI_KEY` | Functions | Optional — enables product search |
 | `SEARCH_COUNTRY` | Functions | Optional — ISO country for results (default `us`) |
 | `UPS_CLIENT_ID` / `UPS_CLIENT_SECRET` | Functions | Optional — live UPS tracking |
@@ -147,7 +162,8 @@ Type checking: `npm run typecheck`. Production build: `npm run build`.
 ## 4. Project structure
 
 ```
-netlify/functions/     product-search, track-shipment, weather
+netlify/functions/     product-search, track-shipment, weather;
+                       _supabaseAuth (shared @supabase/server token check)
 public/                manifest.webmanifest, sw.js (offline shell), icons
 supabase/migrations/   001 schema+RLS+storage · 002 demo seed function
 src/

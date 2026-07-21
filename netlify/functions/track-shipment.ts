@@ -19,7 +19,7 @@
  * tracking page (see src/lib/carriers.ts) — the feature still works, it just
  * isn't automatic.
  */
-import { createClient } from '@supabase/supabase-js';
+import { authenticateRequest } from './_supabaseAuth';
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
@@ -37,21 +37,14 @@ const CARRIER_ENV: Record<string, string[]> = {
 export default async function handler(req: Request): Promise<Response> {
   if (req.method !== 'POST') return json({ ok: false, error: 'POST only.' }, 405);
 
-  const supabaseUrl = process.env.VITE_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!supabaseUrl || !serviceKey) {
-    return json({ ok: false, configured: false, error: 'Server is not configured.' }, 500);
-  }
-
   // Only signed-in users may hit carrier APIs through us.
-  const token = (req.headers.get('authorization') ?? '').replace(/^Bearer\s+/i, '');
-  if (!token) return json({ ok: false, configured: false, error: 'Sign in first.' }, 401);
-  const admin = createClient(supabaseUrl, serviceKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
-  const { data: userData, error: userError } = await admin.auth.getUser(token);
-  if (userError || !userData.user) {
-    return json({ ok: false, configured: false, error: 'Session expired — sign in again.' }, 401);
+  const auth = await authenticateRequest(req);
+  if (!auth.ok) {
+    if (auth.reason === 'unconfigured') {
+      return json({ ok: false, configured: false, error: 'Server is not configured.' }, 500);
+    }
+    const error = auth.reason === 'no_token' ? 'Sign in first.' : 'Session expired — sign in again.';
+    return json({ ok: false, configured: false, error }, auth.status);
   }
 
   let carrier = '';
