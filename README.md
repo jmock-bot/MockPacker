@@ -40,9 +40,18 @@ trip planning.
 ## 1. Supabase setup
 
 1. Create a project at [supabase.com](https://supabase.com).
-2. In **SQL Editor**, run the migrations in order:
-   1. [`supabase/migrations/001_schema.sql`](supabase/migrations/001_schema.sql) — tables, enums, triggers, RLS, storage buckets
+2. In **SQL Editor**, run the migrations in order (both are safe to re-run if
+   a previous attempt failed partway):
+   1. [`supabase/migrations/001_schema.sql`](supabase/migrations/001_schema.sql) — enums, tables, functions, triggers, RLS, storage buckets
    2. [`supabase/migrations/002_demo.sql`](supabase/migrations/002_demo.sql) — the `seed_demo_trip()` function behind the "Load a demo trip" button
+
+   If the run finishes with a NOTICE about `storage.objects` policies, your
+   project's SQL role can't create storage policies directly. Create them in
+   **Dashboard → Storage → Policies** instead, mirroring the expressions at the
+   bottom of `001_schema.sql`: `trip-photos` (select/insert/delete allowed when
+   `public.is_trip_member((split_part(name, '/', 1))::uuid)` — use
+   `can_contribute` for insert/delete) and `avatars` (public read; users write
+   only under their own `auth.uid()` folder).
 
    > **Seeing `relation "trip_members" does not exist`?** The SQL Editor runs a
    > file as a single transaction: if any statement fails, the *entire*
