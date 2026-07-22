@@ -78,6 +78,23 @@ trip planning.
    > drop policy if exists "user deletes own avatar" on storage.objects;
    > ```
    > </details>
+   >
+   > **Seeing `new row violates row-level security policy for table "trips"`
+   > when you create a trip?** Same underlying cause. The app sets the row's
+   > `owner_id` to your signed-in user id, which is exactly what the
+   > `create own trips` policy checks (`owner_id = auth.uid()`), so a
+   > correctly-migrated database accepts the insert. This error means RLS is
+   > enabled on `trips` but that INSERT policy is missing — Postgres then
+   > default-denies the write. It shows up when `001_schema.sql` only ran
+   > partway (e.g. an older version rolled the whole file back and the tables
+   > were later recreated by hand, or the file was run statement-by-statement).
+   > Re-run the **full** `001_schema.sql` — it drops and recreates every policy,
+   > so it's safe to run again; use the reset snippet above first if a piecemeal
+   > run left partial objects behind, then run `001` and `002` in order. To
+   > confirm the policy landed, run
+   > `select policyname from pg_policies where tablename = 'trips';` — you
+   > should see `create own trips` (alongside `members read trips`,
+   > `organizers edit trips`, and `owner deletes trip`).
 3. **Authentication → Providers**: enable **Email**, **Google**, and **Apple**.
    For each OAuth provider, add its client ID/secret and set the Supabase
    callback URL in the provider's console:
