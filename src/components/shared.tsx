@@ -100,7 +100,7 @@ export function WeatherBadge({ day, compact }: { day: WeatherDay | undefined; co
       </span>
       {!compact && <span>{label}</span>}
       {(day.precipProb ?? 0) >= 30 && (
-        <span className="font-medium text-sky-700">💧 {Math.round(day.precipProb ?? 0)}%</span>
+        <span className="font-medium text-sky-700 dark:text-sky-400">💧 {Math.round(day.precipProb ?? 0)}%</span>
       )}
       {(day.windMax ?? 0) >= 20 && <span className="font-medium">💨 {Math.round(day.windMax ?? 0)} mph</span>}
     </span>
@@ -158,7 +158,7 @@ export function CommentThread({
                 aria-pressed={mine}
                 aria-label={`React ${e}${count ? `, ${count}` : ''}`}
                 className={`rounded-full border px-2 py-0.5 text-xs ${
-                  mine ? 'border-maroon bg-maroon-tint' : 'border-line bg-white'
+                  mine ? 'border-maroon bg-maroon-tint' : 'border-line bg-card'
                 } disabled:opacity-50`}
               >
                 {e} {count > 0 && <span className="font-semibold tabular-nums">{count}</span>}

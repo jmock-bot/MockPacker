@@ -19,7 +19,7 @@ export const useToast = () => useContext(ToastContext);
 const KIND_STYLES: Record<ToastKind, string> = {
   success: 'bg-emerald-700 text-white',
   error: 'bg-rose-700 text-white',
-  info: 'bg-ink text-white',
+  info: 'bg-ink text-paper',
   warning: 'bg-amber-600 text-white',
 };
 

@@ -109,7 +109,7 @@ export function HomePage() {
   return (
     <div className="flex flex-col gap-4">
       {/* Hero: trip + countdown + readiness */}
-      <Card className="!p-5" accent="#0B6E6E">
+      <Card className="!p-5" accent="rgb(var(--color-accent))">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="min-w-0">
             <p className="text-xs font-semibold uppercase tracking-wide text-maroon">
@@ -275,7 +275,7 @@ export function HomePage() {
           <p className="text-sm text-ink-soft">
             {undelivered.length} shipment{undelivered.length > 1 ? 's' : ''} not delivered yet
             {problemShipments.length > 0 && (
-              <span className="font-semibold text-rose-700">
+              <span className="font-semibold text-rose-700 dark:text-rose-400">
                 {' '}— {problemShipments.length} need{problemShipments.length === 1 ? 's' : ''} attention
               </span>
             )}

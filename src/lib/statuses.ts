@@ -12,12 +12,12 @@ export const BAG_STATUSES: BagStatus[] = [
 ];
 
 export const BAG_STATUS_META: Record<BagStatus, { label: string; chip: string }> = {
-  need: { label: 'Need', chip: 'bg-rose-100 text-rose-800' },
-  considering: { label: 'Considering', chip: 'bg-amber-100 text-amber-800' },
+  need: { label: 'Need', chip: 'bg-rose-100 text-rose-800 dark:bg-rose-500/15 dark:text-rose-300' },
+  considering: { label: 'Considering', chip: 'bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300' },
   own: { label: 'Own', chip: 'bg-cream text-ink-soft' },
-  ordered: { label: 'Ordered', chip: 'bg-sky-100 text-sky-800' },
-  shipped: { label: 'Shipped', chip: 'bg-indigo-100 text-indigo-800' },
-  delivered: { label: 'Delivered', chip: 'bg-emerald-100 text-emerald-800' },
+  ordered: { label: 'Ordered', chip: 'bg-sky-100 text-sky-800 dark:bg-sky-500/15 dark:text-sky-300' },
+  shipped: { label: 'Shipped', chip: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-500/15 dark:text-indigo-300' },
+  delivered: { label: 'Delivered', chip: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300' },
 };
 
 /** Statuses that mean "the traveler physically has this item". */
@@ -43,13 +43,13 @@ export const SHIPMENT_STATUS_META: Record<
 > = {
   order_placed: { label: 'Order placed', chip: 'bg-cream text-ink-soft' },
   preparing: { label: 'Preparing', chip: 'bg-cream text-ink-soft' },
-  shipped: { label: 'Shipped', chip: 'bg-sky-100 text-sky-800' },
-  in_transit: { label: 'In transit', chip: 'bg-sky-100 text-sky-800' },
-  out_for_delivery: { label: 'Out for delivery', chip: 'bg-indigo-100 text-indigo-800' },
-  delivered: { label: 'Delivered', chip: 'bg-emerald-100 text-emerald-800', done: true },
-  delayed: { label: 'Delayed', chip: 'bg-amber-100 text-amber-900', problem: true },
-  exception: { label: 'Exception', chip: 'bg-rose-100 text-rose-800', problem: true },
-  returned: { label: 'Returned', chip: 'bg-rose-100 text-rose-800', problem: true },
+  shipped: { label: 'Shipped', chip: 'bg-sky-100 text-sky-800 dark:bg-sky-500/15 dark:text-sky-300' },
+  in_transit: { label: 'In transit', chip: 'bg-sky-100 text-sky-800 dark:bg-sky-500/15 dark:text-sky-300' },
+  out_for_delivery: { label: 'Out for delivery', chip: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-500/15 dark:text-indigo-300' },
+  delivered: { label: 'Delivered', chip: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300', done: true },
+  delayed: { label: 'Delayed', chip: 'bg-amber-100 text-amber-900 dark:bg-amber-500/15 dark:text-amber-300', problem: true },
+  exception: { label: 'Exception', chip: 'bg-rose-100 text-rose-800 dark:bg-rose-500/15 dark:text-rose-300', problem: true },
+  returned: { label: 'Returned', chip: 'bg-rose-100 text-rose-800 dark:bg-rose-500/15 dark:text-rose-300', problem: true },
 };
 
 /* ── Packing categories ───────────────────────────────────── */
@@ -88,8 +88,8 @@ export const ROLE_META: Record<TripRole, { label: string; blurb: string }> = {
 
 export const THEME_STATUS_META: Record<ThemeStatus, { label: string; chip: string }> = {
   proposed: { label: 'Proposed', chip: 'bg-cream text-ink-soft' },
-  voting: { label: 'Voting', chip: 'bg-amber-100 text-amber-800' },
-  approved: { label: 'Approved', chip: 'bg-emerald-100 text-emerald-800' },
+  voting: { label: 'Voting', chip: 'bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300' },
+  approved: { label: 'Approved', chip: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300' },
 };
 
 export const DRESS_CODES = [

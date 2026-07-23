@@ -49,6 +49,30 @@
   --duration-base: 250ms;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-accent: 79 176 176; /* #4FB0B0 */
+    --color-accent-hover: 61 149 149; /* #3D9595 */
+    --color-accent-deep: 45 120 120; /* deeper teal for pressed states */
+    --color-accent-soft: 22 48 47; /* #16302F */
+    --color-on-accent: 15 26 26; /* #0F1A1A */
+
+    --color-bg: 18 18 17; /* #121211 */
+    --color-surface: 27 26 24; /* #1B1A18 */
+    --color-surface-alt: 35 34 32; /* #232220 */
+    --color-border: 47 46 42; /* #2F2E2A */
+    --color-border-strong: 62 61 56; /* #3E3D38 */
+
+    --color-text: 237 237 234; /* #EDEDEA */
+    --color-text-muted: 155 153 143; /* #9B998F */
+    --color-text-faint: 106 104 95; /* #6A685F */
+
+    --color-success: 111 207 115; /* #6FCF73 */
+    --color-warning: 224 163 58; /* #E0A33A */
+    --color-danger: 229 115 107; /* #E5736B */
+  }
+}
+
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;

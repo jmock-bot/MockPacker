@@ -77,7 +77,7 @@ export function InstallPrompt() {
 
   return (
     <>
-      <div className="fixed inset-x-3 bottom-[calc(64px+env(safe-area-inset-bottom))] z-30 mx-auto max-w-md rounded-2xl border border-line bg-white p-3 shadow-raised lg:bottom-4 lg:right-4 lg:left-auto">
+      <div className="fixed inset-x-3 bottom-[calc(64px+env(safe-area-inset-bottom))] z-30 mx-auto max-w-md rounded-2xl border border-line bg-card p-3 shadow-raised lg:bottom-4 lg:right-4 lg:left-auto">
         <div className="flex items-center gap-3">
           <img src="/icons/icon-192.png" alt="" width={40} height={40} className="h-10 w-10 shrink-0 rounded-xl" />
           <div className="min-w-0 flex-1">
@@ -91,7 +91,7 @@ export function InstallPrompt() {
             type="button"
             onClick={dismiss}
             aria-label="Dismiss install prompt"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-ink-faint hover:bg-black/5"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-ink-faint hover:bg-ink/5"
           >
             ✕
           </button>
@@ -101,7 +101,7 @@ export function InstallPrompt() {
       <Modal open={showIosHelp} onClose={() => setShowIosHelp(false)} title="Add to your Home Screen">
         <ol className="flex flex-col gap-4 text-sm text-ink-soft">
           <li className="flex items-start gap-3">
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-maroon text-xs font-bold text-white">1</span>
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-maroon text-xs font-bold text-on-accent">1</span>
             <span>
               Tap the <strong>Share</strong> button
               <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" className="mx-1 inline align-text-bottom" fill="none" stroke="currentColor" strokeWidth="1.8">
@@ -111,11 +111,11 @@ export function InstallPrompt() {
             </span>
           </li>
           <li className="flex items-start gap-3">
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-maroon text-xs font-bold text-white">2</span>
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-maroon text-xs font-bold text-on-accent">2</span>
             <span>Scroll down and tap <strong>Add to Home Screen</strong>.</span>
           </li>
           <li className="flex items-start gap-3">
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-maroon text-xs font-bold text-white">3</span>
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-maroon text-xs font-bold text-on-accent">3</span>
             <span>Tap <strong>Add</strong>. MockPacker opens full-screen from your Home Screen.</span>
           </li>
         </ol>

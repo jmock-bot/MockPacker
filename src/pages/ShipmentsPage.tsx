@@ -62,7 +62,7 @@ export function ShipmentsPage() {
 
       {/* Delivery risk */}
       {hasRisk && (
-        <Card accent="#C0392B">
+        <Card accent="rgb(var(--color-danger))">
           <SectionTitle>⚠️ Delivery Risk</SectionTitle>
           <div className="flex flex-col gap-2">
             {risk.late.map((s) => (
@@ -128,12 +128,12 @@ export function ShipmentsPage() {
                       <Chip className={meta.chip}>{meta.label}</Chip>
                       <Chip className="bg-cream text-ink-soft">{carrierName(s.carrier)}</Chip>
                       {member && <MemberChip member={member} />}
-                      {item && <Chip className="bg-sky-100 text-sky-800">🎒 {item.name}</Chip>}
+                      {item && <Chip className="bg-sky-100 text-sky-800 dark:bg-sky-500/15 dark:text-sky-300">🎒 {item.name}</Chip>}
                     </div>
                   </div>
                   <div className="text-right text-xs text-ink-faint">
                     {s.eta_date && (
-                      <p className={s.eta_date >= activeTrip.start_date ? 'font-bold text-rose-700' : ''}>
+                      <p className={s.eta_date >= activeTrip.start_date ? 'font-bold text-rose-700 dark:text-rose-400' : ''}>
                         ETA {shortDate(s.eta_date)}
                       </p>
                     )}
@@ -153,7 +153,7 @@ export function ShipmentsPage() {
                   </div>
                 )}
                 {meta.problem && (
-                  <p className="mt-1.5 text-xs font-semibold text-rose-700">
+                  <p className="mt-1.5 text-xs font-semibold text-rose-700 dark:text-rose-400">
                     Needs attention — check with the carrier or retailer.
                   </p>
                 )}
@@ -167,7 +167,7 @@ export function ShipmentsPage() {
                       href={link}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex min-h-[34px] items-center rounded-xl border border-line bg-white px-2.5 text-xs font-semibold text-ink"
+                      className="inline-flex min-h-[34px] items-center rounded-xl border border-line bg-card px-2.5 text-xs font-semibold text-ink"
                     >
                       Track on {carrierName(s.carrier)} ↗
                     </a>
@@ -189,7 +189,7 @@ export function ShipmentsPage() {
                   <Button variant="ghost" className="!min-h-[34px] px-2.5 text-xs" onClick={() => { setEditing(s); setFormOpen(true); }}>
                     Edit
                   </Button>
-                  <Button variant="ghost" className="!min-h-[34px] px-2.5 text-xs text-rose-700" onClick={() => setDeleteTarget(s)}>
+                  <Button variant="ghost" className="!min-h-[34px] px-2.5 text-xs text-rose-700 dark:text-rose-400" onClick={() => setDeleteTarget(s)}>
                     Delete
                   </Button>
                 </div>

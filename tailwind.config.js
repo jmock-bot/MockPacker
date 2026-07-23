@@ -7,6 +7,9 @@ const token = (name) => `rgb(var(${name}) / <alpha-value>)`;
 
 export default {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
+  // Media strategy: dark: variants track prefers-color-scheme, matching the
+  // CSS-variable palette flip in src/index.css.
+  darkMode: 'media',
   theme: {
     extend: {
       colors: {
@@ -28,6 +31,8 @@ export default {
           deep: token('--color-accent-deep'),
           tint: token('--color-accent-soft'),
         },
+        // Text/icons that sit on the accent (flips to near-black in dark).
+        'on-accent': token('--color-on-accent'),
       },
       fontFamily: {
         sans: [

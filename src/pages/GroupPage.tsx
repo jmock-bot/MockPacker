@@ -157,7 +157,7 @@ export function GroupPage() {
                       type="button"
                       onClick={() => setRemoveTarget(m)}
                       aria-label={`Remove ${m.name}`}
-                      className="flex h-8 w-8 items-center justify-center rounded-lg text-ink-faint hover:bg-black/5"
+                      className="flex h-8 w-8 items-center justify-center rounded-lg text-ink-faint hover:bg-ink/5"
                     >
                       ✕
                     </button>
@@ -204,7 +204,7 @@ export function GroupPage() {
                 ? outfits.filter((o) => o.date === t.date && o.chosen)
                 : [];
               return (
-                <Card key={t.id} accent="#0B6E6E">
+                <Card key={t.id} accent="rgb(var(--color-accent))">
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div>
                       <p className="font-bold text-ink">🎨 {t.name}</p>
@@ -235,7 +235,7 @@ export function GroupPage() {
                           .map((m) => {
                             const o = boardOutfits.find((x) => x.member_id === m.id);
                             return (
-                              <div key={m.id} className="w-28 shrink-0 rounded-xl border border-line bg-white p-2 text-center">
+                              <div key={m.id} className="w-28 shrink-0 rounded-xl border border-line bg-card p-2 text-center">
                                 <MemberDot member={m} size={24} />
                                 <p className="mt-1 truncate text-[11px] font-semibold text-ink">{m.name}</p>
                                 {o ? (
@@ -284,7 +284,7 @@ export function GroupPage() {
                         Edit
                       </Button>
                       {canOrganize && (
-                        <Button variant="ghost" className="!min-h-[34px] px-2.5 text-xs text-rose-700" onClick={() => setDeleteThemeTarget(t)}>
+                        <Button variant="ghost" className="!min-h-[34px] px-2.5 text-xs text-rose-700 dark:text-rose-400" onClick={() => setDeleteThemeTarget(t)}>
                           Delete
                         </Button>
                       )}
@@ -335,7 +335,7 @@ export function GroupPage() {
                       type="button"
                       onClick={() => setDeletePhotoTarget(p)}
                       aria-label="Delete photo"
-                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-ink-faint hover:bg-black/5"
+                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-ink-faint hover:bg-ink/5"
                     >
                       🗑️
                     </button>
@@ -383,7 +383,7 @@ export function GroupPage() {
               </Button>
               {inviteEmail.trim() && (
                 <a
-                  className="flex min-h-[44px] flex-1 items-center justify-center rounded-xl border border-line bg-white px-4 text-sm font-semibold text-ink"
+                  className="flex min-h-[44px] flex-1 items-center justify-center rounded-xl border border-line bg-card px-4 text-sm font-semibold text-ink"
                   href={`mailto:${encodeURIComponent(inviteEmail)}?subject=${encodeURIComponent(`Join our trip: ${activeTrip.name}`)}&body=${encodeURIComponent(`You're invited to ${activeTrip.name} on MockPacker!\n\nJoin here: ${inviteLink}`)}`}
                 >
                   ✉️ Email it
@@ -544,7 +544,7 @@ function ThemeFormModal({
                 key={idea}
                 type="button"
                 onClick={() => setName(idea)}
-                className="rounded-full border border-line bg-white px-2.5 py-1 text-xs text-ink-soft hover:border-maroon hover:text-maroon"
+                className="rounded-full border border-line bg-card px-2.5 py-1 text-xs text-ink-soft hover:border-maroon hover:text-maroon"
               >
                 {idea}
               </button>
@@ -653,7 +653,7 @@ function PhotoUploadModal({
               type="file"
               accept="image/*"
               onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-              className="text-sm text-ink-soft file:mr-3 file:rounded-xl file:border-0 file:bg-maroon file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-white"
+              className="text-sm text-ink-soft file:mr-3 file:rounded-xl file:border-0 file:bg-maroon file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-on-accent"
             />
           )}
         </Field>

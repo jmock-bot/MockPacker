@@ -59,7 +59,7 @@ export function LoginPage() {
   return (
     <div className="flex min-h-dvh flex-col bg-paper">
       {/* Hero — one simple promise */}
-      <div className="bg-maroon px-6 pb-10 pt-[max(3rem,env(safe-area-inset-top))] text-center text-white">
+      <div className="bg-maroon px-6 pb-10 pt-[max(3rem,env(safe-area-inset-top))] text-center text-on-accent">
         <img
           src="/icons/icon-192.png"
           alt=""

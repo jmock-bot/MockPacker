@@ -60,7 +60,7 @@ export function Layout() {
   return (
     <div className="min-h-dvh bg-paper lg:flex">
       {/* Desktop sidebar */}
-      <aside className="hidden w-60 shrink-0 border-r border-line bg-white lg:flex lg:flex-col">
+      <aside className="hidden w-60 shrink-0 border-r border-line bg-card lg:flex lg:flex-col">
         <div className="border-b border-line p-4">
           <div className="flex items-center gap-2.5">
             <img src="/icons/icon-192.png" alt="" width={34} height={34} className="h-[34px] w-[34px] rounded-lg" />
@@ -78,7 +78,7 @@ export function Layout() {
               end={item.to === '/'}
               className={({ isActive }) =>
                 `flex min-h-[44px] items-center gap-3 rounded-xl px-3 text-sm font-medium ${
-                  isActive ? 'bg-maroon text-white' : 'text-ink-soft hover:bg-paper'
+                  isActive ? 'bg-maroon text-on-accent' : 'text-ink-soft hover:bg-paper'
                 }`
               }
             >
@@ -95,7 +95,7 @@ export function Layout() {
           >
             <span aria-hidden="true">🔔</span> Notifications
             {unreadNotifications > 0 && (
-              <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-maroon px-1.5 text-[10px] font-bold text-white">
+              <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-maroon px-1.5 text-[10px] font-bold text-on-accent">
                 {unreadNotifications > 9 ? '9+' : unreadNotifications}
               </span>
             )}
@@ -131,7 +131,7 @@ export function Layout() {
           >
             <span aria-hidden="true">🔔</span>
             {unreadNotifications > 0 && (
-              <span className="absolute right-1.5 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-maroon px-1 text-[10px] font-bold text-white">
+              <span className="absolute right-1.5 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-maroon px-1 text-[10px] font-bold text-on-accent">
                 {unreadNotifications > 9 ? '9+' : unreadNotifications}
               </span>
             )}
@@ -139,13 +139,13 @@ export function Layout() {
         </header>
 
         {activeTrip?.is_demo && (
-          <div role="status" className="bg-maroon px-4 py-2 text-center text-xs font-semibold text-white">
+          <div role="status" className="bg-maroon px-4 py-2 text-center text-xs font-semibold text-on-accent">
             ✨ Demo trip — sample data so you can explore. Delete it anytime from Trips.
           </div>
         )}
 
         {offline && (
-          <div role="status" className="bg-amber-100 px-4 py-2 text-center text-xs font-semibold text-amber-900">
+          <div role="status" className="bg-amber-100 px-4 py-2 text-center text-xs font-semibold text-amber-900 dark:bg-amber-500/15 dark:text-amber-200">
             You're offline — showing the latest saved data.
           </div>
         )}
@@ -159,7 +159,7 @@ export function Layout() {
         {/* Mobile bottom navigation */}
         <nav
           aria-label="Main"
-          className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-white pb-[env(safe-area-inset-bottom)] lg:hidden"
+          className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-card pb-[env(safe-area-inset-bottom)] lg:hidden"
         >
           <div className="mx-auto flex max-w-lg items-stretch justify-around">
             {MOBILE_ITEMS.map((item) => (
