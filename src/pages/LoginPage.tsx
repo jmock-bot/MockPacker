@@ -13,15 +13,6 @@ const TAGLINES: Record<Mode, string> = {
   reset: 'We’ll email you a password reset link.',
 };
 
-/** The outcomes people actually want — not the features that deliver them. */
-const PROMISES: { icon: string; text: string }[] = [
-  { icon: '🌴', text: 'A stress-free vacation, start to finish' },
-  { icon: '👨‍👩‍👧‍👦', text: 'Everyone on the same page' },
-  { icon: '💰', text: 'No more “who owes who?”' },
-  { icon: '🧳', text: 'Nothing forgotten at home' },
-  { icon: '📍', text: 'No one asking “where are we meeting?”' },
-];
-
 export function LoginPage() {
   const { session, loading, signIn, signUp, signInWithProvider, sendMagicLink, sendPasswordReset } =
     useAuth();
@@ -67,8 +58,8 @@ export function LoginPage() {
 
   return (
     <div className="flex min-h-dvh flex-col bg-paper">
-      {/* Hero — sell the trip, not the software */}
-      <div className="bg-maroon px-6 pb-9 pt-[max(3rem,env(safe-area-inset-top))] text-center text-white">
+      {/* Hero — one simple promise */}
+      <div className="bg-maroon px-6 pb-10 pt-[max(3rem,env(safe-area-inset-top))] text-center text-white">
         <img
           src="/icons/icon-192.png"
           alt=""
@@ -76,31 +67,12 @@ export function LoginPage() {
           height={64}
           className="mx-auto mb-5 h-16 w-16 rounded-2xl shadow-raised"
         />
-        <h1 className="text-[1.75rem] font-bold leading-tight tracking-tight text-balance">
-          The whole group trip,
-          <br />
-          finally handled.
+        <h1 className="mx-auto max-w-xs text-[1.75rem] font-bold leading-tight tracking-tight text-balance">
+          Turning group chats into group trips.
         </h1>
-        <p className="mx-auto mt-3 max-w-xs text-sm leading-relaxed text-white/85">
-          MockPacker keeps everyone packed, paid up, and in sync — so you can just enjoy the getaway.
-        </p>
       </div>
 
-      {/* Promises — the transformation, at a glance */}
-      <div className="mx-auto w-full max-w-md px-6 pt-6">
-        <ul className="grid grid-cols-1 gap-2.5">
-          {PROMISES.map(({ icon, text }) => (
-            <li key={text} className="flex items-center gap-3 text-sm font-medium text-ink-soft">
-              <span aria-hidden="true" className="text-lg leading-none">
-                {icon}
-              </span>
-              {text}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <main className="mx-auto w-full max-w-md flex-1 px-6 pb-8 pt-6">
+      <main className="mx-auto w-full max-w-md flex-1 px-6 py-8">
         <h2 className="text-lg font-bold text-ink">
           {mode === 'signup' ? 'Create your account' : mode === 'signin' ? 'Sign in' : mode === 'magic' ? 'Email me a link' : 'Reset password'}
         </h2>
