@@ -5,6 +5,7 @@ import { useToast } from '../context/ToastContext';
 import { daysUntil, shortDate } from '../lib/format';
 import { Button, Card, Chip, ConfirmDialog, EmptyState, SectionTitle, Spinner } from '../components/ui';
 import { Icon, type IconName } from '../components/Icon';
+import { ImportChatModal } from '../components/ImportChatModal';
 import type { Trip } from '../lib/types';
 
 const TYPE_ICONS: Record<Trip['trip_type'], IconName> = {
@@ -24,6 +25,7 @@ export function TripsPage() {
   const [confirmDelete, setConfirmDelete] = useState<Trip | null>(null);
   const [joinCode, setJoinCode] = useState('');
   const [seeding, setSeeding] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
 
   if (tripsLoading) return <Spinner label="Loading trips" />;
 
@@ -33,6 +35,19 @@ export function TripsPage() {
         <h1 className="text-xl font-bold text-ink">Trips</h1>
         <Button onClick={() => navigate('/trips/new')}><Icon name="plus" size={16} /> Plan a Trip</Button>
       </div>
+
+      <button
+        type="button"
+        onClick={() => setImportOpen(true)}
+        className="flex items-center gap-3 rounded-card border border-dashed border-maroon bg-maroon-tint px-4 py-3 text-left"
+      >
+        <Icon name="comment" size={20} className="shrink-0 text-maroon" />
+        <span className="flex-1 text-sm font-semibold text-maroon">
+          Or create a trip from a group chat
+        </span>
+        <Icon name="chevron-right" size={18} className="shrink-0 text-maroon" />
+      </button>
+      <ImportChatModal open={importOpen} onClose={() => setImportOpen(false)} />
 
       {trips.length === 0 ? (
         <EmptyState

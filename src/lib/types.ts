@@ -237,6 +237,16 @@ export interface FeedEntry {
   created_at: string;
 }
 
+export interface ChatMessage {
+  id: string;
+  trip_id: string;
+  author_id: string | null;
+  author_name: string;
+  body: string;
+  kind: 'message' | 'system';
+  created_at: string;
+}
+
 /** One day of forecast, normalized from the weather provider. */
 export interface WeatherDay {
   date: string;

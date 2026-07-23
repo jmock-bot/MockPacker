@@ -11,6 +11,7 @@ import { Icon } from './components/Icon';
 import { supabaseConfigured } from './lib/supabase';
 import { LoginPage } from './pages/LoginPage';
 import { HomePage } from './pages/HomePage';
+import { ChatPage } from './pages/ChatPage';
 import { TripsPage } from './pages/TripsPage';
 import { NewTripPage } from './pages/NewTripPage';
 import { PackingPage } from './pages/PackingPage';
@@ -78,6 +79,7 @@ export default function App() {
                 }
               >
                 <Route path="/" element={<HomePage />} />
+                <Route path="/chat" element={<ChatPage />} />
                 <Route path="/trips" element={<TripsPage />} />
                 <Route path="/trips/new" element={<NewTripPage />} />
                 <Route path="/packing" element={<PackingPage />} />

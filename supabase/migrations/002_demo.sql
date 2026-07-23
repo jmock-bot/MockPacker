@@ -3,9 +3,13 @@
 -- seed_demo_trip() builds a complete sample trip owned by the CALLING user:
 -- four travelers, five days, a formal dinner, an approved all-white theme day,
 -- packing progress, saved products, one delivered + one delayed shipment,
--- outfit photos, comments, and a live activity feed. The trip is flagged
--- is_demo so the UI labels it, and it can be deleted like any other trip.
--- The app calls this from the "Load a demo trip" button.
+-- outfit photos, comments, a live activity feed, and a group chat thread.
+-- The trip is flagged is_demo so the UI labels it, and it can be deleted like
+-- any other trip. The app calls this from the "Load a demo trip" button.
+--
+-- Chat seeding requires chat_messages (004_chat.sql) — defining this function
+-- doesn't validate that at creation time, only when it's actually called, so
+-- migration order (001 → 002 → 003 → 004) still works on a fresh database.
 
 create or replace function public.seed_demo_trip()
 returns uuid language plpgsql security definer set search_path = public as $$
@@ -169,6 +173,16 @@ begin
     (t, my_name,  'theme',    'approved the All-White Beach Photos theme', now() - interval '12 hours'),
     (t, 'Jordan', 'packed',   'marked 3 items packed', now() - interval '8 hours'),
     (t, 'Nia',    'shipping', 'White maxi dress shipment is delayed (FedEx)', now() - interval '6 hours');
+
+  -- ── group chat ──
+  insert into chat_messages (trip_id, author_id, author_name, body, kind, created_at) values
+    (t, null, 'Maya', 'ok so are we still doing the beach house Aug — I mean the dates we picked??', 'message', now() - interval '3 days'),
+    (t, uid,  my_name, 'yes!! already told everyone at work I''m out that week', 'message', now() - interval '3 days' + interval '4 minutes'),
+    (t, null, 'Jordan', 'I''m in charge of the kayak tour, booking it this week', 'message', now() - interval '2 days'),
+    (t, null, '', 'Maya added "White maxi dress" to the packing list', 'system', now() - interval '20 hours'),
+    (t, null, 'Nia', 'can we do all-white for the family photos?', 'message', now() - interval '19 hours'),
+    (t, null, '', 'Poll: All-white theme for beach photos — approved', 'system', now() - interval '12 hours'),
+    (t, uid,  my_name, 'approved it, adding sunscreen reminders for everyone 😅', 'message', now() - interval '11 hours');
 
   return t;
 end $$;
