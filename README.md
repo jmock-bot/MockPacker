@@ -16,6 +16,17 @@ reuses the architecture, auth flow, design system, RLS patterns, PWA shell,
 and serverless product-search of the Back2SchoMock project, generalized for
 trip planning.
 
+> **Standing up the `MockPacker` repository:** this branch is a complete,
+> self-contained application. To publish it as its own repo, create an empty
+> GitHub repository named `MockPacker` and push this branch to it as `main`:
+>
+> ```bash
+> git clone -b claude/mockpacker-trip-packing-n0k6tb https://github.com/jmock-bot/Back2SchoMocks MockPacker
+> cd MockPacker
+> git remote set-url origin https://github.com/jmock-bot/MockPacker.git
+> git push -u origin HEAD:main
+> ```
+
 ---
 
 ## Feature overview
@@ -40,69 +51,56 @@ trip planning.
 ## 1. Supabase setup
 
 1. Create a project at [supabase.com](https://supabase.com).
-2. In **SQL Editor**, run the migrations in order (both are safe to re-run if
-   a previous attempt failed partway):
-   1. [`supabase/migrations/001_schema.sql`](supabase/migrations/001_schema.sql) — enums, tables, functions, triggers, RLS, storage buckets
+2. In **SQL Editor**, run the migrations in order:
+   1. [`supabase/migrations/001_schema.sql`](supabase/migrations/001_schema.sql) — tables, enums, triggers, RLS, storage buckets
    2. [`supabase/migrations/002_demo.sql`](supabase/migrations/002_demo.sql) — the `seed_demo_trip()` function behind the "Load a demo trip" button
-
-   If the run finishes with a NOTICE about `storage.objects` policies, your
-   project's SQL role can't create storage policies directly. Create them in
-   **Dashboard → Storage → Policies** instead, mirroring the expressions at the
-   bottom of `001_schema.sql`: `trip-photos` (select/insert/delete allowed when
-   `public.is_trip_member((split_part(name, '/', 1))::uuid)` — use
-   `can_contribute` for insert/delete) and `avatars` (public read; users write
-   only under their own `auth.uid()` folder).
-
-   > **Seeing `relation "trip_members" does not exist`?** The SQL Editor runs a
-   > file as a single transaction: if any statement fails, the *entire*
-   > migration rolls back and no tables are created, so every query afterwards
-   > fails with an error like this. Pull the latest `001_schema.sql` (an older
-   > version created a `profiles` policy before the `trip_members` table it
-   > references) and re-run it in full, then `002_demo.sql`. If a piecemeal
-   > run left partial objects behind, reset first:
-   >
-   > <details><summary>Reset snippet (deletes all MockPacker data!)</summary>
-   >
-   > ```sql
-   > drop table if exists trip_feed, notifications, shipments, reactions,
-   >   comments, photos, votes, themes, outfits, packing_items, activities,
-   >   trip_stops, trip_members, trips, profiles cascade;
-   > drop trigger if exists on_auth_user_created on auth.users;
-   > drop function if exists handle_new_user, handle_new_trip, is_trip_member,
-   >   trip_role_of, can_organize, can_contribute, redeem_trip_invite,
-   >   seed_demo_trip cascade;
-   > drop type if exists trip_role, trip_kind, bag_status, shipment_status, theme_status;
-   > drop policy if exists "anyone reads avatars" on storage.objects;
-   > drop policy if exists "user writes own avatar" on storage.objects;
-   > drop policy if exists "user updates own avatar" on storage.objects;
-   > drop policy if exists "user deletes own avatar" on storage.objects;
-   > ```
-   > </details>
-   >
-   > **Seeing `new row violates row-level security policy for table "trips"`
-   > when you create a trip?** Same underlying cause. The app sets the row's
-   > `owner_id` to your signed-in user id, which is exactly what the
-   > `create own trips` policy checks (`owner_id = auth.uid()`), so a
-   > correctly-migrated database accepts the insert. This error means RLS is
-   > enabled on `trips` but that INSERT policy is missing — Postgres then
-   > default-denies the write. It shows up when `001_schema.sql` only ran
-   > partway (e.g. an older version rolled the whole file back and the tables
-   > were later recreated by hand, or the file was run statement-by-statement).
-   > Re-run the **full** `001_schema.sql` — it drops and recreates every policy,
-   > so it's safe to run again; use the reset snippet above first if a piecemeal
-   > run left partial objects behind, then run `001` and `002` in order. To
-   > confirm the policy landed, run
-   > `select policyname from pg_policies where tablename = 'trips';` — you
-   > should see `create own trips` (alongside `members read trips`,
-   > `organizers edit trips`, and `owner deletes trip`).
-3. **Authentication → Providers**: enable **Email**, **Google**, and **Apple**.
-   For each OAuth provider, add its client ID/secret and set the Supabase
-   callback URL in the provider's console:
-   `https://YOUR_PROJECT_REF.supabase.co/auth/v1/callback`
-4. **Authentication → URL Configuration → Redirect URLs**: add your production
-   Netlify domain, `http://localhost:8888`, and any preview URL pattern.
+   3. [`supabase/migrations/003_trips_select_policy.sql`](supabase/migrations/003_trips_select_policy.sql) — only needed for databases migrated before the trips select-policy fix landed in 001 (fixes "new row violates row-level security policy for table trips" when creating a trip)
+3. **Authentication → Providers**: enable **Email**, **Google**, and **Apple**
+   (see [OAuth setup](#oauth-setup-google--apple) below for the redirect URLs —
+   this is the step people get wrong).
+4. **Authentication → URL Configuration**: set the **Site URL** and **Redirect
+   URLs** allow-list (again, see [OAuth setup](#oauth-setup-google--apple)).
 5. Copy the **Project URL**, **anon public key**, and **service_role key**
    (server-side only!) from **Project Settings → API**.
+
+### OAuth setup (Google & Apple)
+
+The single most common OAuth mistake is pointing Google/Apple at your app URL.
+They don't redirect to your app — **they redirect to Supabase, and Supabase
+redirects to your app.** So there are two separate allow-lists:
+
+**A · Provider console** (Google Cloud Console → Credentials → your OAuth
+client; or the Apple Services ID). Set the **Authorized redirect URI** to
+**Supabase's** callback — never your app:
+
+```
+https://<YOUR_PROJECT_REF>.supabase.co/auth/v1/callback
+```
+
+Don't hand-type it: **Supabase → Authentication → Providers → Google** shows the
+exact **"Callback URL (for OAuth)"** to copy. In Google, also add your app
+origins under **Authorized JavaScript origins** (e.g.
+`https://your-site.netlify.app` and `http://localhost:8888`).
+
+**B · Supabase → Authentication → URL Configuration** — where Supabase is
+allowed to send the user *after* login:
+
+- **Site URL:** your canonical app URL, e.g. `https://your-site.netlify.app`
+- **Redirect URLs** (glob allow-list — the app returns to routes like `/join/…`):
+  - `https://your-site.netlify.app/**`
+  - `https://deploy-preview-*--your-site.netlify.app/**` (Netlify PR previews)
+  - `http://localhost:8888/**` (`netlify dev`) or `http://localhost:5173/**` (`vite`)
+
+**C · App env** — leave `VITE_AUTH_REDIRECT_URL` **blank**. The client
+(`src/context/AuthContext.tsx`) falls back to `window.location.origin`, so login
+returns to whatever origin the user is on — localhost, preview, or production —
+automatically. Only set it to force one origin, and if so it's your **app** URL,
+**never** the `…supabase.co` URL (that would strand users on the Supabase
+domain after login).
+
+> Quick failure map: `redirect_uri_mismatch` from Google → the callback in **A**
+> is wrong or missing. "requested path is invalid" from Supabase → the origin
+> isn't in the **B** allow-list.
 
 ### Security model (RLS)
 

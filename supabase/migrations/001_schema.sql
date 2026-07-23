@@ -443,8 +443,15 @@ drop policy if exists "insert own profile" on profiles;
 create policy "insert own profile" on profiles for insert with check (id = auth.uid());
 
 -- trips
+-- The direct owner_id check matters: createTrip inserts with a RETURNING
+-- clause, and Postgres applies this select policy to the just-inserted row.
+-- At that instant the on_trip_created trigger hasn't added the owner's
+-- trip_members row yet, and a statement can't see its own in-flight insert
+-- through is_trip_member()'s subquery — so without the column check the
+-- INSERT fails with "new row violates row-level security policy".
 drop policy if exists "members read trips" on trips;
-create policy "members read trips" on trips for select using (public.is_trip_member(id));
+create policy "members read trips" on trips for select
+  using (owner_id = auth.uid() or public.is_trip_member(id));
 drop policy if exists "create own trips" on trips;
 create policy "create own trips" on trips for insert with check (owner_id = auth.uid());
 drop policy if exists "organizers edit trips" on trips;

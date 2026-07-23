@@ -6,6 +6,7 @@ import { ACTIVITY_KINDS } from '../lib/activities';
 import { DRESS_CODES, LODGING_TYPES, TRANSPORTS, TRIP_TYPES } from '../lib/statuses';
 import { todayIso } from '../lib/format';
 import { Button, Card, Field, Select, TextArea, TextInput, Warning } from '../components/ui';
+import { CityAutocomplete } from '../components/CityAutocomplete';
 import type { TripKind, TripRole } from '../lib/types';
 
 interface TravelerDraft {
@@ -38,6 +39,9 @@ export function NewTripPage() {
   const [city, setCity] = useState('');
   const [region, setRegion] = useState('');
   const [country, setCountry] = useState('United States');
+  // Coordinates captured when a city is picked from autocomplete — lets us
+  // skip a second geocode and guarantees the forecast matches the chosen city.
+  const [coords, setCoords] = useState<{ lat: number; lon: number } | null>(null);
   const [lodgingName, setLodgingName] = useState('');
   const [address, setAddress] = useState('');
   const [notes, setNotes] = useState('');
@@ -124,6 +128,8 @@ export function NewTripPage() {
       city: city.trim(),
       region: region.trim(),
       country: country.trim(),
+      lat: coords?.lat ?? null,
+      lon: coords?.lon ?? null,
       lodging_type: lodgingType,
       lodging_name: lodgingName.trim() || null,
       address: address.trim() || null,
@@ -234,8 +240,25 @@ export function NewTripPage() {
         {step === 1 && (
           <>
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="City" required>
-                {(id) => <TextInput id={id} value={city} onChange={(e) => setCity(e.target.value)} placeholder="Hilton Head Island" />}
+              <Field label="City" required hint="Start typing to pick from suggestions.">
+                {(id) => (
+                  <CityAutocomplete
+                    id={id}
+                    value={city}
+                    onChange={(v) => {
+                      setCity(v);
+                      // Typing after a pick invalidates the captured coordinates.
+                      setCoords(null);
+                    }}
+                    onSelect={(place) => {
+                      setCity(place.name);
+                      if (place.region) setRegion(place.region);
+                      if (place.country) setCountry(place.country);
+                      setCoords({ lat: place.lat, lon: place.lon });
+                    }}
+                    placeholder="Hilton Head Island"
+                  />
+                )}
               </Field>
               <Field label="State / region">
                 {(id) => <TextInput id={id} value={region} onChange={(e) => setRegion(e.target.value)} placeholder="South Carolina" />}

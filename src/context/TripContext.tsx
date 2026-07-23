@@ -54,6 +54,9 @@ export interface NewTripInput {
   city: string;
   region: string;
   country: string;
+  /** Coordinates from city autocomplete; when present we skip re-geocoding. */
+  lat: number | null;
+  lon: number | null;
   lodging_type: string | null;
   lodging_name: string | null;
   address: string | null;
@@ -376,9 +379,12 @@ export function TripProvider({ children }: { children: ReactNode }) {
     async (input: NewTripInput): Promise<Result> => {
       if (!session) return { ok: false, error: 'Sign in first.' };
       try {
-        const geo = await geocode(
-          [input.city, input.region, input.country].filter(Boolean).join(', ')
-        );
+        // Prefer coordinates captured from city autocomplete; only geocode
+        // when the organizer typed a city without picking a suggestion.
+        const coords: { lat: number; lon: number } | null =
+          input.lat != null && input.lon != null
+            ? { lat: input.lat, lon: input.lon }
+            : await geocode([input.city, input.region, input.country].filter(Boolean).join(', '));
         const { data: tripRow, error } = await supabase
           .from('trips')
           .insert({
@@ -397,8 +403,8 @@ export function TripProvider({ children }: { children: ReactNode }) {
             end_date: input.end_date,
             travelers_count: input.travelers.length + 1,
             laundry_available: input.laundry_available,
-            lat: geo?.lat ?? null,
-            lon: geo?.lon ?? null,
+            lat: coords?.lat ?? null,
+            lon: coords?.lon ?? null,
             notes: input.notes,
           })
           .select('*')
@@ -433,8 +439,8 @@ export function TripProvider({ children }: { children: ReactNode }) {
         // Generate the personalized packing list.
         const allDays = eachDay(trip.start_date, trip.end_date);
         const wx =
-          geo != null
-            ? await fetchTripWeather(geo.lat, geo.lon, trip.start_date, trip.end_date, allDays)
+          coords != null
+            ? await fetchTripWeather(coords.lat, coords.lon, trip.start_date, trip.end_date, allDays)
             : [];
         const international =
           Boolean(input.country) &&

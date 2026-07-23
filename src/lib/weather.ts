@@ -14,6 +14,47 @@ export interface GeoResult {
   lon: number;
 }
 
+interface GeoApiHit {
+  name: string;
+  admin1?: string;
+  country?: string;
+  latitude: number;
+  longitude: number;
+}
+
+const toGeoResult = (hit: GeoApiHit): GeoResult => ({
+  name: hit.name,
+  region: hit.admin1 ?? '',
+  country: hit.country ?? '',
+  lat: hit.latitude,
+  lon: hit.longitude,
+});
+
+/**
+ * Autocomplete search: up to `limit` matching cities for a typed query.
+ * Accepts an AbortSignal so the caller can cancel stale in-flight requests as
+ * the user keeps typing. Returns [] on error/empty rather than throwing.
+ */
+export async function searchCities(
+  query: string,
+  limit = 6,
+  signal?: AbortSignal
+): Promise<GeoResult[]> {
+  const q = query.trim();
+  if (q.length < 2) return [];
+  try {
+    const res = await fetch(
+      `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=${limit}&language=en&format=json`,
+      { signal: signal ?? AbortSignal.timeout(8000) }
+    );
+    if (!res.ok) return [];
+    const data = (await res.json()) as { results?: GeoApiHit[] };
+    return (data.results ?? []).map(toGeoResult);
+  } catch {
+    return [];
+  }
+}
+
 export async function geocode(query: string): Promise<GeoResult | null> {
   const q = query.trim();
   if (!q) return null;
@@ -23,18 +64,9 @@ export async function geocode(query: string): Promise<GeoResult | null> {
       { signal: AbortSignal.timeout(8000) }
     );
     if (!res.ok) return null;
-    const data = (await res.json()) as {
-      results?: { name: string; admin1?: string; country?: string; latitude: number; longitude: number }[];
-    };
+    const data = (await res.json()) as { results?: GeoApiHit[] };
     const hit = data.results?.[0];
-    if (!hit) return null;
-    return {
-      name: hit.name,
-      region: hit.admin1 ?? '',
-      country: hit.country ?? '',
-      lat: hit.latitude,
-      lon: hit.longitude,
-    };
+    return hit ? toGeoResult(hit) : null;
   } catch {
     return null;
   }
