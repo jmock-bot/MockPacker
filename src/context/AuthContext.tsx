@@ -11,13 +11,18 @@ import { supabase } from '../lib/supabase';
 import type { Profile } from '../lib/types';
 
 /**
- * OAuth redirect target. Configurable per environment so production,
- * previews, and localhost can each register their own allowed URL in
- * Supabase (Authentication → URL Configuration).
+ * Where Supabase sends the user after an email link or OAuth round-trip.
+ * The base is configurable per environment so production, previews, and
+ * localhost can each register their own allowed URL in Supabase
+ * (Authentication → URL Configuration). We land on /trips so every login
+ * method starts on the Trips list (the allow-list uses /** globs).
  */
-const redirectTo =
+const authRedirectBase =
   (import.meta.env.VITE_AUTH_REDIRECT_URL as string | undefined) ||
   (typeof window !== 'undefined' ? window.location.origin : undefined);
+const redirectTo = authRedirectBase
+  ? `${authRedirectBase.replace(/\/+$/, '')}/trips`
+  : undefined;
 
 interface AuthContextValue {
   session: Session | null;

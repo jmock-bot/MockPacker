@@ -25,7 +25,10 @@ export function LoginPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const from = (location.state as { from?: string } | null)?.from ?? '/';
+  // New logins start on the Trips list; a genuine deep-link (e.g. /join/…)
+  // is preserved, but the bare app entry (/) defers to /trips.
+  const requested = (location.state as { from?: string } | null)?.from;
+  const from = requested && requested !== '/' ? requested : '/trips';
   if (!loading && session) return <Navigate to={from} replace />;
 
   const submit = async (e: FormEvent) => {
