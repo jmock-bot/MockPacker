@@ -7,11 +7,20 @@ import { Button, Field, TextInput, Warning } from '../components/ui';
 type Mode = 'signin' | 'signup' | 'magic' | 'reset';
 
 const TAGLINES: Record<Mode, string> = {
-  signin: 'Welcome back, traveler.',
-  signup: 'Create your account and start packing smarter.',
+  signin: 'Welcome back — your trip is waiting.',
+  signup: 'Start planning the trip everyone actually enjoys.',
   magic: 'We’ll email you a one-tap sign-in link.',
   reset: 'We’ll email you a password reset link.',
 };
+
+/** The outcomes people actually want — not the features that deliver them. */
+const PROMISES: { icon: string; text: string }[] = [
+  { icon: '🌴', text: 'A stress-free vacation, start to finish' },
+  { icon: '👨‍👩‍👧‍👦', text: 'Everyone on the same page' },
+  { icon: '💰', text: 'No more “who owes who?”' },
+  { icon: '🧳', text: 'Nothing forgotten at home' },
+  { icon: '📍', text: 'No one asking “where are we meeting?”' },
+];
 
 export function LoginPage() {
   const { session, loading, signIn, signUp, signInWithProvider, sendMagicLink, sendPasswordReset } =
@@ -58,20 +67,40 @@ export function LoginPage() {
 
   return (
     <div className="flex min-h-dvh flex-col bg-paper">
-      {/* Splash header */}
-      <div className="bg-maroon px-6 pb-10 pt-[max(3rem,env(safe-area-inset-top))] text-center text-white">
+      {/* Hero — sell the trip, not the software */}
+      <div className="bg-maroon px-6 pb-9 pt-[max(3rem,env(safe-area-inset-top))] text-center text-white">
         <img
           src="/icons/icon-192.png"
           alt=""
-          width={72}
-          height={72}
-          className="mx-auto mb-4 h-[72px] w-[72px] rounded-2xl shadow-raised"
+          width={64}
+          height={64}
+          className="mx-auto mb-5 h-16 w-16 rounded-2xl shadow-raised"
         />
-        <h1 className="text-3xl font-bold tracking-tight">MockPacker</h1>
-        <p className="mt-1 text-sm text-white/80">Pack together. Travel ready.</p>
+        <h1 className="text-[1.75rem] font-bold leading-tight tracking-tight text-balance">
+          The whole group trip,
+          <br />
+          finally handled.
+        </h1>
+        <p className="mx-auto mt-3 max-w-xs text-sm leading-relaxed text-white/85">
+          MockPacker keeps everyone packed, paid up, and in sync — so you can just enjoy the getaway.
+        </p>
       </div>
 
-      <main className="mx-auto w-full max-w-md flex-1 px-6 py-8">
+      {/* Promises — the transformation, at a glance */}
+      <div className="mx-auto w-full max-w-md px-6 pt-6">
+        <ul className="grid grid-cols-1 gap-2.5">
+          {PROMISES.map(({ icon, text }) => (
+            <li key={text} className="flex items-center gap-3 text-sm font-medium text-ink-soft">
+              <span aria-hidden="true" className="text-lg leading-none">
+                {icon}
+              </span>
+              {text}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <main className="mx-auto w-full max-w-md flex-1 px-6 pb-8 pt-6">
         <h2 className="text-lg font-bold text-ink">
           {mode === 'signup' ? 'Create your account' : mode === 'signin' ? 'Sign in' : mode === 'magic' ? 'Email me a link' : 'Reset password'}
         </h2>
