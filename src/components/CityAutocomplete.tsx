@@ -47,6 +47,12 @@ export function CityAutocomplete({
     setLoading(true);
     const t = window.setTimeout(() => {
       void searchCities(q, 6, controller.signal).then((r) => {
+        // searchCities swallows AbortError and resolves with [] — indistinguishable
+        // from a genuine "no results". Without this guard, an aborted (stale)
+        // request's resolution can land after a newer request has already started,
+        // flashing "No matches" right before the real results arrive. Discard
+        // results from any request this effect has already superseded.
+        if (controller.signal.aborted) return;
         setResults(r);
         setActive(-1);
         setOpen(true);
