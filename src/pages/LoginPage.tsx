@@ -70,6 +70,10 @@ export function LoginPage() {
         <h1 className="mx-auto max-w-xs text-[1.75rem] font-bold leading-tight tracking-tight text-balance">
           Turning group chats into group trips.
         </h1>
+        <p className="mx-auto mt-3 max-w-xs text-sm leading-snug text-on-accent/85 text-balance">
+          MockPacker keeps your group's packing lists, daily outfit plans, and shipment tracking in
+          one place — with a Trip Readiness score so nothing gets left behind.
+        </p>
       </div>
 
       <main className="mx-auto w-full max-w-md flex-1 px-6 py-8">

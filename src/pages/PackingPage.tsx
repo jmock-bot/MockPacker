@@ -7,6 +7,7 @@ import { percent, shortDate } from '../lib/format';
 import { Button, Card, Chip, ConfirmDialog, EmptyState, ProgressBar, Select, Spinner } from '../components/ui';
 import { ItemFormModal } from '../components/ItemFormModal';
 import { MemberChip } from '../components/shared';
+import { Icon } from '../components/Icon';
 import type { PackingItem } from '../lib/types';
 
 export function PackingPage() {
@@ -48,7 +49,7 @@ export function PackingPage() {
   if (!activeTrip)
     return (
       <EmptyState
-        icon="✅"
+        icon="checklist"
         title="No trip selected"
         body="Create or open a trip first — the packing list lives inside a trip."
         action={<Link to="/trips" className="text-sm font-semibold text-maroon underline underline-offset-2">Go to Trips →</Link>}
@@ -69,7 +70,7 @@ export function PackingPage() {
             {packedCount}/{items.length} packed · {percent(overallPct)}
           </p>
         </div>
-        {canContribute && <Button onClick={() => setAdding(true)}>✚ Add item</Button>}
+        {canContribute && <Button onClick={() => setAdding(true)}><Icon name="plus" size={16} /> Add item</Button>}
       </div>
 
       <ProgressBar value={overallPct} label="Overall packing progress" />
@@ -114,7 +115,7 @@ export function PackingPage() {
 
       {lastMinute.length > 0 && statusFilter === 'all' && (
         <Card className="!bg-cream">
-          <p className="text-sm font-semibold text-ink">⏰ Last-minute items ({lastMinute.length})</p>
+          <p className="flex items-center gap-1.5 text-sm font-semibold text-ink"><Icon name="clock" size={16} /> Last-minute items ({lastMinute.length})</p>
           <p className="text-xs text-ink-faint">
             {lastMinute.map((i) => i.name).slice(0, 6).join(' · ')}
             {lastMinute.length > 6 ? '…' : ''} — don't pack these until departure day.
@@ -124,7 +125,7 @@ export function PackingPage() {
 
       {byCategory.length === 0 ? (
         <EmptyState
-          icon="🎒"
+          icon="bag"
           title="Nothing matches these filters"
           body={items.length === 0 ? 'Add your first item, or re-run trip creation to generate a list.' : 'Try a different traveler or status filter.'}
         />
@@ -175,7 +176,7 @@ export function PackingPage() {
                           aria-label={`Edit ${item.name}`}
                           className="flex h-9 w-9 items-center justify-center rounded-lg text-ink-faint hover:bg-ink/5"
                         >
-                          ✏️
+                          <Icon name="edit" size={16} />
                         </button>
                         <button
                           type="button"
@@ -187,7 +188,7 @@ export function PackingPage() {
                           aria-label={`Duplicate ${item.name}`}
                           className="flex h-9 w-9 items-center justify-center rounded-lg text-ink-faint hover:bg-ink/5"
                         >
-                          📄
+                          <Icon name="file" size={16} />
                         </button>
                         <button
                           type="button"
@@ -195,7 +196,7 @@ export function PackingPage() {
                           aria-label={`Delete ${item.name}`}
                           className="flex h-9 w-9 items-center justify-center rounded-lg text-ink-faint hover:bg-ink/5"
                         >
-                          🗑️
+                          <Icon name="trash" size={16} />
                         </button>
                       </div>
                     )}

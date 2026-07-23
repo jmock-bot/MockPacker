@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { publicAvatarUrl, uploadAvatar } from '../lib/supabase';
 import { Button, Card, Field, SectionTitle, Select, TextArea, TextInput } from '../components/ui';
+import { Icon } from '../components/Icon';
 
 const FITS = ['', 'slim', 'regular', 'relaxed', 'oversized'];
 
@@ -181,7 +182,7 @@ export function ProfilePage() {
           void signOut().then(() => navigate('/login'));
         }}
       >
-        🚪 Sign out
+        <Icon name="logout" size={18} /> Sign out
       </Button>
     </div>
   );

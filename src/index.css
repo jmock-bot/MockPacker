@@ -49,8 +49,9 @@
   --duration-base: 250ms;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
+/* Dark palette applied via [data-theme="dark"] on <html>, set by public/theme.js
+   (honors a saved choice, else OS preference). */
+:root[data-theme="dark"] {
     --color-accent: 79 176 176; /* #4FB0B0 */
     --color-accent-hover: 61 149 149; /* #3D9595 */
     --color-accent-deep: 45 120 120; /* deeper teal for pressed states */
@@ -70,7 +71,6 @@
     --color-success: 111 207 115; /* #6FCF73 */
     --color-warning: 224 163 58; /* #E0A33A */
     --color-danger: 229 115 107; /* #E5736B */
-  }
 }
 
 @layer base {

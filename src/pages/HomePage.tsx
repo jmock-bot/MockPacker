@@ -6,17 +6,18 @@ import { computeReadiness } from '../lib/readiness';
 import { daysUntil, percent, shortDate, timeAgo, todayIso, weekday } from '../lib/format';
 import { Button, Card, EmptyState, ProgressBar, ReadinessRing, SectionTitle, Spinner, Warning } from '../components/ui';
 import { MemberDot, WeatherBadge } from '../components/shared';
+import { Icon, type IconName } from '../components/Icon';
 
-const FEED_ICONS: Record<string, string> = {
-  packed: '✅',
-  comment: '💬',
-  photo: '📷',
-  outfit: '👗',
-  purchase: '🛍️',
-  shipping: '🚚',
-  theme: '🎨',
-  member: '👥',
-  update: '✨',
+const FEED_ICONS: Record<string, IconName> = {
+  packed: 'check',
+  comment: 'comment',
+  photo: 'camera',
+  outfit: 'shirt',
+  purchase: 'cart',
+  shipping: 'truck',
+  theme: 'palette',
+  member: 'users',
+  update: 'sparkle',
 };
 
 export function HomePage() {
@@ -54,12 +55,12 @@ export function HomePage() {
     return (
       <div className="mx-auto max-w-lg">
         <EmptyState
-          icon="🧳"
-          title="No trips yet"
-          body="Plan your first trip and MockPacker will build a personalized packing list, daily outfit plans, and a readiness dashboard for the whole group."
+          icon="compass"
+          title="Plan a group trip"
+          body="MockPacker turns your group trip into shared packing lists, daily outfit plans, shipment tracking, and a Trip Readiness score — so nothing gets left behind."
           action={
             <div className="flex flex-col gap-2">
-              <Button onClick={() => navigate('/trips/new')}>✚ Plan a Trip</Button>
+              <Button onClick={() => navigate('/trips/new')}>Plan a Trip</Button>
               <Button
                 variant="secondary"
                 disabled={seeding}
@@ -72,7 +73,7 @@ export function HomePage() {
                   });
                 }}
               >
-                {seeding ? 'Loading demo…' : '✨ Load a demo trip'}
+                {seeding ? 'Loading demo…' : 'Load a demo trip'}
               </Button>
             </div>
           }
@@ -91,20 +92,20 @@ export function HomePage() {
   const themeNeedingApproval = themes.find((t) => t.status !== 'approved');
 
   /* Suggested action cards, most urgent first. */
-  const suggestions: { icon: string; text: string; to: string }[] = [];
+  const suggestions: { icon: IconName; text: string; to: string }[] = [];
   if (problemShipments.length > 0)
-    suggestions.push({ icon: '🚨', text: 'Review a delayed shipment', to: '/shipments' });
+    suggestions.push({ icon: 'alert', text: 'Review a delayed shipment', to: '/shipments' });
   if (needItems.length > 0)
-    suggestions.push({ icon: '🛍️', text: `Order ${needItems.length} missing item${needItems.length > 1 ? 's' : ''}`, to: '/bag' });
+    suggestions.push({ icon: 'cart', text: `Order ${needItems.length} missing item${needItems.length > 1 ? 's' : ''}`, to: '/bag' });
   if (unpackedRequired.length > 0)
-    suggestions.push({ icon: '✅', text: 'Finish your packing list', to: '/packing' });
+    suggestions.push({ icon: 'checklist', text: 'Finish your packing list', to: '/packing' });
   if (themeNeedingApproval)
-    suggestions.push({ icon: '🎨', text: `Confirm the “${themeNeedingApproval.name}” theme`, to: '/group' });
+    suggestions.push({ icon: 'palette', text: `Confirm the “${themeNeedingApproval.name}” theme`, to: '/group' });
   const keyDate = themes.find((t) => t.date)?.date;
   if (keyDate && !outfits.some((o) => o.member_id === myMember?.id && o.date === keyDate && o.chosen))
-    suggestions.push({ icon: '👗', text: `Choose your ${weekday(keyDate)} outfit`, to: `/days/${keyDate}` });
+    suggestions.push({ icon: 'shirt', text: `Choose your ${weekday(keyDate)} outfit`, to: `/days/${keyDate}` });
   if (members.filter((m) => m.joined).length < members.length)
-    suggestions.push({ icon: '✉️', text: 'Invite travelers who haven’t joined yet', to: '/group' });
+    suggestions.push({ icon: 'mail', text: 'Invite travelers who haven’t joined yet', to: '/group' });
 
   return (
     <div className="flex flex-col gap-4">
@@ -122,7 +123,7 @@ export function HomePage() {
             </p>
             {!departed && countdown != null && (
               <p className="mt-2 text-2xl font-bold tabular-nums text-maroon">
-                {countdown === 0 ? 'Departure day! ✈️' : `${countdown} day${countdown === 1 ? '' : 's'} to go`}
+                {countdown === 0 ? 'Departure day!' : `${countdown} day${countdown === 1 ? '' : 's'} to go`}
               </p>
             )}
           </div>
@@ -179,9 +180,9 @@ export function HomePage() {
                 to={s.to}
                 className="flex min-h-[56px] items-center gap-3 rounded-card border border-line bg-card px-4 shadow-card transition-colors hover:border-maroon"
               >
-                <span aria-hidden="true" className="text-xl">{s.icon}</span>
+                <Icon name={s.icon} size={22} className="text-maroon" />
                 <span className="text-sm font-medium text-ink">{s.text}</span>
-                <span aria-hidden="true" className="ml-auto text-ink-faint">→</span>
+                <Icon name="chevron-right" size={18} className="ml-auto text-ink-faint" />
               </Link>
             ))}
           </div>
@@ -293,7 +294,7 @@ export function HomePage() {
           <ul className="flex flex-col gap-2">
             {feed.slice(0, 8).map((f) => (
               <li key={f.id} className="flex items-start gap-2.5 text-sm">
-                <span aria-hidden="true">{FEED_ICONS[f.kind] ?? '✨'}</span>
+                <Icon name={FEED_ICONS[f.kind] ?? 'sparkle'} size={18} className="mt-0.5 shrink-0 text-ink-faint" />
                 <span className="min-w-0 flex-1 text-ink-soft">
                   <strong className="font-semibold text-ink">{f.actor_name}</strong> {f.message}
                 </span>
@@ -313,7 +314,7 @@ export function HomePage() {
         ) : (
           <span />
         )}
-        <Button onClick={() => navigate('/trips/new')}>✚ Plan a Trip</Button>
+        <Button onClick={() => navigate('/trips/new')}>Plan a Trip</Button>
       </div>
     </div>
   );

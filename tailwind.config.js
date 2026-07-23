@@ -7,9 +7,9 @@ const token = (name) => `rgb(var(${name}) / <alpha-value>)`;
 
 export default {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
-  // Media strategy: dark: variants track prefers-color-scheme, matching the
-  // CSS-variable palette flip in src/index.css.
-  darkMode: 'media',
+  // Selector strategy: dark: variants track the data-theme attribute set by
+  // public/theme.js, matching the CSS-variable palette flip in src/index.css.
+  darkMode: ['selector', '[data-theme="dark"]'],
   theme: {
     extend: {
       colors: {

@@ -3,6 +3,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useTrip } from '../context/TripContext';
 import { useToast } from '../context/ToastContext';
 import { Button, Card, Field, TextInput, Warning } from '../components/ui';
+import { Icon } from '../components/Icon';
 
 /** Landing page for invitation links: /join/<code> (or /join?code=<code>). */
 export function JoinPage() {
@@ -22,7 +23,7 @@ export function JoinPage() {
     const res = await redeemInvite(code);
     setBusy(false);
     if (res.ok) {
-      toast('Welcome aboard — you joined the trip! 🎉', 'success');
+      toast('Welcome aboard — you joined the trip!', 'success');
       navigate('/');
     } else {
       setError(res.error ?? 'That code did not work.');
@@ -33,7 +34,7 @@ export function JoinPage() {
     <div className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-4 p-6">
       <Card>
         <div className="mb-4 text-center">
-          <span aria-hidden="true" className="text-4xl">🧳</span>
+          <Icon name="briefcase" size={40} className="mx-auto text-maroon" />
           <h1 className="mt-2 text-xl font-bold text-ink">Join a trip</h1>
           <p className="text-sm text-ink-faint">
             Enter the invitation code from your trip organizer to join the group.

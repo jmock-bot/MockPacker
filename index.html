@@ -2,6 +2,16 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <!-- No-flash theme blocker: set data-theme before styles apply. -->
+    <script>
+      (function () {
+        try {
+          var c = localStorage.getItem('mp-theme');
+          var dark = c === 'dark' || (!c && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+        } catch (e) {}
+      })();
+    </script>
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover"
@@ -27,6 +37,7 @@
   </head>
   <body>
     <div id="root"></div>
+    <script src="/theme.js" defer></script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

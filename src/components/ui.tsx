@@ -8,6 +8,7 @@ import {
   type SelectHTMLAttributes,
   type TextareaHTMLAttributes,
 } from 'react';
+import { Icon, type IconName } from './Icon';
 
 /* ---------- Buttons ---------- */
 
@@ -401,7 +402,7 @@ export function EmptyState({
   body,
   action,
 }: {
-  icon?: string;
+  icon?: IconName;
   title: string;
   body?: string;
   action?: ReactNode;
@@ -409,8 +410,8 @@ export function EmptyState({
   return (
     <div className="flex flex-col items-center gap-2 rounded-card border border-dashed border-line bg-card/60 px-6 py-10 text-center">
       {icon && (
-        <span aria-hidden="true" className="text-3xl">
-          {icon}
+        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-cream text-ink-soft">
+          <Icon name={icon} size={26} />
         </span>
       )}
       <p className="font-semibold text-ink">{title}</p>

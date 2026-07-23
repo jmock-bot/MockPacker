@@ -78,7 +78,7 @@ export function ItemFormModal({
     const res = item ? await updateItem(item.id, payload) : await addItem(payload);
     setBusy(false);
     if (res.ok) {
-      toast(item ? 'Item updated.' : 'Added to the trip! 🎒', 'success');
+      toast(item ? 'Item updated.' : 'Added to the trip!', 'success');
       onClose();
     } else {
       toast(res.error ?? 'Could not save the item.', 'error');

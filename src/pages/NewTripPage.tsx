@@ -7,6 +7,7 @@ import { DRESS_CODES, LODGING_TYPES, TRANSPORTS, TRIP_TYPES } from '../lib/statu
 import { todayIso } from '../lib/format';
 import { Button, Card, Field, Select, TextArea, TextInput, Warning } from '../components/ui';
 import { CityAutocomplete } from '../components/CityAutocomplete';
+import { Icon } from '../components/Icon';
 import type { TripKind, TripRole } from '../lib/types';
 
 interface TravelerDraft {
@@ -146,7 +147,7 @@ export function NewTripPage() {
     });
     setBusy(false);
     if (res.ok) {
-      toast('Trip created — your packing list is ready! 🎒', 'success');
+      toast('Trip created — your packing list is ready!', 'success');
       navigate('/packing');
     } else {
       setError(res.error ?? 'Could not create the trip.');
@@ -276,8 +277,8 @@ export function NewTripPage() {
             <Field label="Trip notes (optional)" hint="Multiple stops? List them here — multi-destination support carries them with the trip.">
               {(id) => <TextArea id={id} value={notes} onChange={(e) => setNotes(e.target.value)} />}
             </Field>
-            <p className="text-xs text-ink-faint">
-              ☁️ MockPacker uses the destination to pull the weather forecast and tailor the packing
+            <p className="flex items-center gap-1 text-xs text-ink-faint">
+              <Icon name="cloud" size={14} /> MockPacker uses the destination to pull the weather forecast and tailor the packing
               list.
             </p>
           </>
@@ -339,7 +340,7 @@ export function NewTripPage() {
               variant="secondary"
               onClick={() => setTravelers((prev) => [...prev, { name: '', email: '', role: 'traveler' }])}
             >
-              ✚ Add a traveler
+              <Icon name="plus" size={16} /> Add a traveler
             </Button>
           </>
         )}
@@ -423,11 +424,11 @@ export function NewTripPage() {
           <>
             <p className="text-sm text-ink-soft">Ready? Here's what MockPacker will set up:</p>
             <ul className="flex flex-col gap-1.5 text-sm text-ink-soft">
-              <li>🧳 <strong className="text-ink">{name || 'Your trip'}</strong> — {city}{region ? `, ${region}` : ''} · {startDate} → {endDate}</li>
-              <li>👥 {travelers.filter((t) => t.name.trim()).length + 1} traveler(s), each with their own checklist</li>
-              <li>🎯 {buildActivities().length} planned activit{buildActivities().length === 1 ? 'y' : 'ies'}</li>
-              <li>☁️ Weather forecast for each day (when in range)</li>
-              <li>🎒 A personalized packing list generated from all of the above — edit anything afterwards</li>
+              <li className="flex items-start gap-2"><Icon name="briefcase" size={16} className="mt-0.5 shrink-0 text-maroon" /> <span><strong className="text-ink">{name || 'Your trip'}</strong> — {city}{region ? `, ${region}` : ''} · {startDate} → {endDate}</span></li>
+              <li className="flex items-start gap-2"><Icon name="users" size={16} className="mt-0.5 shrink-0 text-maroon" /> <span>{travelers.filter((t) => t.name.trim()).length + 1} traveler(s), each with their own checklist</span></li>
+              <li className="flex items-start gap-2"><Icon name="target" size={16} className="mt-0.5 shrink-0 text-maroon" /> <span>{buildActivities().length} planned activit{buildActivities().length === 1 ? 'y' : 'ies'}</span></li>
+              <li className="flex items-start gap-2"><Icon name="cloud" size={16} className="mt-0.5 shrink-0 text-maroon" /> <span>Weather forecast for each day (when in range)</span></li>
+              <li className="flex items-start gap-2"><Icon name="bag" size={16} className="mt-0.5 shrink-0 text-maroon" /> <span>A personalized packing list generated from all of the above — edit anything afterwards</span></li>
             </ul>
           </>
         )}
@@ -445,7 +446,7 @@ export function NewTripPage() {
             <Button onClick={next}>Continue →</Button>
           ) : (
             <Button onClick={() => void submit()} disabled={busy}>
-              {busy ? 'Building your packing list…' : '🎒 Create trip + packing list'}
+              {busy ? 'Building your packing list…' : <><Icon name="bag" size={18} /> Create trip + packing list</>}
             </Button>
           )}
         </div>
