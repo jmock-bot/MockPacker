@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Button, Modal } from './ui';
+import { Icon } from './Icon';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -93,7 +94,7 @@ export function InstallPrompt() {
             aria-label="Dismiss install prompt"
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-ink-faint hover:bg-ink/5"
           >
-            ✕
+            <Icon name="x" size={18} />
           </button>
         </div>
       </div>

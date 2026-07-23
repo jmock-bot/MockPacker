@@ -7,6 +7,7 @@ import { ROLE_META, THEME_STATUS_META } from '../lib/statuses';
 import { dayLabel, timeAgo } from '../lib/format';
 import { Button, Card, Chip, ConfirmDialog, EmptyState, Field, Modal, SectionTitle, Select, Spinner, TextArea, TextInput } from '../components/ui';
 import { MemberDot, PhotoCard, CommentThread, TripImage } from '../components/shared';
+import { Icon } from '../components/Icon';
 import type { Photo, Theme, TripMember, TripRole } from '../lib/types';
 
 const THEME_IDEAS = [
@@ -73,7 +74,7 @@ export function GroupPage() {
   if (!activeTrip)
     return (
       <EmptyState
-        icon="👥"
+        icon="users"
         title="No trip selected"
         body="Group tools live inside a trip."
         action={<Link to="/trips" className="text-sm font-semibold text-maroon underline underline-offset-2">Go to Trips →</Link>}
@@ -110,7 +111,7 @@ export function GroupPage() {
           action={
             canOrganize && (
               <Button className="!min-h-[38px] px-3 text-xs" onClick={() => { setInviteOpen(true); setInviteLink(null); }}>
-                ✚ Invite
+                <Icon name="plus" size={16} /> Invite
               </Button>
             )
           }
@@ -159,7 +160,7 @@ export function GroupPage() {
                       aria-label={`Remove ${m.name}`}
                       className="flex h-8 w-8 items-center justify-center rounded-lg text-ink-faint hover:bg-ink/5"
                     >
-                      ✕
+                      <Icon name="x" size={16} />
                     </button>
                   </div>
                 )}
@@ -180,7 +181,7 @@ export function GroupPage() {
           action={
             canContribute && (
               <Button className="!min-h-[38px] px-3 text-xs" onClick={() => { setEditingTheme(null); setThemeOpen(true); }}>
-                ✚ New theme
+                <Icon name="plus" size={16} /> New theme
               </Button>
             )
           }
@@ -189,7 +190,7 @@ export function GroupPage() {
         </SectionTitle>
         {themes.length === 0 ? (
           <EmptyState
-            icon="🎨"
+            icon="palette"
             title="No themes yet"
             body="Coordinate the group — formal night, all-white photos, western night, team colors…"
           />
@@ -207,7 +208,7 @@ export function GroupPage() {
                 <Card key={t.id} accent="rgb(var(--color-accent))">
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div>
-                      <p className="font-bold text-ink">🎨 {t.name}</p>
+                      <p className="flex items-center gap-1.5 font-bold text-ink"><Icon name="palette" size={16} className="text-maroon" /> {t.name}</p>
                       <p className="text-xs text-ink-faint">
                         {t.date ? dayLabel(t.date) : 'Date TBD'}
                         {t.colors && <> · Palette: {t.colors}</>}
@@ -264,7 +265,7 @@ export function GroupPage() {
                   {canContribute && (
                     <div className="mt-3 flex flex-wrap gap-1.5">
                       <Button variant="secondary" className="!min-h-[34px] px-2.5 text-xs" onClick={() => void toggleVote('theme', t.id)}>
-                        {iVoted ? '✓ Voted' : '🗳️ Vote'} {voteCount > 0 && `(${voteCount})`}
+                        {iVoted ? <><Icon name="check" size={14} /> Voted</> : <><Icon name="vote" size={14} /> Vote</>} {voteCount > 0 && `(${voteCount})`}
                       </Button>
                       {canOrganize && t.status !== 'approved' && (
                         <Button
@@ -273,7 +274,7 @@ export function GroupPage() {
                           onClick={() => {
                             void saveTheme({ id: t.id, name: t.name, status: 'approved' }).then(() => {
                               void postFeed('theme', `approved the ${t.name} theme`);
-                              toast('Theme approved! 🎉', 'success');
+                              toast('Theme approved!', 'success');
                             });
                           }}
                         >
@@ -311,18 +312,18 @@ export function GroupPage() {
           action={
             canContribute && (
               <Button className="!min-h-[38px] px-3 text-xs" onClick={() => setPhotoOpen(true)}>
-                ✚ Upload photo
+                <Icon name="plus" size={16} /> Upload photo
               </Button>
             )
           }
         >
           Photos
         </SectionTitle>
-        <p className="-mt-2 mb-2 text-xs text-ink-faint">
-          🔒 Photos are stored privately and only visible to people on this trip.
+        <p className="-mt-2 mb-2 flex items-center gap-1 text-xs text-ink-faint">
+          <Icon name="lock" size={13} /> Photos are stored privately and only visible to people on this trip.
         </p>
         {photos.length === 0 ? (
-          <EmptyState icon="📷" title="No photos yet" body="Share outfit ideas, product screenshots, or packing progress." />
+          <EmptyState icon="camera" title="No photos yet" body="Share outfit ideas, product screenshots, or packing progress." />
         ) : (
           <div className="grid gap-3 sm:grid-cols-2">
             {photos.map((p) => (
@@ -337,7 +338,7 @@ export function GroupPage() {
                       aria-label="Delete photo"
                       className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-ink-faint hover:bg-ink/5"
                     >
-                      🗑️
+                      <Icon name="trash" size={16} />
                     </button>
                   )
                 }
@@ -386,7 +387,7 @@ export function GroupPage() {
                   className="flex min-h-[44px] flex-1 items-center justify-center rounded-xl border border-line bg-card px-4 text-sm font-semibold text-ink"
                   href={`mailto:${encodeURIComponent(inviteEmail)}?subject=${encodeURIComponent(`Join our trip: ${activeTrip.name}`)}&body=${encodeURIComponent(`You're invited to ${activeTrip.name} on MockPacker!\n\nJoin here: ${inviteLink}`)}`}
                 >
-                  ✉️ Email it
+                  <Icon name="mail" size={16} /> Email it
                 </a>
               )}
             </div>
@@ -431,7 +432,7 @@ export function GroupPage() {
         open={themeOpen}
         onClose={() => setThemeOpen(false)}
         theme={editingTheme}
-        onSaved={() => toast('Theme saved! 🎨', 'success')}
+        onSaved={() => toast('Theme saved!', 'success')}
       />
 
       {/* ── Photo modal ── */}
@@ -634,7 +635,7 @@ function PhotoUploadModal({
     );
     setBusy(false);
     if (res.ok) {
-      toast('Photo uploaded! 📷', 'success');
+      toast('Photo uploaded!', 'success');
       setFile(null);
       setCaption('');
       onClose();

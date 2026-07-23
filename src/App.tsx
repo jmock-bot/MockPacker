@@ -7,6 +7,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { Layout } from './components/Layout';
 import { ScrollRestoration } from './components/ScrollRestoration';
 import { Spinner } from './components/ui';
+import { Icon } from './components/Icon';
 import { supabaseConfigured } from './lib/supabase';
 import { LoginPage } from './pages/LoginPage';
 import { HomePage } from './pages/HomePage';
@@ -33,7 +34,7 @@ function RequireAuth({ children }: { children: ReactNode }) {
 function SetupHelp() {
   return (
     <div className="mx-auto flex min-h-dvh max-w-lg flex-col items-center justify-center gap-4 p-6 text-center">
-      <span aria-hidden="true" className="text-4xl">🎒</span>
+      <Icon name="bag" size={40} className="text-maroon" />
       <h1 className="text-xl font-bold text-maroon">MockPacker needs a database</h1>
       <p className="text-sm text-ink-soft">
         Supabase environment variables are missing. Copy <code>.env.example</code> to{' '}

@@ -4,15 +4,16 @@ import { useTrip } from '../context/TripContext';
 import { useToast } from '../context/ToastContext';
 import { daysUntil, shortDate } from '../lib/format';
 import { Button, Card, Chip, ConfirmDialog, EmptyState, SectionTitle, Spinner } from '../components/ui';
+import { Icon, type IconName } from '../components/Icon';
 import type { Trip } from '../lib/types';
 
-const TYPE_ICONS: Record<Trip['trip_type'], string> = {
-  personal: '🧍',
-  family: '👨‍👩‍👧‍👦',
-  business: '💼',
-  romantic: '💞',
-  group: '👥',
-  event: '🎉',
+const TYPE_ICONS: Record<Trip['trip_type'], IconName> = {
+  personal: 'user',
+  family: 'users',
+  business: 'briefcase',
+  romantic: 'heart',
+  group: 'users',
+  event: 'party',
 };
 
 export function TripsPage() {
@@ -30,12 +31,12 @@ export function TripsPage() {
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between gap-3">
         <h1 className="text-xl font-bold text-ink">Trips</h1>
-        <Button onClick={() => navigate('/trips/new')}>✚ Plan a Trip</Button>
+        <Button onClick={() => navigate('/trips/new')}><Icon name="plus" size={16} /> Plan a Trip</Button>
       </div>
 
       {trips.length === 0 ? (
         <EmptyState
-          icon="🧳"
+          icon="briefcase"
           title="No trips yet"
           body="Plan your first trip, join one with an invitation code, or explore the demo."
           action={
@@ -51,7 +52,7 @@ export function TripsPage() {
                 });
               }}
             >
-              {seeding ? 'Loading…' : '✨ Load a demo trip'}
+              {seeding ? 'Loading…' : <><Icon name="sparkle" size={16} /> Load a demo trip</>}
             </Button>
           }
         />
@@ -65,7 +66,7 @@ export function TripsPage() {
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="flex items-center gap-2 font-bold text-ink">
-                      <span aria-hidden="true">{TYPE_ICONS[t.trip_type]}</span>
+                      <Icon name={TYPE_ICONS[t.trip_type]} size={18} className="shrink-0 text-maroon" />
                       <span className="truncate">{t.name}</span>
                       {t.is_demo && <Chip className="bg-maroon-tint text-maroon">Demo</Chip>}
                     </p>
@@ -118,7 +119,7 @@ export function TripsPage() {
             if (!joinCode.trim()) return;
             void redeemInvite(joinCode).then((r) => {
               if (r.ok) {
-                toast('You joined the trip! 🎉', 'success');
+                toast('You joined the trip!', 'success');
                 setJoinCode('');
                 navigate('/');
               } else toast(r.error ?? 'That code did not work.', 'error');

@@ -4,6 +4,7 @@ import { searchProducts, type SearchFilters } from '../lib/searchApi';
 import { money } from '../lib/format';
 import { Button, Card, Chip, EmptyState, Field, MoneyInput, Select, Spinner, TextInput, Warning } from '../components/ui';
 import { ItemFormModal } from '../components/ItemFormModal';
+import { Icon } from '../components/Icon';
 import { PACKING_CATEGORIES } from '../lib/statuses';
 import type { PackingItem, ProductResult } from '../lib/types';
 
@@ -140,7 +141,7 @@ export function SearchPage() {
                 <p className="mt-1 line-clamp-2 text-xs font-medium text-ink">{r.name}</p>
                 <p className="text-sm font-bold tabular-nums text-maroon">{money(r.price)}</p>
                 <p className="text-[11px] text-ink-faint">{r.store}</p>
-                {r.rating != null && <p className="text-[11px] text-ink-soft">★ {r.rating}{r.reviewCount ? ` (${r.reviewCount})` : ''}</p>}
+                {r.rating != null && <p className="flex items-center justify-center gap-0.5 text-[11px] text-ink-soft"><Icon name="star" size={11} /> {r.rating}{r.reviewCount ? ` (${r.reviewCount})` : ''}</p>}
                 <p className="text-[11px] text-ink-faint">
                   {r.shippingCost === 0 ? 'Free shipping' : r.deliveryEstimate ?? ''}
                 </p>
@@ -158,7 +159,7 @@ export function SearchPage() {
       {results != null && !busy && (
         results.length === 0 ? (
           configured && (
-            <EmptyState icon="🔍" title="No results" body="Try fewer words or remove a filter." />
+            <EmptyState icon="search" title="No results" body="Try fewer words or remove a filter." />
           )
         ) : (
           <div className="grid gap-3 sm:grid-cols-2">
@@ -168,7 +169,7 @@ export function SearchPage() {
                   {r.imageUrl ? (
                     <img src={r.imageUrl} alt="" className="max-h-full max-w-full object-contain" loading="lazy" />
                   ) : (
-                    <span aria-hidden="true" className="text-2xl">🛍️</span>
+                    <Icon name="cart" size={28} className="text-ink-faint" />
                   )}
                 </div>
                 <div className="min-w-0 flex-1">
@@ -185,19 +186,26 @@ export function SearchPage() {
                       </>
                     )}
                   </p>
-                  <p className="text-[11px] text-ink-faint">
-                    {[
-                      r.rating != null ? `★ ${r.rating}${r.reviewCount ? ` (${r.reviewCount})` : ''}` : null,
-                      r.shippingCost === 0 ? 'Free shipping' : null,
-                      r.deliveryEstimate,
-                      r.inStock === false ? 'Out of stock' : null,
-                    ]
-                      .filter(Boolean)
-                      .join(' · ')}
+                  <p className="flex items-center gap-1 text-[11px] text-ink-faint">
+                    {r.rating != null && (
+                      <span className="inline-flex items-center gap-0.5">
+                        <Icon name="star" size={11} /> {r.rating}{r.reviewCount ? ` (${r.reviewCount})` : ''}
+                      </span>
+                    )}
+                    <span>
+                      {[
+                        r.rating != null ? '' : null,
+                        r.shippingCost === 0 ? 'Free shipping' : null,
+                        r.deliveryEstimate,
+                        r.inStock === false ? 'Out of stock' : null,
+                      ]
+                        .filter(Boolean)
+                        .join(' · ')}
+                    </span>
                   </p>
                   <div className="mt-1.5 flex flex-wrap gap-1.5">
                     <Button className="!min-h-[34px] px-2.5 text-xs" onClick={() => startSave(r)}>
-                      🎒 Add to Bag
+                      <Icon name="bag" size={14} /> Add to Bag
                     </Button>
                     {r.url && (
                       <a
@@ -215,7 +223,7 @@ export function SearchPage() {
                       aria-pressed={compare.some((x) => x.id === r.id)}
                       onClick={() => toggleCompare(r)}
                     >
-                      {compare.some((x) => x.id === r.id) ? '✓ Comparing' : '⇄ Compare'}
+                      {compare.some((x) => x.id === r.id) ? <><Icon name="check" size={14} /> Comparing</> : <><Icon name="compass" size={14} /> Compare</>}
                     </Button>
                   </div>
                 </div>

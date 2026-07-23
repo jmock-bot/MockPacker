@@ -6,6 +6,7 @@ import { BAG_STATUSES, BAG_STATUS_META } from '../lib/statuses';
 import { money } from '../lib/format';
 import { Button, Card, Chip, EmptyState, Select, Spinner, Stat } from '../components/ui';
 import { MemberChip, TripImage } from '../components/shared';
+import { Icon } from '../components/Icon';
 import { ItemFormModal } from '../components/ItemFormModal';
 import type { BagStatus, PackingItem } from '../lib/types';
 
@@ -36,7 +37,7 @@ export function BagPage() {
   if (!activeTrip)
     return (
       <EmptyState
-        icon="🎒"
+        icon="bag"
         title="No trip selected"
         body="The Bag shows a trip's inventory — open a trip first."
         action={<Link to="/trips" className="text-sm font-semibold text-maroon underline underline-offset-2">Go to Trips →</Link>}
@@ -57,7 +58,7 @@ export function BagPage() {
             Trip inventory — own it, need it, ordered it, got it.
           </p>
         </div>
-        <Button onClick={() => navigate('/search')}>🔍 Shop for items</Button>
+        <Button onClick={() => navigate('/search')}><Icon name="search" size={18} /> Shop for items</Button>
       </div>
 
       <div className="grid grid-cols-3 gap-2">
@@ -111,7 +112,7 @@ export function BagPage() {
 
       {filtered.length === 0 ? (
         <EmptyState
-          icon="🛍️"
+          icon="cart"
           title="Nothing here"
           body="Save products from Search or add items in Packing — they all live in the Bag."
         />
@@ -128,8 +129,8 @@ export function BagPage() {
                     className="h-16 w-16 shrink-0 rounded-lg"
                   />
                 ) : (
-                  <div aria-hidden="true" className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-cream text-xl">
-                    🎒
+                  <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-cream text-ink-faint">
+                    <Icon name="bag" size={26} />
                   </div>
                 )}
                 <div className="min-w-0 flex-1">
@@ -140,7 +141,7 @@ export function BagPage() {
                   <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
                     {member && <MemberChip member={member} />}
                     <Chip className={BAG_STATUS_META[item.status].chip}>{BAG_STATUS_META[item.status].label}</Chip>
-                    {item.packed && <Chip className="bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300">Packed ✓</Chip>}
+                    {item.packed && <Chip className="bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300"><Icon name="check" size={12} /> Packed</Chip>}
                     {item.store && <Chip className="bg-cream text-ink-soft">{item.store}</Chip>}
                     {item.est_price != null && (
                       <span className="text-xs font-semibold tabular-nums text-ink">{money(item.est_price)}</span>
@@ -206,7 +207,7 @@ export function BagPage() {
 
       {toBuy.length > 0 && (
         <Button variant="secondary" onClick={() => { toast('Tip: search a needed item and save the best result to your Bag.', 'info'); navigate('/search'); }}>
-          🔍 Find the {toBuy.length} item{toBuy.length > 1 ? 's' : ''} you still need
+          <Icon name="search" size={18} /> Find the {toBuy.length} item{toBuy.length > 1 ? 's' : ''} you still need
         </Button>
       )}
     </div>

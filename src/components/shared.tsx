@@ -5,6 +5,7 @@ import { timeAgo } from '../lib/format';
 import { useTrip } from '../context/TripContext';
 import { useAuth } from '../context/AuthContext';
 import { Button, TextInput } from './ui';
+import { Icon } from './Icon';
 import type { CommentRow, Photo, TripMember, WeatherDay } from '../lib/types';
 
 /* ---------- Member avatar chip ---------- */
@@ -72,10 +73,9 @@ export function TripImage({
   if (!url)
     return (
       <div
-        aria-hidden="true"
-        className={`flex items-center justify-center bg-cream text-2xl text-ink-faint ${className}`}
+        className={`flex items-center justify-center bg-cream text-ink-faint ${className}`}
       >
-        🖼️
+        <Icon name="image" size={28} />
       </div>
     );
   return <img src={url} alt={alt} loading="lazy" className={`object-cover ${className}`} />;
@@ -89,7 +89,7 @@ export function WeatherBadge({ day, compact }: { day: WeatherDay | undefined; co
   if (day.tMax == null)
     return (
       <span className="inline-flex items-center gap-1 text-xs text-ink-faint">
-        <span aria-hidden="true">🗓️</span> Forecast soon
+        <Icon name="calendar-empty" size={14} /> Forecast soon
       </span>
     );
   return (
@@ -100,9 +100,15 @@ export function WeatherBadge({ day, compact }: { day: WeatherDay | undefined; co
       </span>
       {!compact && <span>{label}</span>}
       {(day.precipProb ?? 0) >= 30 && (
-        <span className="font-medium text-sky-700 dark:text-sky-400">💧 {Math.round(day.precipProb ?? 0)}%</span>
+        <span className="inline-flex items-center gap-0.5 font-medium text-sky-700 dark:text-sky-400">
+          <Icon name="droplet" size={13} /> {Math.round(day.precipProb ?? 0)}%
+        </span>
       )}
-      {(day.windMax ?? 0) >= 20 && <span className="font-medium">💨 {Math.round(day.windMax ?? 0)} mph</span>}
+      {(day.windMax ?? 0) >= 20 && (
+        <span className="inline-flex items-center gap-0.5 font-medium">
+          <Icon name="wind" size={13} /> {Math.round(day.windMax ?? 0)} mph
+        </span>
+      )}
     </span>
   );
 }

@@ -7,6 +7,7 @@ import { dayLabel, shortDate, todayIso } from '../lib/format';
 import { recommendOutfit } from '../lib/packing';
 import { Button, Card, Chip, ConfirmDialog, EmptyState, Field, Modal, SectionTitle, Spinner, TextArea, TextInput, Warning } from '../components/ui';
 import { CommentThread, MemberDot, TripImage, WeatherBadge } from '../components/shared';
+import { Icon } from '../components/Icon';
 import { weatherLabel } from '../lib/weather';
 import type { Outfit, TripMember } from '../lib/types';
 
@@ -18,7 +19,7 @@ export function DaysPage() {
   if (!activeTrip)
     return (
       <EmptyState
-        icon="📅"
+        icon="calendar"
         title="No trip selected"
         body="Daily plans appear once you create or open a trip."
         action={<Link to="/trips" className="text-sm font-semibold text-maroon underline underline-offset-2">Go to Trips →</Link>}
@@ -53,7 +54,9 @@ export function DaysPage() {
                   <WeatherBadge day={w} compact />
                 </div>
                 {theme && (
-                  <p className="mt-1 text-sm font-semibold text-maroon">🎨 {theme.name}</p>
+                  <p className="mt-1 flex items-center gap-1 text-sm font-semibold text-maroon">
+                    <Icon name="palette" size={15} /> {theme.name}
+                  </p>
                 )}
                 {dayActs.length > 0 ? (
                   <ul className="mt-2 flex flex-col gap-1">
@@ -72,8 +75,8 @@ export function DaysPage() {
                 ) : (
                   <p className="mt-2 text-sm text-ink-faint">Free day — no plans yet</p>
                 )}
-                <p className="mt-2 text-xs text-ink-faint">
-                  👗 {chosen.length}/{members.filter((m) => m.role !== 'viewer').length} outfits chosen
+                <p className="mt-2 flex items-center gap-1 text-xs text-ink-faint">
+                  <Icon name="shirt" size={13} /> {chosen.length}/{members.filter((m) => m.role !== 'viewer').length} outfits chosen
                 </p>
               </Card>
             </Link>
@@ -114,12 +117,12 @@ export function DayDetailPage() {
   const [confirmDeleteOutfit, setConfirmDeleteOutfit] = useState<Outfit | null>(null);
 
   if (!activeTrip || !date)
-    return <EmptyState icon="📅" title="No trip selected" body="Open a trip to see daily plans." />;
+    return <EmptyState icon="calendar" title="No trip selected" body="Open a trip to see daily plans." />;
   if (loading) return <Spinner label="Loading the day" />;
   if (!tripDays.includes(date))
     return (
       <EmptyState
-        icon="🗓️"
+        icon="calendar-empty"
         title="That date isn't part of this trip"
         action={<Button variant="secondary" onClick={() => navigate('/days')}>Back to Daily Plans</Button>}
       />
@@ -142,7 +145,7 @@ export function DayDetailPage() {
       {/* Day header + prev/next */}
       <div className="flex items-center justify-between gap-2">
         <Button variant="ghost" disabled={idx <= 0} onClick={() => navigate(`/days/${tripDays[idx - 1]}`)} aria-label="Previous day">
-          ←
+          <Icon name="chevron-right" size={20} className="rotate-180" />
         </Button>
         <div className="text-center">
           <h1 className="text-lg font-bold text-ink">{dayLabel(date)}</h1>
@@ -151,7 +154,7 @@ export function DayDetailPage() {
           </p>
         </div>
         <Button variant="ghost" disabled={idx >= tripDays.length - 1} onClick={() => navigate(`/days/${tripDays[idx + 1]}`)} aria-label="Next day">
-          →
+          <Icon name="chevron-right" size={20} />
         </Button>
       </div>
 
@@ -168,8 +171,8 @@ export function DayDetailPage() {
               <p className="text-sm text-ink-faint">{weatherLabel(w.code).label}</p>
             </div>
             <div className="text-sm text-ink-soft">
-              <p>💧 Rain: {w.precipProb != null ? `${Math.round(w.precipProb)}%` : '—'}</p>
-              <p>💨 Wind: {w.windMax != null ? `${Math.round(w.windMax)} mph` : '—'}</p>
+              <p className="flex items-center gap-1"><Icon name="droplet" size={14} /> Rain: {w.precipProb != null ? `${Math.round(w.precipProb)}%` : '—'}</p>
+              <p className="flex items-center gap-1"><Icon name="wind" size={14} /> Wind: {w.windMax != null ? `${Math.round(w.windMax)} mph` : '—'}</p>
             </div>
           </div>
         ) : (
@@ -183,7 +186,7 @@ export function DayDetailPage() {
       {theme && (
         <Card accent="rgb(var(--color-accent))">
           <SectionTitle action={<Chip className="bg-maroon-tint text-maroon">Group theme</Chip>}>
-            🎨 {theme.name}
+            <span className="inline-flex items-center gap-1.5"><Icon name="palette" size={18} /> {theme.name}</span>
           </SectionTitle>
           {theme.description && <p className="text-sm text-ink-soft">{theme.description}</p>}
           <div className="mt-2 flex flex-wrap gap-1.5">
@@ -222,7 +225,7 @@ export function DayDetailPage() {
                     {a.dress_code && <Chip className="bg-maroon-tint text-maroon">{a.dress_code}</Chip>}
                     <Chip className="bg-cream text-ink-soft">{a.setting}</Chip>
                     {a.intensity === 'high' && <Chip className="bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300">Very active</Chip>}
-                    {a.equipment && <Chip className="bg-sky-100 text-sky-800 dark:bg-sky-500/15 dark:text-sky-300">🎒 {a.equipment}</Chip>}
+                    {a.equipment && <Chip className="bg-sky-100 text-sky-800 dark:bg-sky-500/15 dark:text-sky-300"><Icon name="bag" size={12} /> {a.equipment}</Chip>}
                   </div>
                   {a.notes && <p className="mt-1 text-xs text-ink-faint">{a.notes}</p>}
                 </div>
@@ -315,7 +318,7 @@ export function DayDetailPage() {
                               </Button>
                             )}
                             <Button variant="ghost" className="!min-h-[34px] px-2.5 text-xs" onClick={() => void toggleVote('outfit', o.id)}>
-                              👍 {voteCount > 0 ? voteCount : 'Vote'}
+                              <Icon name="thumbs-up" size={14} /> {voteCount > 0 ? voteCount : 'Vote'}
                             </Button>
                             {(isMe || canContribute) && (
                               <>
@@ -340,7 +343,7 @@ export function DayDetailPage() {
 
               {canContribute && (
                 <Button variant="secondary" className="mt-3 w-full !min-h-[38px] text-xs" onClick={() => setOutfitFor(m)}>
-                  ✚ Add outfit option for {m.name}
+                  <Icon name="plus" size={16} /> Add outfit option for {m.name}
                 </Button>
               )}
             </Card>
@@ -359,7 +362,7 @@ export function DayDetailPage() {
         outfit={editingOutfit}
         onSaved={() => {
           void postFeed('outfit', `updated an outfit for ${dayLabel(date)}`);
-          toast('Outfit saved! 👗', 'success');
+          toast('Outfit saved!', 'success');
         }}
         saveOutfit={saveOutfit}
         otherOutfits={outfits}

@@ -7,6 +7,7 @@ import { SHIPMENT_STATUSES, SHIPMENT_STATUS_META } from '../lib/statuses';
 import { daysUntil, shortDate } from '../lib/format';
 import { Button, Card, Chip, ConfirmDialog, EmptyState, Field, Modal, SectionTitle, Select, Spinner, TextInput, Warning } from '../components/ui';
 import { MemberChip } from '../components/shared';
+import { Icon } from '../components/Icon';
 import type { Shipment, ShipmentStatus } from '../lib/types';
 
 export function ShipmentsPage() {
@@ -37,7 +38,7 @@ export function ShipmentsPage() {
   if (!activeTrip)
     return (
       <EmptyState
-        icon="🚚"
+        icon="truck"
         title="No trip selected"
         body="Shipment tracking lives inside a trip."
         action={<Link to="/trips" className="text-sm font-semibold text-maroon underline underline-offset-2">Go to Trips →</Link>}
@@ -57,13 +58,13 @@ export function ShipmentsPage() {
             Departure {shortDate(activeTrip.start_date)} — everything needs to land before then.
           </p>
         </div>
-        <Button onClick={() => { setEditing(null); setFormOpen(true); }}>✚ Add shipment</Button>
+        <Button onClick={() => { setEditing(null); setFormOpen(true); }}><Icon name="plus" size={16} /> Add shipment</Button>
       </div>
 
       {/* Delivery risk */}
       {hasRisk && (
         <Card accent="rgb(var(--color-danger))">
-          <SectionTitle>⚠️ Delivery Risk</SectionTitle>
+          <SectionTitle><span className="inline-flex items-center gap-1.5"><Icon name="alert" size={16} /> Delivery Risk</span></SectionTitle>
           <div className="flex flex-col gap-2">
             {risk.late.map((s) => (
               <Warning key={s.id} tone="rose">
@@ -104,7 +105,7 @@ export function ShipmentsPage() {
 
       {shipments.length === 0 ? (
         <EmptyState
-          icon="📦"
+          icon="package"
           title="No shipments yet"
           body="When you order something for the trip, add its tracking here and MockPacker will flag anything that might miss departure."
         />
@@ -128,7 +129,7 @@ export function ShipmentsPage() {
                       <Chip className={meta.chip}>{meta.label}</Chip>
                       <Chip className="bg-cream text-ink-soft">{carrierName(s.carrier)}</Chip>
                       {member && <MemberChip member={member} />}
-                      {item && <Chip className="bg-sky-100 text-sky-800 dark:bg-sky-500/15 dark:text-sky-300">🎒 {item.name}</Chip>}
+                      {item && <Chip className="bg-sky-100 text-sky-800 dark:bg-sky-500/15 dark:text-sky-300"><Icon name="bag" size={12} /> {item.name}</Chip>}
                     </div>
                   </div>
                   <div className="text-right text-xs text-ink-faint">
@@ -158,7 +159,7 @@ export function ShipmentsPage() {
                   </p>
                 )}
                 {s.last_scan && (
-                  <p className="mt-1.5 text-xs text-ink-faint">📍 Latest scan: {s.last_scan}</p>
+                  <p className="mt-1.5 flex items-center gap-1 text-xs text-ink-faint"><Icon name="pin" size={13} /> Latest scan: {s.last_scan}</p>
                 )}
 
                 <div className="mt-2 flex flex-wrap gap-1.5">
@@ -183,7 +184,7 @@ export function ShipmentsPage() {
                         });
                       }}
                     >
-                      ✓ Delivered
+                      <Icon name="check" size={14} /> Delivered
                     </Button>
                   )}
                   <Button variant="ghost" className="!min-h-[34px] px-2.5 text-xs" onClick={() => { setEditing(s); setFormOpen(true); }}>
@@ -208,7 +209,7 @@ export function ShipmentsPage() {
         open={formOpen}
         onClose={() => setFormOpen(false)}
         shipment={editing}
-        onSaved={() => toast('Shipment saved. 🚚', 'success')}
+        onSaved={() => toast('Shipment saved.', 'success')}
       />
       <ConfirmDialog
         open={deleteTarget != null}

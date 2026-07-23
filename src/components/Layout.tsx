@@ -2,41 +2,44 @@ import { useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTrip } from '../context/TripContext';
+import { useTheme } from '../context/ThemeContext';
 import { Modal } from './ui';
+import { Icon, type IconName } from './Icon';
 import { InstallPrompt } from './InstallPrompt';
 import { timeAgo } from '../lib/format';
 
 interface NavItem {
   to: string;
   label: string;
-  icon: string;
+  icon: IconName;
 }
 
 const SIDEBAR_ITEMS: NavItem[] = [
-  { to: '/', label: 'Home', icon: '🏠' },
-  { to: '/trips', label: 'Trips', icon: '🧳' },
-  { to: '/packing', label: 'Packing', icon: '✅' },
-  { to: '/days', label: 'Daily Plans', icon: '📅' },
-  { to: '/group', label: 'Group', icon: '👥' },
-  { to: '/bag', label: 'Bag', icon: '🎒' },
-  { to: '/search', label: 'Shop', icon: '🔍' },
-  { to: '/shipments', label: 'Shipments', icon: '🚚' },
-  { to: '/profile', label: 'Profile', icon: '👤' },
+  { to: '/', label: 'Home', icon: 'home' },
+  { to: '/trips', label: 'Trips', icon: 'compass' },
+  { to: '/packing', label: 'Packing', icon: 'checklist' },
+  { to: '/days', label: 'Daily Plans', icon: 'calendar' },
+  { to: '/group', label: 'Group', icon: 'users' },
+  { to: '/bag', label: 'Bag', icon: 'bag' },
+  { to: '/search', label: 'Shop', icon: 'search' },
+  { to: '/shipments', label: 'Shipments', icon: 'truck' },
+  { to: '/profile', label: 'Profile', icon: 'user' },
 ];
 
+// Four primary destinations for the mobile tab bar; the rest live in "More".
 const MOBILE_ITEMS: NavItem[] = [
-  { to: '/', label: 'Trip', icon: '🧳' },
-  { to: '/packing', label: 'Pack', icon: '✅' },
-  { to: '/days', label: 'Today', icon: '📅' },
-  { to: '/bag', label: 'Bag', icon: '🎒' },
+  { to: '/', label: 'Home', icon: 'home' },
+  { to: '/days', label: 'Days', icon: 'calendar' },
+  { to: '/bag', label: 'Bag', icon: 'bag' },
+  { to: '/group', label: 'Group', icon: 'users' },
 ];
 
 const MORE_ITEMS: NavItem[] = [
-  { to: '/trips', label: 'All trips', icon: '🧳' },
-  { to: '/group', label: 'Group & themes', icon: '👥' },
-  { to: '/search', label: 'Shop for items', icon: '🔍' },
-  { to: '/shipments', label: 'Shipments', icon: '🚚' },
-  { to: '/profile', label: 'Profile & sizes', icon: '👤' },
+  { to: '/trips', label: 'Trips', icon: 'compass' },
+  { to: '/packing', label: 'Packing', icon: 'checklist' },
+  { to: '/search', label: 'Shop', icon: 'search' },
+  { to: '/shipments', label: 'Shipments', icon: 'truck' },
+  { to: '/profile', label: 'Profile', icon: 'user' },
 ];
 
 export function Layout() {
@@ -50,11 +53,21 @@ export function Layout() {
     markAllNotificationsRead,
   } = useTrip();
   const navigate = useNavigate();
+  const { setTheme } = useTheme();
   const [notifOpen, setNotifOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
 
   const doSignOut = () => {
     void signOut().then(() => navigate('/login'));
+  };
+
+  // Quick binary flip from the header: toggle relative to the currently
+  // rendered mode (the .dark class ThemeContext stamps on <html>), and persist
+  // the result as an explicit light/dark choice. The Settings screen keeps the
+  // full light/dark/system control.
+  const toggleTheme = () => {
+    const isDark = document.documentElement.classList.contains('dark');
+    setTheme(isDark ? 'light' : 'dark');
   };
 
   return (
@@ -82,7 +95,7 @@ export function Layout() {
                 }`
               }
             >
-              <span aria-hidden="true">{item.icon}</span>
+              <Icon name={item.icon} size={20} />
               {item.label}
             </NavLink>
           ))}
@@ -93,7 +106,7 @@ export function Layout() {
             onClick={() => setNotifOpen(true)}
             className="flex min-h-[44px] w-full items-center gap-3 rounded-xl px-3 text-sm font-medium text-ink-soft hover:bg-paper"
           >
-            <span aria-hidden="true">🔔</span> Notifications
+            <Icon name="bell" size={20} /> Notifications
             {unreadNotifications > 0 && (
               <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-maroon px-1.5 text-[10px] font-bold text-on-accent">
                 {unreadNotifications > 9 ? '9+' : unreadNotifications}
@@ -106,7 +119,7 @@ export function Layout() {
             onClick={doSignOut}
             className="mt-1 flex min-h-[44px] w-full items-center gap-3 rounded-xl px-3 text-sm font-medium text-ink-soft hover:bg-paper"
           >
-            <span aria-hidden="true">🚪</span> Sign out
+            <Icon name="logout" size={20} /> Sign out
           </button>
         </div>
       </aside>
@@ -123,24 +136,35 @@ export function Layout() {
               )}
             </div>
           </div>
-          <button
-            type="button"
-            onClick={() => setNotifOpen(true)}
-            aria-label={`Notifications${unreadNotifications ? `, ${unreadNotifications} unread` : ''}`}
-            className="relative flex h-11 w-11 items-center justify-center rounded-xl text-lg"
-          >
-            <span aria-hidden="true">🔔</span>
-            {unreadNotifications > 0 && (
-              <span className="absolute right-1.5 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-maroon px-1 text-[10px] font-bold text-on-accent">
-                {unreadNotifications > 9 ? '9+' : unreadNotifications}
-              </span>
-            )}
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={toggleTheme}
+              aria-label="Toggle dark mode"
+              className="theme-toggle flex h-11 w-11 items-center justify-center rounded-xl text-ink-soft hover:bg-ink/5"
+            >
+              <Icon name="sun" size={20} className="hidden dark:block" />
+              <Icon name="moon" size={20} className="block dark:hidden" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setNotifOpen(true)}
+              aria-label={`Notifications${unreadNotifications ? `, ${unreadNotifications} unread` : ''}`}
+              className="relative flex h-11 w-11 items-center justify-center rounded-xl text-ink-soft hover:bg-ink/5"
+            >
+              <Icon name="bell" size={20} />
+              {unreadNotifications > 0 && (
+                <span className="absolute right-1.5 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-maroon px-1 text-[10px] font-bold text-on-accent">
+                  {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                </span>
+              )}
+            </button>
+          </div>
         </header>
 
         {activeTrip?.is_demo && (
-          <div role="status" className="bg-maroon px-4 py-2 text-center text-xs font-semibold text-on-accent">
-            ✨ Demo trip — sample data so you can explore. Delete it anytime from Trips.
+          <div role="status" className="flex items-center justify-center gap-2 bg-maroon px-4 py-2 text-center text-xs font-semibold text-on-accent">
+            <Icon name="sparkle" size={16} /> Demo trip — sample data so you can explore. Delete it anytime from Trips.
           </div>
         )}
 
@@ -156,7 +180,7 @@ export function Layout() {
 
         <InstallPrompt />
 
-        {/* Mobile bottom navigation */}
+        {/* Mobile bottom navigation — 4 primary tabs + More */}
         <nav
           aria-label="Main"
           className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-card pb-[env(safe-area-inset-bottom)] lg:hidden"
@@ -173,14 +197,8 @@ export function Layout() {
                   }`
                 }
               >
-                {({ isActive }) => (
-                  <>
-                    <span aria-hidden="true" className={`text-lg ${isActive ? '' : 'grayscale opacity-70'}`}>
-                      {item.icon}
-                    </span>
-                    {item.label}
-                  </>
-                )}
+                <Icon name={item.icon} size={22} />
+                {item.label}
               </NavLink>
             ))}
             <button
@@ -188,7 +206,7 @@ export function Layout() {
               onClick={() => setMoreOpen(true)}
               className="flex min-h-[56px] min-w-[60px] flex-col items-center justify-center gap-0.5 px-1 text-[11px] font-medium text-ink-faint"
             >
-              <span aria-hidden="true" className="text-lg grayscale opacity-70">☰</span>
+              <Icon name="menu" size={22} />
               More
             </button>
           </div>
@@ -208,7 +226,7 @@ export function Layout() {
               }}
               className="flex min-h-[48px] items-center gap-3 rounded-xl px-3 text-left text-sm font-medium text-ink-soft hover:bg-cream"
             >
-              <span aria-hidden="true">{item.icon}</span>
+              <Icon name={item.icon} size={20} />
               {item.label}
             </button>
           ))}
@@ -220,7 +238,7 @@ export function Layout() {
             }}
             className="flex min-h-[48px] items-center gap-3 rounded-xl px-3 text-left text-sm font-medium text-ink-soft hover:bg-cream"
           >
-            <span aria-hidden="true">🚪</span> Sign out
+            <Icon name="logout" size={20} /> Sign out
           </button>
         </nav>
       </Modal>
