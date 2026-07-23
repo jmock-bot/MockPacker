@@ -1,7 +1,7 @@
 {
   "name": "MockPacker",
   "short_name": "MockPacker",
-  "description": "Pack together. Travel ready. Collaborative trip planning and packing: personalized lists, weather-aware outfits, group themes, shopping, and shipment tracking.",
+  "description": "From: The Group Chat To: The Group Trip. Collaborative trip planning and packing: personalized lists, weather-aware outfits, group themes, shopping, and shipment tracking.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

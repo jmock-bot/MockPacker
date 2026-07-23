@@ -1,6 +1,6 @@
 # 🎒 MockPacker
 
-**Pack together. Travel ready.**
+**From: The Group Chat To: The Group Trip**
 
 MockPacker is a collaborative trip-planning and packing app for individuals,
 families, couples, and groups: enter your trip's dates, destination, and
