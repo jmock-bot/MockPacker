@@ -53,7 +53,8 @@ export type IconName =
   | 'logout'
   | 'clock'
   | 'pin'
-  | 'briefcase';
+  | 'briefcase'
+  | 'send';
 
 const PATHS: Record<IconName, ReactNode> = {
   home: (
@@ -293,6 +294,7 @@ const PATHS: Record<IconName, ReactNode> = {
       <path d="M8 7V5.5A2.5 2.5 0 0 1 10.5 3h3A2.5 2.5 0 0 1 16 5.5V7" />
     </>
   ),
+  send: <path d="M4 12h16M14 6l6 6-6 6" />,
 };
 
 export function Icon({

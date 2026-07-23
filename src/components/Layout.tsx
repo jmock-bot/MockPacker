@@ -16,6 +16,7 @@ interface NavItem {
 
 const SIDEBAR_ITEMS: NavItem[] = [
   { to: '/', label: 'Home', icon: 'home' },
+  { to: '/chat', label: 'Chat', icon: 'comment' },
   { to: '/trips', label: 'Trips', icon: 'compass' },
   { to: '/packing', label: 'Packing', icon: 'checklist' },
   { to: '/days', label: 'Daily Plans', icon: 'calendar' },
@@ -26,9 +27,10 @@ const SIDEBAR_ITEMS: NavItem[] = [
   { to: '/profile', label: 'Profile', icon: 'user' },
 ];
 
-// Four primary destinations for the mobile tab bar; the rest live in "More".
+// Five primary destinations for the mobile tab bar; the rest live in "More".
 const MOBILE_ITEMS: NavItem[] = [
   { to: '/', label: 'Home', icon: 'home' },
+  { to: '/chat', label: 'Chat', icon: 'comment' },
   { to: '/days', label: 'Days', icon: 'calendar' },
   { to: '/bag', label: 'Bag', icon: 'bag' },
   { to: '/group', label: 'Group', icon: 'users' },

@@ -16,6 +16,7 @@ import { fetchTripWeather, geocode } from '../lib/weather';
 import type {
   Activity,
   BagStatus,
+  ChatMessage,
   CommentRow,
   FeedEntry,
   NotificationRow,
@@ -94,6 +95,7 @@ interface TripContextValue {
   reactions: Reaction[];
   shipments: Shipment[];
   feed: FeedEntry[];
+  chatMessages: ChatMessage[];
   notifications: NotificationRow[];
   unreadNotifications: number;
   weather: WeatherDay[];
@@ -137,6 +139,7 @@ interface TripContextValue {
   saveShipment: (s: Partial<Shipment>) => Promise<Result>;
   deleteShipment: (id: string) => Promise<Result>;
   postFeed: (kind: string, message: string) => Promise<void>;
+  sendChatMessage: (body: string) => Promise<Result>;
   markNotificationRead: (id: string) => Promise<void>;
   markAllNotificationsRead: () => Promise<void>;
 }
@@ -178,6 +181,7 @@ export function TripProvider({ children }: { children: ReactNode }) {
   const [reactions, setReactions] = useState<Reaction[]>([]);
   const [shipments, setShipments] = useState<Shipment[]>([]);
   const [feed, setFeed] = useState<FeedEntry[]>([]);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [notifications, setNotifications] = useState<NotificationRow[]>([]);
   const [weather, setWeather] = useState<WeatherDay[]>([]);
 
@@ -240,10 +244,11 @@ export function TripProvider({ children }: { children: ReactNode }) {
       setReactions([]);
       setShipments([]);
       setFeed([]);
+      setChatMessages([]);
       return;
     }
     const id = t.id;
-    const [mem, act, itm, out, thm, vot, pho, com, rea, shp, fed] = await Promise.all([
+    const [mem, act, itm, out, thm, vot, pho, com, rea, shp, fed, chat] = await Promise.all([
       supabase.from('trip_members').select('*').eq('trip_id', id).order('created_at'),
       supabase.from('activities').select('*').eq('trip_id', id).order('date').order('start_time'),
       supabase.from('packing_items').select('*').eq('trip_id', id).order('category').order('name'),
@@ -255,6 +260,7 @@ export function TripProvider({ children }: { children: ReactNode }) {
       supabase.from('reactions').select('*').eq('trip_id', id),
       supabase.from('shipments').select('*').eq('trip_id', id).order('created_at', { ascending: false }),
       supabase.from('trip_feed').select('*').eq('trip_id', id).order('created_at', { ascending: false }).limit(40),
+      supabase.from('chat_messages').select('*').eq('trip_id', id).order('created_at').limit(200),
     ]);
     setMembers((mem.data as TripMember[] | null) ?? []);
     setActivities((act.data as Activity[] | null) ?? []);
@@ -267,6 +273,7 @@ export function TripProvider({ children }: { children: ReactNode }) {
     setReactions((rea.data as Reaction[] | null) ?? []);
     setShipments((shp.data as Shipment[] | null) ?? []);
     setFeed((fed.data as FeedEntry[] | null) ?? []);
+    setChatMessages((chat.data as ChatMessage[] | null) ?? []);
   }, [activeTrip, session]);
 
   useEffect(() => {
@@ -320,6 +327,7 @@ export function TripProvider({ children }: { children: ReactNode }) {
       'reactions',
       'shipments',
       'trip_feed',
+      'chat_messages',
     ]) {
       channel.on(
         'postgres_changes',
@@ -371,6 +379,24 @@ export function TripProvider({ children }: { children: ReactNode }) {
         .insert({ trip_id: activeTrip.id, actor_name: actorName, kind, message });
     },
     [activeTrip, actorName]
+  );
+
+  const sendChatMessage = useCallback(
+    async (body: string): Promise<Result> => {
+      if (!activeTrip || !session) return { ok: false, error: 'No active trip.' };
+      const trimmed = body.trim();
+      if (!trimmed) return { ok: false, error: 'Message is empty.' };
+      const { error } = await supabase.from('chat_messages').insert({
+        trip_id: activeTrip.id,
+        author_id: session.user.id,
+        author_name: actorName,
+        body: trimmed,
+        kind: 'message',
+      });
+      if (!error) await reloadTrip();
+      return error ? { ok: false, error: error.message } : { ok: true };
+    },
+    [activeTrip, session, actorName, reloadTrip]
   );
 
   /* ── Trips ── */
@@ -976,6 +1002,7 @@ export function TripProvider({ children }: { children: ReactNode }) {
         reactions,
         shipments,
         feed,
+        chatMessages,
         notifications,
         unreadNotifications,
         weather,
@@ -1016,6 +1043,7 @@ export function TripProvider({ children }: { children: ReactNode }) {
         saveShipment,
         deleteShipment,
         postFeed,
+        sendChatMessage,
         markNotificationRead,
         markAllNotificationsRead,
       }}

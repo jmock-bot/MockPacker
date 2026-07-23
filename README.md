@@ -33,7 +33,8 @@ trip planning.
 
 | Area | What it does |
 | --- | --- |
-| **Trip creation** | 5-step wizard: basics (dates, transport, lodging, trip type), destination, travelers, activity picker (25+ activity types with dress code / setting / intensity / equipment), review → generates the packing list |
+| **Trip creation** | 5-step wizard: basics (dates, transport, lodging, trip type), destination, travelers, activity picker (25+ activity types with dress code / setting / intensity / equipment), review → generates the packing list. Or skip the wizard and **import a trip from a group chat**: paste the conversation and MockPacker heuristically picks out dates, a destination, travelers (from "Name: message" senders), and mentioned activities — shown as an editable preview before the trip (and its packing list + chat history) is created |
+| **Chat** | Per-trip group chat (`chat_messages`, realtime), reachable from the Home banner, the Trips list, and its own tab. Imported trips arrive with the pasted conversation already seeded in |
 | **Packing engine** | Rule-based generator in `src/lib/packing.ts`: trip length, laundry availability, weather forecast, transport (flight → TSA liquids, boarding passes; car → snacks, chargers), lodging (camping gear, rental laundry), international travel (passport, adapters), activities (beach, ski, golf, hiking, formal, business…), trip type (family → kids' items), last-minute flags |
 | **Packing checklist** | Grouped by 20 categories, filter by traveler/status, per-traveler progress, quantities, required/optional, duplicate, move category, reassign, notes, product link, price |
 | **The Bag** | Trip inventory (not a checkout cart): Need → Considering → Own → Ordered → Shipped → Delivered, plus Packed. Purchases happen at the retailer via product links |
@@ -55,6 +56,7 @@ trip planning.
    1. [`supabase/migrations/001_schema.sql`](supabase/migrations/001_schema.sql) — tables, enums, triggers, RLS, storage buckets
    2. [`supabase/migrations/002_demo.sql`](supabase/migrations/002_demo.sql) — the `seed_demo_trip()` function behind the "Load a demo trip" button
    3. [`supabase/migrations/003_trips_select_policy.sql`](supabase/migrations/003_trips_select_policy.sql) — only needed for databases migrated before the trips select-policy fix landed in 001 (fixes "new row violates row-level security policy for table trips" when creating a trip)
+   4. [`supabase/migrations/004_chat.sql`](supabase/migrations/004_chat.sql) — `chat_messages` table + RLS for per-trip group chat
 3. **Authentication → Providers**: enable **Email**, **Google**, and **Apple**
    (see [OAuth setup](#oauth-setup-google--apple) below for the redirect URLs —
    this is the step people get wrong).
@@ -173,19 +175,22 @@ Type checking: `npm run typecheck`. Production build: `npm run build`.
 ```
 netlify/functions/     product-search, track-shipment, weather
 public/                manifest.webmanifest, sw.js (offline shell), icons
-supabase/migrations/   001 schema+RLS+storage · 002 demo seed function
+supabase/migrations/   001 schema+RLS+storage · 002 demo seed function ·
+                       003 trips select-policy fix · 004 chat_messages+RLS
 src/
   lib/                 packing (list engine + what-to-wear), readiness (score),
                        weather (Open-Meteo), activities (catalog), statuses,
-                       carriers, searchApi, format, supabase, types
+                       carriers, searchApi, chatImport (heuristic parser for
+                       the group-chat import flow), format, supabase, types
   context/             AuthContext (email/OAuth/magic-link + profile),
                        TripContext (trips, members, items, outfits, themes,
-                       photos, comments, shipments, feed, realtime sync),
-                       ToastContext
+                       photos, comments, shipments, feed, chat messages,
+                       realtime sync), ToastContext
   components/          ui (buttons/cards/modals/readiness ring), Layout,
                        shared (avatars, weather badge, photo + comment thread),
-                       ItemFormModal, InstallPrompt, ScrollRestoration
-  pages/               Login, Home (readiness dashboard), Trips, NewTrip
+                       ItemFormModal, ImportChatModal (create a trip from a
+                       pasted group chat), InstallPrompt, ScrollRestoration
+  pages/               Login, Home (readiness dashboard), Chat, Trips, NewTrip
                        (wizard), Packing, Days (+ day detail with outfits),
                        Group (members/themes/board/photos), Bag, Search,
                        Shipments, Profile, Join

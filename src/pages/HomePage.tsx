@@ -7,6 +7,7 @@ import { daysUntil, percent, shortDate, timeAgo, todayIso, weekday } from '../li
 import { Button, Card, EmptyState, ProgressBar, ReadinessRing, SectionTitle, Spinner, Warning } from '../components/ui';
 import { MemberDot, WeatherBadge } from '../components/shared';
 import { Icon, type IconName } from '../components/Icon';
+import { ImportChatModal } from '../components/ImportChatModal';
 
 const FEED_ICONS: Record<string, IconName> = {
   packed: 'check',
@@ -40,6 +41,7 @@ export function HomePage() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [seeding, setSeeding] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
 
   const readiness = useMemo(
     () =>
@@ -157,6 +159,21 @@ export function HomePage() {
           </div>
         )}
       </Card>
+
+      {/* Chat-import promo */}
+      <button
+        type="button"
+        onClick={() => setImportOpen(true)}
+        className="flex items-center gap-3 rounded-card bg-maroon px-4 py-3.5 text-left text-on-accent"
+      >
+        <Icon name="sparkle" size={22} className="shrink-0" />
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm font-bold">New: start a trip from a group chat</span>
+          <span className="block text-xs opacity-85">Paste the chat — we'll find the dates, spot &amp; crew</span>
+        </span>
+        <span className="shrink-0 rounded-lg bg-white px-3 py-1.5 text-xs font-bold text-maroon">Try it</span>
+      </button>
+      <ImportChatModal open={importOpen} onClose={() => setImportOpen(false)} />
 
       {/* Alerts */}
       {readiness && readiness.alerts.length > 0 && (
