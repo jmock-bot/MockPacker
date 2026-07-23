@@ -48,7 +48,7 @@ export function DaysPage() {
                 <div className="flex items-start justify-between gap-2">
                   <p className="font-bold text-ink">
                     {dayLabel(d)}
-                    {d === today && <Chip className="ml-2 bg-maroon text-white">Today</Chip>}
+                    {d === today && <Chip className="ml-2 bg-maroon text-on-accent">Today</Chip>}
                   </p>
                   <WeatherBadge day={w} compact />
                 </div>
@@ -181,7 +181,7 @@ export function DayDetailPage() {
 
       {/* Theme */}
       {theme && (
-        <Card accent="#6e1423">
+        <Card accent="rgb(var(--color-accent))">
           <SectionTitle action={<Chip className="bg-maroon-tint text-maroon">Group theme</Chip>}>
             🎨 {theme.name}
           </SectionTitle>
@@ -221,8 +221,8 @@ export function DayDetailPage() {
                   <div className="mt-1 flex flex-wrap gap-1.5">
                     {a.dress_code && <Chip className="bg-maroon-tint text-maroon">{a.dress_code}</Chip>}
                     <Chip className="bg-cream text-ink-soft">{a.setting}</Chip>
-                    {a.intensity === 'high' && <Chip className="bg-amber-100 text-amber-800">Very active</Chip>}
-                    {a.equipment && <Chip className="bg-sky-100 text-sky-800">🎒 {a.equipment}</Chip>}
+                    {a.intensity === 'high' && <Chip className="bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300">Very active</Chip>}
+                    {a.equipment && <Chip className="bg-sky-100 text-sky-800 dark:bg-sky-500/15 dark:text-sky-300">🎒 {a.equipment}</Chip>}
                   </div>
                   {a.notes && <p className="mt-1 text-xs text-ink-faint">{a.notes}</p>}
                 </div>
@@ -284,7 +284,7 @@ export function DayDetailPage() {
                       (v) => v.target_kind === 'outfit' && v.target_id === o.id
                     ).length;
                     return (
-                      <li key={o.id} className={`rounded-xl border p-3 ${o.chosen ? 'border-maroon bg-maroon-tint/40' : 'border-line bg-white'}`}>
+                      <li key={o.id} className={`rounded-xl border p-3 ${o.chosen ? 'border-maroon bg-maroon-tint/40' : 'border-line bg-card'}`}>
                         <div className="flex items-start gap-3">
                           {(o.photo_path || o.external_image_url) && (
                             <TripImage
@@ -296,8 +296,8 @@ export function DayDetailPage() {
                           <div className="min-w-0 flex-1">
                             <p className="text-sm font-semibold text-ink">
                               {o.title || 'Outfit option'}
-                              {o.chosen && <Chip className="ml-1.5 bg-maroon text-white">Wearing this</Chip>}
-                              {o.approved && <Chip className="ml-1.5 bg-emerald-100 text-emerald-800">Approved</Chip>}
+                              {o.chosen && <Chip className="ml-1.5 bg-maroon text-on-accent">Wearing this</Chip>}
+                              {o.approved && <Chip className="ml-1.5 bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300">Approved</Chip>}
                             </p>
                             <p className="text-xs text-ink-soft">
                               {[o.top_item, o.bottom_item, o.shoes, o.outerwear, o.accessories]
@@ -322,7 +322,7 @@ export function DayDetailPage() {
                                 <Button variant="ghost" className="!min-h-[34px] px-2.5 text-xs" onClick={() => setEditingOutfit(o)}>
                                   Edit
                                 </Button>
-                                <Button variant="ghost" className="!min-h-[34px] px-2.5 text-xs text-rose-700" onClick={() => setConfirmDeleteOutfit(o)}>
+                                <Button variant="ghost" className="!min-h-[34px] px-2.5 text-xs text-rose-700 dark:text-rose-400" onClick={() => setConfirmDeleteOutfit(o)}>
                                   Delete
                                 </Button>
                               </>
@@ -499,7 +499,7 @@ function OutfitFormModal({
               type="file"
               accept="image/*"
               onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-              className="text-sm text-ink-soft file:mr-3 file:rounded-xl file:border-0 file:bg-maroon file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-white"
+              className="text-sm text-ink-soft file:mr-3 file:rounded-xl file:border-0 file:bg-maroon file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-on-accent"
             />
           )}
         </Field>

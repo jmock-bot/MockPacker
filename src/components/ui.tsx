@@ -14,10 +14,10 @@ import {
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'success';
 
 const BUTTON_STYLES: Record<ButtonVariant, string> = {
-  primary: 'bg-maroon text-white hover:bg-maroon-soft active:bg-maroon-deep',
+  primary: 'bg-maroon text-on-accent hover:bg-maroon-soft active:bg-maroon-deep',
   secondary:
-    'bg-white text-ink border border-line hover:border-ink-faint active:bg-paper',
-  ghost: 'bg-transparent text-ink-soft hover:bg-black/5',
+    'bg-card text-ink border border-line hover:border-ink-faint active:bg-paper',
+  ghost: 'bg-transparent text-ink-soft hover:bg-ink/5',
   danger: 'bg-rose-700 text-white hover:bg-rose-800',
   success: 'bg-emerald-700 text-white hover:bg-emerald-800',
 };
@@ -95,7 +95,7 @@ export function Field({
     <div className="flex flex-col gap-1">
       <label htmlFor={id} className="text-sm font-medium text-ink-soft">
         {label}
-        {required && <span aria-hidden="true" className="text-rose-600"> *</span>}
+        {required && <span aria-hidden="true" className="text-rose-600 dark:text-rose-400"> *</span>}
       </label>
       {children(id)}
       {hint && <p className="text-xs text-ink-faint">{hint}</p>}
@@ -104,7 +104,7 @@ export function Field({
 }
 
 const inputClass =
-  'min-h-[44px] w-full rounded-xl border border-line bg-white px-3 text-base text-ink placeholder:text-ink-faint focus:border-maroon focus:outline-none focus:ring-2 focus:ring-maroon/15';
+  'min-h-[44px] w-full rounded-xl border border-line bg-card px-3 text-base text-ink placeholder:text-ink-faint focus:border-maroon focus:outline-none focus:ring-2 focus:ring-maroon/15';
 
 export function TextInput(props: InputHTMLAttributes<HTMLInputElement>) {
   return <input {...props} className={`${inputClass} ${props.className ?? ''}`} />;
@@ -151,7 +151,7 @@ export function TextArea(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {
     <textarea
       rows={3}
       {...props}
-      className={`w-full rounded-xl border border-line bg-white px-3 py-2 text-base text-ink placeholder:text-ink-faint focus:border-maroon focus:outline-none focus:ring-2 focus:ring-maroon/15 ${props.className ?? ''}`}
+      className={`w-full rounded-xl border border-line bg-card px-3 py-2 text-base text-ink placeholder:text-ink-faint focus:border-maroon focus:outline-none focus:ring-2 focus:ring-maroon/15 ${props.className ?? ''}`}
     />
   );
 }
@@ -177,7 +177,7 @@ export function Stepper({
         type="button"
         aria-label={`Decrease ${label}`}
         onClick={() => onChange(Math.max(min, value - 1))}
-        className="flex h-11 w-11 items-center justify-center rounded-xl border border-line bg-white text-xl font-bold text-ink active:bg-paper"
+        className="flex h-11 w-11 items-center justify-center rounded-xl border border-line bg-card text-xl font-bold text-ink active:bg-paper"
       >
         −
       </button>
@@ -188,7 +188,7 @@ export function Stepper({
         type="button"
         aria-label={`Increase ${label}`}
         onClick={() => onChange(Math.min(max, value + 1))}
-        className="flex h-11 w-11 items-center justify-center rounded-xl border border-line bg-white text-xl font-bold text-ink active:bg-paper"
+        className="flex h-11 w-11 items-center justify-center rounded-xl border border-line bg-card text-xl font-bold text-ink active:bg-paper"
       >
         +
       </button>
@@ -219,7 +219,7 @@ export function ProgressBar({
     >
       <div
         className="h-full rounded-full transition-[width] duration-300"
-        style={{ width: `${clamped}%`, backgroundColor: color ?? '#6e1423' }}
+        style={{ width: `${clamped}%`, backgroundColor: color ?? 'rgb(var(--color-accent))' }}
       />
     </div>
   );
@@ -231,7 +231,13 @@ export function ReadinessRing({ value, size = 96 }: { value: number; size?: numb
   const clamped = Math.max(0, Math.min(100, value));
   const r = (size - 12) / 2;
   const c = 2 * Math.PI * r;
-  const tone = clamped >= 80 ? '#047857' : clamped >= 50 ? '#b45309' : '#be123c';
+  // Reference the semantic CSS variables so the ring recolors in dark mode.
+  const tone =
+    clamped >= 80
+      ? 'rgb(var(--color-success))'
+      : clamped >= 50
+        ? 'rgb(var(--color-warning))'
+        : 'rgb(var(--color-danger))';
   return (
     <div
       role="img"
@@ -240,7 +246,7 @@ export function ReadinessRing({ value, size = 96 }: { value: number; size?: numb
       style={{ width: size, height: size }}
     >
       <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#e8e2d7" strokeWidth="8" />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgb(var(--color-border))" strokeWidth="8" />
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -315,7 +321,7 @@ export function Modal({
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
       <div
-        className="absolute inset-0 bg-ink/50"
+        className="absolute inset-0 bg-black/50"
         aria-hidden="true"
         onClick={onClose}
       />
@@ -335,7 +341,7 @@ export function Modal({
             type="button"
             onClick={onClose}
             aria-label="Close dialog"
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-ink-faint hover:bg-black/5 hover:text-ink"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-ink-faint hover:bg-ink/5 hover:text-ink"
           >
             <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
               <path d="M2 2l14 14M16 2L2 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -401,7 +407,7 @@ export function EmptyState({
   action?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center gap-2 rounded-card border border-dashed border-line bg-white/60 px-6 py-10 text-center">
+    <div className="flex flex-col items-center gap-2 rounded-card border border-dashed border-line bg-card/60 px-6 py-10 text-center">
       {icon && (
         <span aria-hidden="true" className="text-3xl">
           {icon}
@@ -419,8 +425,8 @@ export function EmptyState({
 export function Warning({ children, tone = 'amber' }: { children: ReactNode; tone?: 'amber' | 'rose' }) {
   const styles =
     tone === 'rose'
-      ? 'border-rose-200 bg-rose-50 text-rose-900'
-      : 'border-amber-200 bg-amber-50 text-amber-900';
+      ? 'border-rose-200 bg-rose-50 text-rose-900 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-200'
+      : 'border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200';
   return (
     <div role="status" className={`rounded-xl border px-3 py-2 text-sm ${styles}`}>
       {children}
@@ -453,7 +459,7 @@ export function Stat({
   tone?: 'good' | 'bad' | 'neutral';
 }) {
   const valueColor =
-    tone === 'bad' ? 'text-rose-700' : tone === 'good' ? 'text-emerald-700' : 'text-ink';
+    tone === 'bad' ? 'text-rose-700 dark:text-rose-400' : tone === 'good' ? 'text-emerald-700 dark:text-emerald-400' : 'text-ink';
   return (
     <div className="rounded-card border border-line bg-card p-3 shadow-card">
       <p className="text-xs font-medium uppercase tracking-wide text-ink-faint">{label}</p>

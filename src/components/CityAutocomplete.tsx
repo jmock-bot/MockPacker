@@ -97,7 +97,7 @@ export function CityAutocomplete({
   };
 
   const inputClass =
-    'min-h-[44px] w-full rounded-xl border border-line bg-white px-3 text-base text-ink placeholder:text-ink-faint focus:border-maroon focus:outline-none focus:ring-2 focus:ring-maroon/15';
+    'min-h-[44px] w-full rounded-xl border border-line bg-card px-3 text-base text-ink placeholder:text-ink-faint focus:border-maroon focus:outline-none focus:ring-2 focus:ring-maroon/15';
 
   return (
     <div ref={boxRef} className="relative">
@@ -129,7 +129,7 @@ export function CityAutocomplete({
         <ul
           id={listId}
           role="listbox"
-          className="absolute z-20 mt-1 max-h-64 w-full overflow-y-auto rounded-xl border border-line bg-white py-1 shadow-raised"
+          className="absolute z-20 mt-1 max-h-64 w-full overflow-y-auto rounded-xl border border-line bg-card py-1 shadow-raised"
         >
           {results.map((p, i) => (
             <li
@@ -155,7 +155,7 @@ export function CityAutocomplete({
         </ul>
       )}
       {open && !loading && results.length === 0 && value.trim().length >= 2 && (
-        <div className="absolute z-20 mt-1 w-full rounded-xl border border-line bg-white px-3 py-2 text-sm text-ink-faint shadow-raised">
+        <div className="absolute z-20 mt-1 w-full rounded-xl border border-line bg-card px-3 py-2 text-sm text-ink-faint shadow-raised">
           No matches — you can still type the city name.
         </div>
       )}

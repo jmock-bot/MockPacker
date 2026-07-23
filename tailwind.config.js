@@ -1,33 +1,47 @@
 /** @type {import('tailwindcss').Config} */
+
+// Semantic colors resolve to CSS variables defined in src/index.css.
+// Variables hold space-separated RGB channels so Tailwind opacity modifiers
+// (e.g. bg-maroon/15) work via rgb(var(--x) / <alpha-value>).
+const token = (name) => `rgb(var(${name}) / <alpha-value>)`;
+
 export default {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
+  // Media strategy: dark: variants track prefers-color-scheme, matching the
+  // CSS-variable palette flip in src/index.css.
+  darkMode: 'media',
   theme: {
     extend: {
       colors: {
         // Charcoal text scale
         ink: {
-          DEFAULT: '#26222b',
-          soft: '#4a4550',
-          faint: '#7c7681',
+          DEFAULT: token('--color-text'),
+          soft: token('--color-text-muted'),
+          faint: token('--color-text-faint'),
         },
         // Warm white / cream surfaces
-        paper: '#faf7f2',
-        cream: '#f3ecdf',
-        card: '#ffffff',
-        line: '#e8e2d7',
-        // Brand: deep maroon
+        paper: token('--color-bg'),
+        cream: token('--color-surface-alt'),
+        card: token('--color-surface'),
+        line: token('--color-border'),
+        // Brand accent (confident teal)
         maroon: {
-          DEFAULT: '#6e1423',
-          soft: '#8a2434',
-          deep: '#4e0d18',
-          tint: '#f7e9ec',
+          DEFAULT: token('--color-accent'),
+          soft: token('--color-accent-hover'),
+          deep: token('--color-accent-deep'),
+          tint: token('--color-accent-soft'),
         },
+        // Text/icons that sit on the accent (flips to near-black in dark).
+        'on-accent': token('--color-on-accent'),
       },
       fontFamily: {
         sans: [
+          'SF Pro Text',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          'Satoshi',
           'Inter',
           'system-ui',
-          '-apple-system',
           'Segoe UI',
           'Roboto',
           'sans-serif',
@@ -37,8 +51,8 @@ export default {
         card: '1rem',
       },
       boxShadow: {
-        card: '0 1px 3px rgba(38, 34, 43, 0.08), 0 1px 2px rgba(38, 34, 43, 0.04)',
-        raised: '0 6px 24px rgba(38, 34, 43, 0.14)',
+        card: 'var(--shadow-card)',
+        raised: 'var(--shadow-float)',
       },
     },
   },

@@ -61,7 +61,7 @@ export function TripsPage() {
             const dd = daysUntil(t.start_date);
             const isActive = activeTrip?.id === t.id;
             return (
-              <Card key={t.id} accent={isActive ? '#6e1423' : undefined}>
+              <Card key={t.id} accent={isActive ? 'rgb(var(--color-accent))' : undefined}>
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="flex items-center gap-2 font-bold text-ink">
@@ -82,7 +82,7 @@ export function TripsPage() {
                 </div>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {isActive ? (
-                    <Chip className="bg-emerald-100 text-emerald-800">Active trip</Chip>
+                    <Chip className="bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300">Active trip</Chip>
                   ) : (
                     <Button
                       variant="secondary"
@@ -97,7 +97,7 @@ export function TripsPage() {
                   )}
                   <Button
                     variant="ghost"
-                    className="!min-h-[36px] px-3 text-xs text-rose-700"
+                    className="!min-h-[36px] px-3 text-xs text-rose-700 dark:text-rose-400"
                     onClick={() => setConfirmDelete(t)}
                   >
                     Delete
@@ -130,7 +130,7 @@ export function TripsPage() {
             onChange={(e) => setJoinCode(e.target.value)}
             placeholder="Paste invitation code"
             aria-label="Invitation code"
-            className="min-h-[44px] w-full rounded-xl border border-line bg-white px-3 text-base text-ink placeholder:text-ink-faint focus:border-maroon focus:outline-none focus:ring-2 focus:ring-maroon/15"
+            className="min-h-[44px] w-full rounded-xl border border-line bg-card px-3 text-base text-ink placeholder:text-ink-faint focus:border-maroon focus:outline-none focus:ring-2 focus:ring-maroon/15"
           />
           <Button type="submit" disabled={!joinCode.trim()} className="shrink-0">
             Join

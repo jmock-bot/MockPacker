@@ -87,7 +87,7 @@ export function ProfilePage() {
         {profile?.avatar_url ? (
           <img src={profile.avatar_url} alt="" className="h-16 w-16 rounded-full object-cover" />
         ) : (
-          <span aria-hidden="true" className="flex h-16 w-16 items-center justify-center rounded-full bg-maroon text-2xl font-bold text-white">
+          <span aria-hidden="true" className="flex h-16 w-16 items-center justify-center rounded-full bg-maroon text-2xl font-bold text-on-accent">
             {(displayName || '?').slice(0, 1).toUpperCase()}
           </span>
         )}
@@ -146,7 +146,7 @@ export function ProfilePage() {
             type="checkbox"
             checked={genderNeutral}
             onChange={(e) => setGenderNeutral(e.target.checked)}
-            className="h-5 w-5 rounded accent-[#6e1423]"
+            className="h-5 w-5 rounded accent-[#0B6E6E]"
           />
           Prefer gender-neutral clothing suggestions
         </label>

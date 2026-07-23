@@ -73,7 +73,7 @@ export function BagPage() {
           onClick={() => setStatusFilter('all')}
           aria-pressed={statusFilter === 'all'}
           className={`min-h-[38px] shrink-0 rounded-full border px-3 text-xs font-semibold ${
-            statusFilter === 'all' ? 'border-maroon bg-maroon text-white' : 'border-line bg-white text-ink-soft'
+            statusFilter === 'all' ? 'border-maroon bg-maroon text-on-accent' : 'border-line bg-card text-ink-soft'
           }`}
         >
           All ({items.length})
@@ -87,7 +87,7 @@ export function BagPage() {
               onClick={() => setStatusFilter(s)}
               aria-pressed={statusFilter === s}
               className={`min-h-[38px] shrink-0 rounded-full border px-3 text-xs font-semibold ${
-                statusFilter === s ? 'border-maroon bg-maroon text-white' : 'border-line bg-white text-ink-soft'
+                statusFilter === s ? 'border-maroon bg-maroon text-on-accent' : 'border-line bg-card text-ink-soft'
               }`}
             >
               {BAG_STATUS_META[s].label} ({count})
@@ -140,7 +140,7 @@ export function BagPage() {
                   <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
                     {member && <MemberChip member={member} />}
                     <Chip className={BAG_STATUS_META[item.status].chip}>{BAG_STATUS_META[item.status].label}</Chip>
-                    {item.packed && <Chip className="bg-emerald-100 text-emerald-800">Packed ✓</Chip>}
+                    {item.packed && <Chip className="bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300">Packed ✓</Chip>}
                     {item.store && <Chip className="bg-cream text-ink-soft">{item.store}</Chip>}
                     {item.est_price != null && (
                       <span className="text-xs font-semibold tabular-nums text-ink">{money(item.est_price)}</span>

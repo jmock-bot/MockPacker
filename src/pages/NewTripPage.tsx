@@ -230,7 +230,7 @@ export function NewTripPage() {
                 type="checkbox"
                 checked={laundry}
                 onChange={(e) => setLaundry(e.target.checked)}
-                className="h-5 w-5 rounded accent-[#6e1423]"
+                className="h-5 w-5 rounded accent-[#0B6E6E]"
               />
               Laundry will be available (packs lighter)
             </label>
@@ -290,7 +290,7 @@ export function NewTripPage() {
               you can send invitation links from the Group page after the trip is created.
             </p>
             {travelers.map((t, i) => (
-              <div key={i} className="flex flex-col gap-2 rounded-xl border border-line bg-white p-3">
+              <div key={i} className="flex flex-col gap-2 rounded-xl border border-line bg-card p-3">
                 <div className="grid gap-2 sm:grid-cols-2">
                   <TextInput
                     value={t.name}
@@ -327,7 +327,7 @@ export function NewTripPage() {
                   </Select>
                   <Button
                     variant="ghost"
-                    className="!min-h-[36px] px-2 text-xs text-rose-700"
+                    className="!min-h-[36px] px-2 text-xs text-rose-700 dark:text-rose-400"
                     onClick={() => setTravelers((prev) => prev.filter((_, j) => j !== i))}
                   >
                     Remove
@@ -360,7 +360,7 @@ export function NewTripPage() {
                     onClick={() => toggleKind(k.id)}
                     aria-pressed={on}
                     className={`flex min-h-[48px] items-center gap-2 rounded-xl border px-3 text-left text-sm font-medium transition-colors ${
-                      on ? 'border-maroon bg-maroon-tint text-maroon' : 'border-line bg-white text-ink-soft'
+                      on ? 'border-maroon bg-maroon-tint text-maroon' : 'border-line bg-card text-ink-soft'
                     }`}
                   >
                     <span aria-hidden="true">{k.icon}</span>
@@ -384,7 +384,7 @@ export function NewTripPage() {
                   const set = (patch: Partial<NewTripActivity>) =>
                     setActivityDetails((prev) => ({ ...prev, [id]: { ...prev[id], ...patch } }));
                   return (
-                    <details key={id} className="rounded-xl border border-line bg-white p-3">
+                    <details key={id} className="rounded-xl border border-line bg-card p-3">
                       <summary className="cursor-pointer text-sm font-semibold text-ink">
                         {kind.icon} {kind.label}
                       </summary>

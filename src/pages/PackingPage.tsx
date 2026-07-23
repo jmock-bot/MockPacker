@@ -88,7 +88,7 @@ export function PackingPage() {
             <option key={m.id} value={m.id}>{m.name}</option>
           ))}
         </Select>
-        <div role="group" aria-label="Filter by status" className="flex overflow-hidden rounded-xl border border-line bg-white">
+        <div role="group" aria-label="Filter by status" className="flex overflow-hidden rounded-xl border border-line bg-card">
           {(
             [
               ['all', 'All'],
@@ -103,7 +103,7 @@ export function PackingPage() {
               onClick={() => setStatusFilter(key)}
               aria-pressed={statusFilter === key}
               className={`min-h-[44px] px-3 text-sm font-medium ${
-                statusFilter === key ? 'bg-maroon text-white' : 'text-ink-soft'
+                statusFilter === key ? 'bg-maroon text-on-accent' : 'text-ink-soft'
               }`}
             >
               {label}
@@ -151,7 +151,7 @@ export function PackingPage() {
                         if (e.target.checked) void postFeed('packed', `packed ${item.name}`);
                       }}
                       aria-label={`Mark ${item.name} as packed`}
-                      className="mt-1 h-6 w-6 shrink-0 rounded accent-[#6e1423]"
+                      className="mt-1 h-6 w-6 shrink-0 rounded accent-[#0B6E6E]"
                     />
                     <div className="min-w-0 flex-1">
                       <p className={`text-sm font-medium ${item.packed ? 'text-ink-faint line-through' : 'text-ink'}`}>
@@ -162,8 +162,8 @@ export function PackingPage() {
                         {member ? <MemberChip member={member} /> : <Chip className="bg-cream text-ink-faint">Shared</Chip>}
                         <Chip className={BAG_STATUS_META[item.status].chip}>{BAG_STATUS_META[item.status].label}</Chip>
                         {!item.required && <Chip className="bg-cream text-ink-faint">Optional</Chip>}
-                        {item.last_minute && <Chip className="bg-amber-100 text-amber-800">Last minute</Chip>}
-                        {item.day && <Chip className="bg-sky-100 text-sky-800">{shortDate(item.day).replace(/, \d{4}$/, '')}</Chip>}
+                        {item.last_minute && <Chip className="bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300">Last minute</Chip>}
+                        {item.day && <Chip className="bg-sky-100 text-sky-800 dark:bg-sky-500/15 dark:text-sky-300">{shortDate(item.day).replace(/, \d{4}$/, '')}</Chip>}
                       </div>
                       {item.notes && <p className="mt-0.5 text-xs text-ink-faint">{item.notes}</p>}
                     </div>
@@ -173,7 +173,7 @@ export function PackingPage() {
                           type="button"
                           onClick={() => setEditing(item)}
                           aria-label={`Edit ${item.name}`}
-                          className="flex h-9 w-9 items-center justify-center rounded-lg text-ink-faint hover:bg-black/5"
+                          className="flex h-9 w-9 items-center justify-center rounded-lg text-ink-faint hover:bg-ink/5"
                         >
                           ✏️
                         </button>
@@ -185,7 +185,7 @@ export function PackingPage() {
                             });
                           }}
                           aria-label={`Duplicate ${item.name}`}
-                          className="flex h-9 w-9 items-center justify-center rounded-lg text-ink-faint hover:bg-black/5"
+                          className="flex h-9 w-9 items-center justify-center rounded-lg text-ink-faint hover:bg-ink/5"
                         >
                           📄
                         </button>
@@ -193,7 +193,7 @@ export function PackingPage() {
                           type="button"
                           onClick={() => setConfirmDelete(item)}
                           aria-label={`Delete ${item.name}`}
-                          className="flex h-9 w-9 items-center justify-center rounded-lg text-ink-faint hover:bg-black/5"
+                          className="flex h-9 w-9 items-center justify-center rounded-lg text-ink-faint hover:bg-ink/5"
                         >
                           🗑️
                         </button>

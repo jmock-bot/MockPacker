@@ -131,7 +131,7 @@ export function SearchPage() {
 
       {/* Compare tray */}
       {compare.length >= 2 && (
-        <Card accent="#6e1423">
+        <Card accent="rgb(var(--color-accent))">
           <p className="mb-2 text-sm font-bold text-ink">Comparing {compare.length} products</p>
           <div className="grid gap-2 sm:grid-cols-3">
             {compare.map((r) => (
@@ -164,7 +164,7 @@ export function SearchPage() {
           <div className="grid gap-3 sm:grid-cols-2">
             {results.map((r) => (
               <Card key={r.id} className="flex gap-3 !p-3">
-                <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white">
+                <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-card">
                   {r.imageUrl ? (
                     <img src={r.imageUrl} alt="" className="max-h-full max-w-full object-contain" loading="lazy" />
                   ) : (
@@ -180,7 +180,7 @@ export function SearchPage() {
                       <>
                         <span className="ml-1.5 text-xs text-ink-faint line-through">{money(r.originalPrice)}</span>
                         {r.discountPercent != null && (
-                          <Chip className="ml-1.5 bg-emerald-100 text-emerald-800">-{r.discountPercent}%</Chip>
+                          <Chip className="ml-1.5 bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300">-{r.discountPercent}%</Chip>
                         )}
                       </>
                     )}
@@ -204,7 +204,7 @@ export function SearchPage() {
                         href={r.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex min-h-[34px] items-center rounded-xl border border-line bg-white px-2.5 text-xs font-semibold text-ink"
+                        className="inline-flex min-h-[34px] items-center rounded-xl border border-line bg-card px-2.5 text-xs font-semibold text-ink"
                       >
                         Retailer ↗
                       </a>
