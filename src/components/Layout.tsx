@@ -81,7 +81,7 @@ export function Layout() {
             <img src="/icons/icon-192.png" alt="" width={34} height={34} className="h-[34px] w-[34px] rounded-lg" />
             <div>
               <p className="text-sm font-bold text-maroon">MockPacker</p>
-              <p className="text-xs text-ink-faint">Pack together. Travel ready.</p>
+              <p className="text-xs text-ink-faint">From: The Group Chat To: The Group Trip</p>
             </div>
           </div>
         </div>
