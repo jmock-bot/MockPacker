@@ -49,8 +49,10 @@
   --duration-base: 250ms;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
+/* Dark palette applies when <html> carries the .dark class. The class is set
+   by the bootstrap script in index.html (pre-paint, no FOUC) and kept in sync
+   by ThemeContext, which resolves the light/dark/system preference. */
+:root.dark {
     --color-accent: 79 176 176; /* #4FB0B0 */
     --color-accent-hover: 61 149 149; /* #3D9595 */
     --color-accent-deep: 45 120 120; /* deeper teal for pressed states */
@@ -70,7 +72,6 @@
     --color-success: 111 207 115; /* #6FCF73 */
     --color-warning: 224 163 58; /* #E0A33A */
     --color-danger: 229 115 107; /* #E5736B */
-  }
 }
 
 @layer base {

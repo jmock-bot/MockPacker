@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { TripProvider } from './context/TripContext';
 import { ToastProvider } from './context/ToastContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { Layout } from './components/Layout';
 import { ScrollRestoration } from './components/ScrollRestoration';
 import { Spinner } from './components/ui';
@@ -45,10 +46,16 @@ function SetupHelp() {
 }
 
 export default function App() {
-  if (!supabaseConfigured) return <SetupHelp />;
+  if (!supabaseConfigured)
+    return (
+      <ThemeProvider>
+        <SetupHelp />
+      </ThemeProvider>
+    );
   return (
-    <BrowserRouter>
-      <AuthProvider>
+    <ThemeProvider>
+      <BrowserRouter>
+        <AuthProvider>
         <ToastProvider>
           <TripProvider>
             <ScrollRestoration />
@@ -85,7 +92,8 @@ export default function App() {
             </Routes>
           </TripProvider>
         </ToastProvider>
-      </AuthProvider>
-    </BrowserRouter>
+        </AuthProvider>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }

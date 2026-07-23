@@ -2,14 +2,22 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { useTheme, type ThemePref } from '../context/ThemeContext';
 import { publicAvatarUrl, uploadAvatar } from '../lib/supabase';
 import { Button, Card, Field, SectionTitle, Select, TextArea, TextInput } from '../components/ui';
 
 const FITS = ['', 'slim', 'regular', 'relaxed', 'oversized'];
 
+const THEME_OPTIONS: { value: ThemePref; label: string; icon: string }[] = [
+  { value: 'light', label: 'Light', icon: '☀️' },
+  { value: 'system', label: 'System', icon: '🖥️' },
+  { value: 'dark', label: 'Dark', icon: '🌙' },
+];
+
 export function ProfilePage() {
   const { session, profile, updateProfile, signOut } = useAuth();
   const { toast } = useToast();
+  const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
 
@@ -104,6 +112,35 @@ export function ProfilePage() {
             />
           </label>
         </div>
+      </Card>
+
+      <Card className="flex flex-col gap-3">
+        <SectionTitle>Appearance</SectionTitle>
+        <div role="radiogroup" aria-label="Theme" className="flex gap-1 rounded-xl bg-cream p-1">
+          {THEME_OPTIONS.map((opt) => {
+            const active = theme === opt.value;
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                role="radio"
+                aria-checked={active}
+                onClick={() => setTheme(opt.value)}
+                className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-sm font-semibold transition-colors ${
+                  active ? 'bg-card text-ink shadow-card' : 'text-ink-soft hover:text-ink'
+                }`}
+              >
+                <span aria-hidden="true">{opt.icon}</span>
+                {opt.label}
+              </button>
+            );
+          })}
+        </div>
+        <p className="text-xs text-ink-faint">
+          {theme === 'system'
+            ? 'Matches your device appearance.'
+            : `Always ${theme}, regardless of device settings.`}
+        </p>
       </Card>
 
       <Card className="flex flex-col gap-4">

@@ -7,9 +7,10 @@ const token = (name) => `rgb(var(${name}) / <alpha-value>)`;
 
 export default {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
-  // Media strategy: dark: variants track prefers-color-scheme, matching the
-  // CSS-variable palette flip in src/index.css.
-  darkMode: 'media',
+  // Class strategy: dark: variants track the .dark class on <html>, matching
+  // the CSS-variable palette flip in src/index.css. ThemeContext toggles the
+  // class from the user's light/dark/system preference.
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
