@@ -204,7 +204,7 @@ export function GroupPage() {
                 ? outfits.filter((o) => o.date === t.date && o.chosen)
                 : [];
               return (
-                <Card key={t.id} accent="#6e1423">
+                <Card key={t.id} accent="#0B6E6E">
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div>
                       <p className="font-bold text-ink">🎨 {t.name}</p>

@@ -61,7 +61,7 @@ export function TripsPage() {
             const dd = daysUntil(t.start_date);
             const isActive = activeTrip?.id === t.id;
             return (
-              <Card key={t.id} accent={isActive ? '#6e1423' : undefined}>
+              <Card key={t.id} accent={isActive ? '#0B6E6E' : undefined}>
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="flex items-center gap-2 font-bold text-ink">

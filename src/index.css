@@ -2,6 +2,53 @@
 @tailwind components;
 @tailwind utilities;
 
+/* =============================================================================
+   DESIGN TOKENS — from tokens.css (TripChat design system)
+   Colors are stored as space-separated RGB channels so Tailwind's opacity
+   modifiers (e.g. bg-maroon/15) resolve correctly via rgb(var(--x) / <a>).
+   The Tailwind theme in tailwind.config.js maps semantic class names onto
+   these variables.
+   ========================================================================== */
+:root {
+  /* Accent — the ONLY brand color. Travel = confident teal. */
+  --color-accent: 11 110 110; /* #0B6E6E */
+  --color-accent-hover: 9 90 90; /* #095A5A */
+  --color-accent-deep: 7 71 71; /* darker teal for pressed states */
+  --color-accent-soft: 230 242 242; /* #E6F2F2 tinted backgrounds */
+  --color-on-accent: 255 255 255; /* #FFFFFF */
+
+  /* Neutrals */
+  --color-bg: 251 251 249; /* #FBFBF9 app background */
+  --color-surface: 255 255 255; /* #FFFFFF cards, sheets */
+  --color-surface-alt: 244 244 241; /* #F4F4F1 secondary surfaces, inputs */
+  --color-border: 226 225 220; /* #E2E1DC hairline dividers */
+  --color-border-strong: 201 199 191; /* #C9C7BF */
+
+  --color-text: 26 26 23; /* #1A1A17 primary body text */
+  --color-text-muted: 107 106 99; /* #6B6A63 secondary text */
+  --color-text-faint: 166 164 156; /* #A6A49C placeholders, captions */
+
+  /* Semantic (used sparingly, only for state) */
+  --color-success: 46 125 50; /* #2E7D32 */
+  --color-warning: 178 106 0; /* #B26A00 */
+  --color-danger: 192 57 43; /* #C0392B */
+
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-float: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+  /* Motion */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+}
+
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
@@ -18,7 +65,17 @@
     font-size: 16px;
   }
   :focus-visible {
-    outline: 2px solid #6e1423;
+    outline: 2px solid rgb(var(--color-accent));
     outline-offset: 2px;
+  }
+}
+
+/* Respect reduced-motion preferences. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
   }
 }

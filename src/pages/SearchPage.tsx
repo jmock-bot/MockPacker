@@ -131,7 +131,7 @@ export function SearchPage() {
 
       {/* Compare tray */}
       {compare.length >= 2 && (
-        <Card accent="#6e1423">
+        <Card accent="#0B6E6E">
           <p className="mb-2 text-sm font-bold text-ink">Comparing {compare.length} products</p>
           <div className="grid gap-2 sm:grid-cols-3">
             {compare.map((r) => (

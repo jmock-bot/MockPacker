@@ -230,7 +230,7 @@ export function NewTripPage() {
                 type="checkbox"
                 checked={laundry}
                 onChange={(e) => setLaundry(e.target.checked)}
-                className="h-5 w-5 rounded accent-[#6e1423]"
+                className="h-5 w-5 rounded accent-[#0B6E6E]"
               />
               Laundry will be available (packs lighter)
             </label>

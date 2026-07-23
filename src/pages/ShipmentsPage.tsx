@@ -62,7 +62,7 @@ export function ShipmentsPage() {
 
       {/* Delivery risk */}
       {hasRisk && (
-        <Card accent="#be123c">
+        <Card accent="#C0392B">
           <SectionTitle>⚠️ Delivery Risk</SectionTitle>
           <div className="flex flex-col gap-2">
             {risk.late.map((s) => (

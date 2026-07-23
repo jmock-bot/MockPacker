@@ -219,7 +219,7 @@ export function ProgressBar({
     >
       <div
         className="h-full rounded-full transition-[width] duration-300"
-        style={{ width: `${clamped}%`, backgroundColor: color ?? '#6e1423' }}
+        style={{ width: `${clamped}%`, backgroundColor: color ?? '#0B6E6E' }}
       />
     </div>
   );
@@ -231,7 +231,7 @@ export function ReadinessRing({ value, size = 96 }: { value: number; size?: numb
   const clamped = Math.max(0, Math.min(100, value));
   const r = (size - 12) / 2;
   const c = 2 * Math.PI * r;
-  const tone = clamped >= 80 ? '#047857' : clamped >= 50 ? '#b45309' : '#be123c';
+  const tone = clamped >= 80 ? '#2E7D32' : clamped >= 50 ? '#B26A00' : '#C0392B';
   return (
     <div
       role="img"
@@ -240,7 +240,7 @@ export function ReadinessRing({ value, size = 96 }: { value: number; size?: numb
       style={{ width: size, height: size }}
     >
       <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#e8e2d7" strokeWidth="8" />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#E2E1DC" strokeWidth="8" />
         <circle
           cx={size / 2}
           cy={size / 2}

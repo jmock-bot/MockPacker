@@ -151,7 +151,7 @@ export function PackingPage() {
                         if (e.target.checked) void postFeed('packed', `packed ${item.name}`);
                       }}
                       aria-label={`Mark ${item.name} as packed`}
-                      className="mt-1 h-6 w-6 shrink-0 rounded accent-[#6e1423]"
+                      className="mt-1 h-6 w-6 shrink-0 rounded accent-[#0B6E6E]"
                     />
                     <div className="min-w-0 flex-1">
                       <p className={`text-sm font-medium ${item.packed ? 'text-ink-faint line-through' : 'text-ink'}`}>

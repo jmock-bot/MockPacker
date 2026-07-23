@@ -146,7 +146,7 @@ export function ProfilePage() {
             type="checkbox"
             checked={genderNeutral}
             onChange={(e) => setGenderNeutral(e.target.checked)}
-            className="h-5 w-5 rounded accent-[#6e1423]"
+            className="h-5 w-5 rounded accent-[#0B6E6E]"
           />
           Prefer gender-neutral clothing suggestions
         </label>

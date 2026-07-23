@@ -181,7 +181,7 @@ export function DayDetailPage() {
 
       {/* Theme */}
       {theme && (
-        <Card accent="#6e1423">
+        <Card accent="#0B6E6E">
           <SectionTitle action={<Chip className="bg-maroon-tint text-maroon">Group theme</Chip>}>
             🎨 {theme.name}
           </SectionTitle>

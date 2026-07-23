@@ -109,7 +109,7 @@ export function HomePage() {
   return (
     <div className="flex flex-col gap-4">
       {/* Hero: trip + countdown + readiness */}
-      <Card className="!p-5" accent="#6e1423">
+      <Card className="!p-5" accent="#0B6E6E">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="min-w-0">
             <p className="text-xs font-semibold uppercase tracking-wide text-maroon">
