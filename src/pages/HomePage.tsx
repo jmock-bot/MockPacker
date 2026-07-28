@@ -4,7 +4,18 @@ import { useTrip } from '../context/TripContext';
 import { useToast } from '../context/ToastContext';
 import { computeReadiness } from '../lib/readiness';
 import { daysUntil, percent, shortDate, timeAgo, todayIso, weekday } from '../lib/format';
-import { Button, Card, EmptyState, ProgressBar, ReadinessRing, SectionTitle, Spinner, Warning } from '../components/ui';
+import {
+  Button,
+  Card,
+  EmptyState,
+  ProgressBar,
+  ReadinessRing,
+  SectionTitle,
+  Skeleton,
+  SkeletonCard,
+  SkeletonScreen,
+  Warning,
+} from '../components/ui';
 import { MemberDot, WeatherBadge } from '../components/shared';
 import { Icon, type IconName } from '../components/Icon';
 import { ImportChatModal } from '../components/ImportChatModal';
@@ -51,7 +62,41 @@ export function HomePage() {
     [activeTrip, items, shipments, outfits, themes, activities, members]
   );
 
-  if (tripsLoading) return <Spinner label="Loading your trips" />;
+  // Skeleton mirrors the real layout below (hero → promo → actions → two-up),
+  // so nothing shifts when the data lands.
+  if (tripsLoading)
+    return (
+      <SkeletonScreen label="Loading your trips">
+        <Card>
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0 flex-1">
+              <Skeleton className="h-3 w-24" />
+              <Skeleton className="mt-2 h-7 w-3/5" />
+              <Skeleton className="mt-2 h-4 w-2/5" />
+              <Skeleton className="mt-4 h-8 w-32" />
+            </div>
+            <Skeleton className="h-24 w-24 shrink-0 rounded-full" />
+          </div>
+          <div className="mt-5 grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i}>
+                <Skeleton className="mb-1.5 h-3 w-full" />
+                <Skeleton className="h-2.5 w-full rounded-full" />
+              </div>
+            ))}
+          </div>
+        </Card>
+        <Skeleton className="h-[76px] w-full rounded-card" />
+        <div className="grid gap-2 sm:grid-cols-2">
+          <Skeleton className="h-14 w-full rounded-card" />
+          <Skeleton className="h-14 w-full rounded-card" />
+        </div>
+        <div className="grid gap-4 lg:grid-cols-2">
+          <SkeletonCard />
+          <SkeletonCard />
+        </div>
+      </SkeletonScreen>
+    );
 
   if (!activeTrip) {
     return (

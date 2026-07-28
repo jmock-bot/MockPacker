@@ -3,7 +3,16 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTrip } from '../context/TripContext';
 import { useToast } from '../context/ToastContext';
 import { daysUntil, shortDate } from '../lib/format';
-import { Button, Card, Chip, ConfirmDialog, EmptyState, SectionTitle, Spinner } from '../components/ui';
+import {
+  Button,
+  Card,
+  Chip,
+  ConfirmDialog,
+  EmptyState,
+  SectionTitle,
+  SkeletonCard,
+  SkeletonScreen,
+} from '../components/ui';
 import { Icon, type IconName } from '../components/Icon';
 import { ImportChatModal } from '../components/ImportChatModal';
 import type { Trip } from '../lib/types';
@@ -27,7 +36,15 @@ export function TripsPage() {
   const [seeding, setSeeding] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
 
-  if (tripsLoading) return <Spinner label="Loading trips" />;
+  if (tripsLoading)
+    return (
+      <SkeletonScreen label="Loading trips">
+        <div className="grid gap-3 sm:grid-cols-2">
+          <SkeletonCard />
+          <SkeletonCard />
+        </div>
+      </SkeletonScreen>
+    );
 
   return (
     <div className="flex flex-col gap-4">

@@ -2,6 +2,7 @@ import {
   useEffect,
   useId,
   useRef,
+  useState,
   type ButtonHTMLAttributes,
   type InputHTMLAttributes,
   type ReactNode,
@@ -10,29 +11,166 @@ import {
 } from 'react';
 import { Icon, type IconName } from './Icon';
 
-/* ---------- Buttons ---------- */
+/* ---------- Buttons ----------
+ * One interaction contract shared by every button in the app:
+ *   hover   — lifts (-1px) and deepens by one elevation step
+ *   press   — scales to .97, drops elevation (tactile "push")
+ *   focus   — 2px accent ring, 2px offset, brand-colored
+ *   disabled— 45% opacity, no pointer events, no hover/press
+ *   loading — label swapped for a spinner, width locked so nothing reflows
+ *   success — brief check-mark confirmation, then back to the label
+ * `ghost` and `danger` are retained as aliases so existing call sites keep
+ * working; `tertiary` and `destructive` are the names to use going forward.
+ */
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'success';
+type ButtonVariant =
+  | 'primary'
+  | 'secondary'
+  | 'tertiary'
+  | 'destructive'
+  | 'success'
+  | 'ghost' // alias → tertiary
+  | 'danger'; // alias → destructive
+
+type ButtonSize = 'sm' | 'md' | 'lg';
 
 const BUTTON_STYLES: Record<ButtonVariant, string> = {
-  primary: 'bg-maroon text-on-accent hover:bg-maroon-soft active:bg-maroon-deep',
+  primary:
+    'bg-maroon text-on-accent shadow-e1 hover:bg-maroon-soft hover:shadow-e2 active:bg-maroon-deep active:shadow-none',
   secondary:
-    'bg-card text-ink border border-line hover:border-ink-faint active:bg-paper',
-  ghost: 'bg-transparent text-ink-soft hover:bg-ink/5',
-  danger: 'bg-rose-700 text-white hover:bg-rose-800',
-  success: 'bg-emerald-700 text-white hover:bg-emerald-800',
+    'bg-card text-ink border border-line shadow-e1 hover:border-line-strong hover:shadow-e2 active:bg-cream active:shadow-none',
+  tertiary: 'bg-transparent text-ink-soft hover:bg-ink/5 hover:text-ink active:bg-ink/10',
+  ghost: 'bg-transparent text-ink-soft hover:bg-ink/5 hover:text-ink active:bg-ink/10',
+  destructive: 'bg-danger text-white shadow-e1 hover:shadow-e2 hover:brightness-110 active:brightness-95 active:shadow-none',
+  danger: 'bg-danger text-white shadow-e1 hover:shadow-e2 hover:brightness-110 active:brightness-95 active:shadow-none',
+  success: 'bg-success text-white shadow-e1 hover:shadow-e2 hover:brightness-110 active:brightness-95 active:shadow-none',
 };
+
+const BUTTON_SIZES: Record<ButtonSize, string> = {
+  sm: 'min-h-[34px] px-2.5 text-caption gap-1.5',
+  md: 'min-h-[44px] px-4 text-label gap-2',
+  lg: 'min-h-[52px] px-5 text-body gap-2',
+};
+
+/** Shared across Button / IconButton / Fab so they feel identical to the touch. */
+const INTERACTION =
+  'relative inline-flex items-center justify-center font-semibold select-none ' +
+  'transition-[background-color,border-color,box-shadow,transform,filter,opacity] ' +
+  'duration-reveal ease-press motion-safe-transform ' +
+  'hover:-translate-y-px active:translate-y-0 active:scale-[.97] ' +
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon focus-visible:ring-offset-2 focus-visible:ring-offset-paper ' +
+  'disabled:pointer-events-none disabled:opacity-45 disabled:shadow-none';
+
+/**
+ * SVG rather than a bordered box: `border-current/30` is silently dropped by
+ * Tailwind (currentColor takes no opacity modifier), which would render a
+ * solid ring with no visible rotation. SVG lets the track and the arc carry
+ * separate opacities while both inherit the button's text color.
+ */
+function ButtonSpinner({ className = '' }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+      className={`h-4 w-4 animate-spin ${className}`}
+    >
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="3" opacity="0.25" />
+      <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+    </svg>
+  );
+}
 
 export function Button({
   variant = 'primary',
+  size = 'md',
+  loading = false,
+  success = false,
   className = '',
+  children,
+  disabled,
   ...props
-}: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: ButtonVariant }) {
+}: ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  /** Swaps the label for a spinner and blocks interaction, without collapsing width. */
+  loading?: boolean;
+  /** Momentary confirmation state — pair with a timeout at the call site. */
+  success?: boolean;
+}) {
+  const busy = loading || success;
   return (
     <button
       {...props}
-      className={`inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-maroon disabled:cursor-not-allowed disabled:opacity-50 ${BUTTON_STYLES[variant]} ${className}`}
-    />
+      disabled={disabled || busy}
+      aria-busy={loading || undefined}
+      className={`${INTERACTION} ${BUTTON_SIZES[size]} ${BUTTON_STYLES[variant]} rounded-md ${className}`}
+    >
+      {/* The label stays in flow but goes invisible, so the button keeps its
+          exact width while loading — no layout jump on either transition. */}
+      <span className={`inline-flex items-center gap-2 ${busy ? 'invisible' : ''}`}>{children}</span>
+      {busy && (
+        <span className="absolute inset-0 flex items-center justify-center">
+          {success ? (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="m5 12 5 5 9-11"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          ) : (
+            <ButtonSpinner />
+          )}
+        </span>
+      )}
+    </button>
+  );
+}
+
+/** Square, label-less button. `label` is required — it becomes the aria-label. */
+export function IconButton({
+  label,
+  size = 'md',
+  variant = 'tertiary',
+  className = '',
+  children,
+  ...props
+}: Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'aria-label'> & {
+  label: string;
+  size?: ButtonSize;
+  variant?: ButtonVariant;
+}) {
+  const box = size === 'sm' ? 'h-9 w-9' : size === 'lg' ? 'h-12 w-12' : 'h-11 w-11';
+  return (
+    <button
+      {...props}
+      aria-label={label}
+      title={label}
+      className={`${INTERACTION} ${box} ${BUTTON_STYLES[variant]} rounded-md ${className}`}
+    >
+      {children}
+    </button>
+  );
+}
+
+/** Floating action button — for the one dominant action on a scrolling screen. */
+export function Fab({
+  label,
+  className = '',
+  children,
+  ...props
+}: Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'aria-label'> & { label: string }) {
+  return (
+    <button
+      {...props}
+      aria-label={label}
+      className={`${INTERACTION} h-14 gap-2 rounded-full bg-maroon px-5 text-label text-on-accent shadow-e3 hover:shadow-e3 hover:brightness-105 ${className}`}
+    >
+      {children}
+    </button>
   );
 }
 
@@ -42,25 +180,34 @@ export function Card({
   children,
   className = '',
   accent,
+  interactive = false,
+  as: Tag = 'section',
 }: {
   children: ReactNode;
   className?: string;
   accent?: string;
+  /** Adds hover lift + press feedback. Use when the whole card is a target. */
+  interactive?: boolean;
+  as?: 'section' | 'article' | 'div';
 }) {
   return (
-    <section
-      className={`rounded-card border border-line bg-card p-4 shadow-card ${className}`}
+    <Tag
+      className={`surface-raised rounded-card border border-line bg-card p-5 ${
+        interactive
+          ? 'motion-safe-transform cursor-pointer transition-[box-shadow,transform,border-color] duration-reveal ease-press hover:-translate-y-0.5 hover:border-line-strong hover:shadow-e2 active:translate-y-0 active:scale-[.99]'
+          : ''
+      } ${className}`}
       style={accent ? { borderTopColor: accent, borderTopWidth: 3 } : undefined}
     >
       {children}
-    </section>
+    </Tag>
   );
 }
 
 export function SectionTitle({ children, action }: { children: ReactNode; action?: ReactNode }) {
   return (
     <div className="mb-3 flex items-center justify-between gap-3">
-      <h2 className="text-base font-bold text-ink">{children}</h2>
+      <h2 className="text-title text-ink">{children}</h2>
       {action}
     </div>
   );
@@ -71,9 +218,285 @@ export function SectionTitle({ children, action }: { children: ReactNode; action
 export function Chip({ children, className = '' }: { children: ReactNode; className?: string }) {
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${className}`}
+      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-overline ${className}`}
     >
       {children}
+    </span>
+  );
+}
+
+/** Selectable filter chip. Selection springs; the rest is restrained. */
+export function FilterChip({
+  selected = false,
+  count,
+  className = '',
+  children,
+  ...props
+}: ButtonHTMLAttributes<HTMLButtonElement> & { selected?: boolean; count?: number }) {
+  return (
+    <button
+      type="button"
+      aria-pressed={selected}
+      {...props}
+      className={`motion-safe-transform inline-flex min-h-[38px] shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3.5 text-label transition-[background-color,border-color,color,transform,box-shadow] duration-reveal ease-spring active:scale-[.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon focus-visible:ring-offset-2 focus-visible:ring-offset-paper ${
+        selected
+          ? 'border-maroon bg-maroon text-on-accent shadow-e1'
+          : 'border-line bg-card text-ink-soft hover:border-line-strong hover:text-ink'
+      } ${className}`}
+    >
+      {children}
+      {count != null && (
+        <span className={`tabular-nums ${selected ? 'opacity-80' : 'text-ink-faint'}`}>{count}</span>
+      )}
+    </button>
+  );
+}
+
+/* ---------- Segmented control ---------- */
+
+/** iOS-style segmented control with a sliding indicator. */
+export function SegmentedControl<T extends string>({
+  options,
+  value,
+  onChange,
+  label,
+  className = '',
+}: {
+  options: { value: T; label: string }[];
+  value: T;
+  onChange: (v: T) => void;
+  label: string;
+  className?: string;
+}) {
+  const index = Math.max(0, options.findIndex((o) => o.value === value));
+  return (
+    <div
+      role="tablist"
+      aria-label={label}
+      className={`relative flex rounded-md border border-line bg-cream p-1 ${className}`}
+    >
+      {/* Sliding indicator — one element that moves, rather than each segment
+          fading its own background in and out. */}
+      <span
+        aria-hidden="true"
+        className="motion-safe-transform absolute inset-y-1 left-1 z-0 rounded-[calc(var(--radius-md)-4px)] bg-card shadow-e1 transition-transform duration-surface ease-press"
+        style={{
+          width: `calc((100% - 0.5rem) / ${options.length})`,
+          transform: `translateX(calc(${index} * 100%))`,
+        }}
+      />
+      {options.map((o) => {
+        const on = o.value === value;
+        return (
+          <button
+            key={o.value}
+            type="button"
+            role="tab"
+            aria-selected={on}
+            onClick={() => onChange(o.value)}
+            className={`relative z-10 min-h-[36px] flex-1 rounded-[calc(var(--radius-md)-4px)] px-3 text-label transition-colors duration-reveal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon ${
+              on ? 'text-ink' : 'text-ink-faint hover:text-ink-soft'
+            }`}
+          >
+            {o.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ---------- Skeletons ----------
+ * Skeletons mirror the shape of the content they replace, so the page does
+ * not reflow when real data lands. Prefer these over a full-page spinner.
+ */
+
+export function Skeleton({ className = '' }: { className?: string }) {
+  return <span aria-hidden="true" className={`block animate-pulse-soft rounded-sm bg-line ${className}`} />;
+}
+
+export function SkeletonText({ lines = 3, className = '' }: { lines?: number; className?: string }) {
+  return (
+    <span className={`flex flex-col gap-2 ${className}`}>
+      {Array.from({ length: lines }).map((_, i) => (
+        <Skeleton key={i} className={`h-3.5 ${i === lines - 1 ? 'w-2/3' : 'w-full'}`} />
+      ))}
+    </span>
+  );
+}
+
+export function SkeletonCard({ className = '' }: { className?: string }) {
+  return (
+    <div className={`surface-raised rounded-card border border-line bg-card p-5 ${className}`}>
+      <Skeleton className="mb-3 h-4 w-1/3" />
+      <SkeletonText lines={3} />
+    </div>
+  );
+}
+
+/** Wrapper that announces loading to assistive tech while skeletons show. */
+export function SkeletonScreen({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div role="status" aria-busy="true" aria-label={label} className="flex flex-col gap-4">
+      <span className="sr-only">{label}</span>
+      {children}
+    </div>
+  );
+}
+
+/* ---------- Notification banner ---------- */
+
+export function Banner({
+  tone = 'info',
+  icon,
+  children,
+  action,
+}: {
+  tone?: 'info' | 'success' | 'warning' | 'danger';
+  icon?: ReactNode;
+  children: ReactNode;
+  action?: ReactNode;
+}) {
+  const tones = {
+    info: 'border-line bg-card text-ink-soft',
+    success: 'border-success/25 bg-success/10 text-success',
+    warning: 'border-warning/25 bg-warning/10 text-warning',
+    danger: 'border-danger/25 bg-danger/10 text-danger',
+  } as const;
+  return (
+    <div
+      role="status"
+      className={`flex animate-fade-in items-center gap-3 rounded-md border px-4 py-3 text-body ${tones[tone]}`}
+    >
+      {icon && <span className="shrink-0">{icon}</span>}
+      <span className="min-w-0 flex-1">{children}</span>
+      {action && <span className="shrink-0">{action}</span>}
+    </div>
+  );
+}
+
+/* ---------- Collapsible ---------- */
+
+export function Collapsible({
+  title,
+  defaultOpen = false,
+  children,
+}: {
+  title: ReactNode;
+  defaultOpen?: boolean;
+  children: ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  const id = useId();
+  return (
+    <div className="surface-raised overflow-hidden rounded-card border border-line bg-card">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        aria-controls={id}
+        className="flex min-h-[52px] w-full items-center justify-between gap-3 px-5 text-left text-title text-ink transition-colors duration-reveal hover:bg-cream/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-maroon"
+      >
+        {title}
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          aria-hidden="true"
+          className={`motion-safe-transform shrink-0 text-ink-faint transition-transform duration-surface ease-press ${
+            open ? 'rotate-180' : ''
+          }`}
+        >
+          <path d="m6 9 6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
+      {/* Grid-template-rows 0fr→1fr animates to auto height without JS measurement. */}
+      <div
+        id={id}
+        className={`grid transition-[grid-template-rows,opacity] duration-surface ease-press ${
+          open ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+        }`}
+      >
+        <div className="overflow-hidden">
+          <div className="border-t border-line px-5 py-4">{children}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- Avatar + presence ---------- */
+
+export function Avatar({
+  name,
+  color,
+  size = 32,
+  presence,
+}: {
+  name: string;
+  color: string;
+  size?: number;
+  presence?: 'online' | 'away' | 'offline';
+}) {
+  const initials = name
+    .split(/\s+/)
+    .map((w) => w[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
+  const dot = { online: 'bg-success', away: 'bg-warning', offline: 'bg-line-strong' };
+  return (
+    <span className="relative inline-flex shrink-0">
+      <span
+        aria-hidden="true"
+        className="inline-flex items-center justify-center rounded-full font-bold text-white"
+        style={{ width: size, height: size, backgroundColor: color, fontSize: size * 0.38 }}
+      >
+        {initials}
+      </span>
+      {presence && (
+        <span
+          aria-hidden="true"
+          className={`absolute bottom-0 right-0 rounded-full ring-2 ring-paper ${dot[presence]}`}
+          style={{ width: Math.max(8, size * 0.28), height: Math.max(8, size * 0.28) }}
+        />
+      )}
+      <span className="sr-only">
+        {name}
+        {presence ? `, ${presence}` : ''}
+      </span>
+    </span>
+  );
+}
+
+/** Overlapping avatar row for "who's on this trip". */
+export function AvatarStack({
+  people,
+  max = 4,
+  size = 30,
+}: {
+  people: { name: string; color: string }[];
+  max?: number;
+  size?: number;
+}) {
+  const shown = people.slice(0, max);
+  const extra = people.length - shown.length;
+  return (
+    <span className="flex items-center">
+      {shown.map((p, i) => (
+        <span key={`${p.name}-${i}`} className="rounded-full ring-2 ring-paper" style={{ marginLeft: i ? -8 : 0 }}>
+          <Avatar name={p.name} color={p.color} size={size} />
+        </span>
+      ))}
+      {extra > 0 && (
+        <span
+          className="inline-flex items-center justify-center rounded-full bg-cream font-bold text-ink-soft ring-2 ring-paper"
+          style={{ width: size, height: size, fontSize: size * 0.34, marginLeft: -8 }}
+        >
+          +{extra}
+        </span>
+      )}
     </span>
   );
 }
@@ -96,7 +519,7 @@ export function Field({
     <div className="flex flex-col gap-1">
       <label htmlFor={id} className="text-sm font-medium text-ink-soft">
         {label}
-        {required && <span aria-hidden="true" className="text-rose-600 dark:text-rose-400"> *</span>}
+        {required && <span aria-hidden="true" className="text-danger"> *</span>}
       </label>
       {children(id)}
       {hint && <p className="text-xs text-ink-faint">{hint}</p>}
@@ -285,6 +708,23 @@ export function Modal({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const titleId = useId();
+  // `mounted` keeps the dialog in the DOM through its exit animation;
+  // `shown` drives the transform/opacity. Exits run faster than entrances —
+  // a slow dismissal feels unresponsive.
+  const [mounted, setMounted] = useState(open);
+  const [shown, setShown] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      setMounted(true);
+      // Next frame, so the browser paints the "from" state before transitioning.
+      const raf = requestAnimationFrame(() => setShown(true));
+      return () => cancelAnimationFrame(raf);
+    }
+    setShown(false);
+    const t = window.setTimeout(() => setMounted(false), 180);
+    return () => window.clearTimeout(t);
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -318,11 +758,13 @@ export function Modal({
     };
   }, [open, onClose]);
 
-  if (!open) return null;
+  if (!mounted) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
       <div
-        className="absolute inset-0 bg-black/50"
+        className={`absolute inset-0 bg-black/50 transition-opacity ease-press ${
+          shown ? 'opacity-100 duration-surface' : 'opacity-0 duration-reveal'
+        }`}
         aria-hidden="true"
         onClick={onClose}
       />
@@ -332,22 +774,25 @@ export function Modal({
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}
-        className={`relative z-10 max-h-[92dvh] w-full overflow-y-auto rounded-t-2xl bg-paper p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-raised outline-none sm:rounded-2xl ${wide ? 'sm:max-w-2xl' : 'sm:max-w-lg'}`}
+        className={`surface-floating motion-safe-transform relative z-10 max-h-[92dvh] w-full overflow-y-auto rounded-t-xl bg-paper p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] outline-none transition-[transform,opacity] sm:rounded-xl ${
+          wide ? 'sm:max-w-2xl' : 'sm:max-w-lg'
+        } ${
+          shown
+            ? 'translate-y-0 opacity-100 duration-surface ease-decelerate sm:scale-100'
+            : 'translate-y-full opacity-0 duration-reveal ease-accelerate sm:translate-y-0 sm:scale-[.97]'
+        }`}
       >
+        {/* Grab handle — signals "this is a sheet you can dismiss" on mobile. */}
+        <div aria-hidden="true" className="mx-auto mb-3 h-1 w-9 rounded-full bg-line-strong sm:hidden" />
         <div className="mb-4 flex items-start justify-between gap-4">
-          <h2 id={titleId} className="text-lg font-bold text-ink">
+          <h2 id={titleId} className="text-title-lg text-ink">
             {title}
           </h2>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close dialog"
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-ink-faint hover:bg-ink/5 hover:text-ink"
-          >
+          <IconButton label="Close dialog" onClick={onClose} className="-mr-1 shrink-0">
             <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
               <path d="M2 2l14 14M16 2L2 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
-          </button>
+          </IconButton>
         </div>
         {children}
       </div>
@@ -396,6 +841,11 @@ export function ConfirmDialog({
 
 /* ---------- Empty state ---------- */
 
+/**
+ * Empty states get real presence rather than a dashed outline — a dashed box
+ * reads as "unfinished form field", not "nothing here yet". The icon sits in
+ * a soft tinted halo so the block has a focal point.
+ */
 export function EmptyState({
   icon,
   title,
@@ -408,14 +858,16 @@ export function EmptyState({
   action?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center gap-2 rounded-card border border-dashed border-line bg-card/60 px-6 py-10 text-center">
+    <div className="surface-raised flex animate-fade-in flex-col items-center gap-3 rounded-card border border-line bg-card px-6 py-12 text-center">
       {icon && (
-        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-cream text-ink-soft">
-          <Icon name={icon} size={26} />
+        <span className="relative flex h-16 w-16 items-center justify-center">
+          <span aria-hidden="true" className="absolute inset-0 rounded-full bg-maroon-tint" />
+          <span aria-hidden="true" className="absolute inset-2 rounded-full bg-maroon/10" />
+          <Icon name={icon} size={28} className="relative text-maroon" />
         </span>
       )}
-      <p className="font-semibold text-ink">{title}</p>
-      {body && <p className="max-w-sm text-sm text-ink-faint">{body}</p>}
+      <p className="text-title-lg text-ink">{title}</p>
+      {body && <p className="max-w-sm text-body text-ink-soft">{body}</p>}
       {action && <div className="mt-2">{action}</div>}
     </div>
   );
@@ -424,12 +876,14 @@ export function EmptyState({
 /* ---------- Inline warning ---------- */
 
 export function Warning({ children, tone = 'amber' }: { children: ReactNode; tone?: 'amber' | 'rose' }) {
+  // Semantic tokens rather than raw Tailwind palettes, so these track the
+  // brand and flip correctly in dark mode.
   const styles =
     tone === 'rose'
-      ? 'border-rose-200 bg-rose-50 text-rose-900 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-200'
-      : 'border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200';
+      ? 'border-danger/25 bg-danger/10 text-danger'
+      : 'border-warning/25 bg-warning/10 text-warning';
   return (
-    <div role="status" className={`rounded-xl border px-3 py-2 text-sm ${styles}`}>
+    <div role="status" className={`animate-fade-in rounded-md border px-3.5 py-2.5 text-body ${styles}`}>
       {children}
     </div>
   );
@@ -459,13 +913,12 @@ export function Stat({
   sub?: string;
   tone?: 'good' | 'bad' | 'neutral';
 }) {
-  const valueColor =
-    tone === 'bad' ? 'text-rose-700 dark:text-rose-400' : tone === 'good' ? 'text-emerald-700 dark:text-emerald-400' : 'text-ink';
+  const valueColor = tone === 'bad' ? 'text-danger' : tone === 'good' ? 'text-success' : 'text-ink';
   return (
-    <div className="rounded-card border border-line bg-card p-3 shadow-card">
-      <p className="text-xs font-medium uppercase tracking-wide text-ink-faint">{label}</p>
-      <p className={`mt-1 text-xl font-bold tabular-nums ${valueColor}`}>{value}</p>
-      {sub && <p className="text-xs text-ink-faint">{sub}</p>}
+    <div className="surface-raised rounded-card border border-line bg-card p-4">
+      <p className="text-overline uppercase text-ink-faint">{label}</p>
+      <p className={`mt-1.5 text-title-lg tabular-nums ${valueColor}`}>{value}</p>
+      {sub && <p className="mt-0.5 text-caption text-ink-faint">{sub}</p>}
     </div>
   );
 }
