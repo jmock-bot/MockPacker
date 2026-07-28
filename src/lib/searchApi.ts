@@ -20,6 +20,12 @@ export interface SearchResponse {
   ok: boolean;
   configured: boolean;
   provider?: string;
+  /**
+   * Notices the provider's terms require us to display with its results (e.g.
+   * the Amazon Associates affiliate + price-accuracy statements). Render all
+   * of them verbatim whenever results are shown.
+   */
+  disclosures?: string[];
   results: ProductResult[];
   error?: string;
 }

@@ -22,6 +22,7 @@ export function SearchPage() {
   const [busy, setBusy] = useState(false);
   const [configured, setConfigured] = useState(true);
   const [provider, setProvider] = useState<string | null>(null);
+  const [disclosures, setDisclosures] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<ProductResult[] | null>(null);
   const [saving, setSaving] = useState<Partial<PackingItem> | null>(null);
@@ -44,6 +45,7 @@ export function SearchPage() {
     setBusy(false);
     setConfigured(res.configured);
     setProvider(res.provider ?? null);
+    setDisclosures(res.disclosures ?? []);
     if (!res.ok && res.error) setError(res.error);
     let list = res.results;
     if (store.trim())
@@ -126,10 +128,11 @@ export function SearchPage() {
 
       {!configured && (
         <Warning>
-          Product search isn't connected yet. The site owner needs to set a shopping-data provider
-          key in the server environment — any one of <code>SERPAPI_KEY</code>,{' '}
-          <code>SERPER_API_KEY</code>, or <code>SEARCHAPI_KEY</code> turns it on. See the README for
-          setup. You can still add items manually from the Packing page.
+          Product search isn't connected yet. The site owner needs to set shopping-data credentials
+          in the server environment — Amazon (<code>AMAZON_ACCESS_KEY</code>,{' '}
+          <code>AMAZON_SECRET_KEY</code>, <code>AMAZON_PARTNER_TAG</code>) or any one of{' '}
+          <code>SERPAPI_KEY</code>, <code>SERPER_API_KEY</code>, or <code>SEARCHAPI_KEY</code>. See
+          the README for setup. You can still add items manually from the Packing page.
         </Warning>
       )}
 
@@ -237,10 +240,16 @@ export function SearchPage() {
       )}
 
       {results && results.length > 0 && (
-        <p className="text-center text-xs text-ink-faint">
-          Prices come from {provider ?? 'the search provider'} and can change at the retailer —
-          verify before buying.
-        </p>
+        <div className="flex flex-col gap-1 text-center text-xs text-ink-faint">
+          <p>
+            Prices come from {provider ?? 'the search provider'} and can change at the retailer —
+            verify before buying.
+          </p>
+          {/* Provider terms require these verbatim — don't trim or reword. */}
+          {disclosures.map((line) => (
+            <p key={line}>{line}</p>
+          ))}
+        </div>
       )}
 
       <ItemFormModal open={saving != null} onClose={() => setSaving(null)} initial={saving ?? undefined} />

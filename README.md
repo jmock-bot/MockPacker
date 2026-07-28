@@ -198,10 +198,13 @@ the `/api/*` alias.
 | `SUPABASE_URL` | Functions | Optional — Functions fall back to `VITE_SUPABASE_URL` |
 | `SUPABASE_JWKS_URL` | Functions | Optional — derived from the project URL (`…/auth/v1/.well-known/jwks.json`) when unset |
 | `SUPABASE_SECRET_KEY` | **Functions only** | Secret key `sb_secret_…`. **Never referenced by frontend code.** Optional — only the legacy HS256 fallback needs it. Falls back to `SUPABASE_SERVICE_ROLE_KEY` |
+| `AMAZON_ACCESS_KEY` | **Functions only** | Optional — Amazon PA-API access key. Enables monetized product search |
+| `AMAZON_SECRET_KEY` | **Functions only** | Optional — Amazon PA-API secret key. **Never referenced by frontend code** |
+| `AMAZON_PARTNER_TAG` | Functions | Optional — Associates tracking ID (e.g. `mockpacker-20`). Required with the two keys above |
 | `SERPAPI_KEY` | Functions | Optional — enables product search via [SerpAPI](https://serpapi.com) |
 | `SERPER_API_KEY` | Functions | Optional — enables product search via [Serper.dev](https://serper.dev) |
 | `SEARCHAPI_KEY` | Functions | Optional — enables product search via [SearchAPI.io](https://www.searchapi.io) |
-| `SEARCH_PROVIDER` | Functions | Optional — force one provider: `serpapi`, `serper`, or `searchapi` |
+| `SEARCH_PROVIDER` | Functions | Optional — force one provider: `amazon`, `serpapi`, `serper`, or `searchapi` |
 | `SEARCH_COUNTRY` | Functions | Optional — ISO country for results (default `us`) |
 | `UPS_CLIENT_ID` / `UPS_CLIENT_SECRET` | Functions | Optional — live UPS tracking |
 | `FEDEX_API_KEY` / `FEDEX_SECRET_KEY` | Functions | Optional — live FedEx tracking |
@@ -217,38 +220,77 @@ keyless Open-Meteo directly.
 ### Turning on product search
 
 The Shop page shows *"Product search isn't connected yet"* until the server has
-a shopping-data provider key. MockPacker never scrapes Google — it calls an
-approved provider, and it supports three so you can pick on price and free-tier
-limits:
+shopping-data credentials. MockPacker never scrapes Google — it calls an
+approved provider. Four are supported, in two flavors:
 
-| Provider | Env var | Sign up |
-| --- | --- | --- |
-| SerpAPI | `SERPAPI_KEY` | <https://serpapi.com/manage-api-key> |
-| Serper.dev | `SERPER_API_KEY` | <https://serper.dev/api-key> |
-| SearchAPI.io | `SEARCHAPI_KEY` | <https://www.searchapi.io/> |
+| Provider | Credentials | Earns commission? | Coverage |
+| --- | --- | --- | --- |
+| **Amazon PA-API 5.0** | `AMAZON_ACCESS_KEY` + `AMAZON_SECRET_KEY` + `AMAZON_PARTNER_TAG` | **Yes** — Associates | Amazon only |
+| SerpAPI | `SERPAPI_KEY` | No | All retailers |
+| Serper.dev | `SERPER_API_KEY` | No | All retailers |
+| SearchAPI.io | `SEARCHAPI_KEY` | No | All retailers |
 
-Set **one** of them:
+Whichever you pick:
 
-1. Create an account with the provider and copy its API key.
-2. In Netlify: **Site settings → Environment variables → Add a variable**. Name
-   it after the provider above, paste the key, and scope it to **Functions**
-   (it must never be scoped to Builds — that would ship the secret to the
-   browser bundle).
+1. Get the credentials (see below for Amazon; the others issue a key on signup).
+2. In Netlify: **Site settings → Environment variables → Add a variable**. Paste
+   each value and scope it to **Functions** — never to Builds, which would ship
+   the secret into the browser bundle.
 3. Redeploy (**Deploys → Trigger deploy → Deploy site**). Environment changes
    only reach Functions on a new deploy.
-4. Open the Shop page and search. The banner disappears, and the footer under
-   the results names the provider that answered.
+4. Open the Shop page and search. The banner disappears and the footer names the
+   provider that answered.
 
-If more than one key is set, the first configured provider in the table order
-wins; set `SEARCH_PROVIDER` to `serpapi`, `serper`, or `searchapi` to force a
-specific one. For local development put the key in `.env` and run
-`npx netlify dev`.
+If several are configured the first in the table order wins; set
+`SEARCH_PROVIDER` to `amazon`, `serpapi`, `serper`, or `searchapi` to force one.
+For local development put the values in `.env` and run `npx netlify dev`.
+
+#### Amazon Product Advertising API
+
+This is the monetized option: results link through your Associates tag, so
+qualifying purchases earn commission. Getting access takes longer than the
+others, and the terms constrain what the app may display.
+
+**Eligibility — read before planning around it.** Amazon does not issue PA-API
+credentials on signup. You need an approved [Associates](https://affiliate-program.amazon.com)
+account **and at least 3 qualifying sales within 180 days**; access is revoked
+if sales lapse. So the site needs traffic converting through ordinary Associates
+links *before* the API turns on. Once eligible, create credentials under
+**Associates Central → Tools → Product Advertising API**.
+
+Your `AMAZON_PARTNER_TAG` must belong to the same marketplace as
+`SEARCH_COUNTRY` — tags are per-locale, and a US tag against `SEARCH_COUNTRY=uk`
+is rejected. The function maps the country to the right PA-API host and signing
+region automatically ([`_amazonPaapi.ts`](netlify/functions/_amazonPaapi.ts)).
+
+**What Amazon results look like, and why they differ:**
+
+- **10 results per search, not 20.** `SearchItems` caps `ItemCount` at 10.
+- **No star ratings or review counts.** PA-API 5.0 does not license review
+  content to ordinary Associates accounts, so those fields come back empty and
+  the UI omits them. Google Shopping providers do return ratings.
+- **Amazon only.** The store filter and the compare tray still work, but they
+  compare Amazon listings against each other rather than across retailers. If
+  cross-retailer price comparison matters more than commission, use one of the
+  Google Shopping providers — or keep both configured and flip `SEARCH_PROVIDER`.
+
+**Required disclosures.** The Associates Operating Agreement requires the
+affiliate identification statement and a price-accuracy notice wherever Amazon
+data is shown. The function returns both in the `disclosures` array and the Shop
+page renders them verbatim under the results — don't remove or reword them.
+
+**Known gap — cached prices.** Amazon's terms allow caching product data for at
+most 24 hours. Saving a search result to the Bag persists `est_price` and
+`product_url` in Supabase indefinitely, so a saved Amazon price can go stale
+past that window. Links stay valid (and keep earning), but prices don't refresh.
+Closing this properly means either re-fetching saved Amazon prices on read or
+not persisting them at all — decide before running Amazon at scale.
 
 ### Netlify Functions
 
 | Endpoint | Purpose |
 | --- | --- |
-| `POST /api/product-search` | Server-side product search (SerpAPI / Serper.dev / SearchAPI.io Google Shopping). Auth-required, rate-limited. Reports `configured:false` until a provider key is set |
+| `POST /api/product-search` | Server-side product search (Amazon PA-API, or SerpAPI / Serper.dev / SearchAPI.io Google Shopping). Auth-required, rate-limited. Reports `configured:false` until a provider is set |
 | `POST /api/track-shipment` | Carrier-API integration point (UPS/FedEx/USPS/DHL). Reports `configured:false` until credentials are set |
 | `GET /api/weather` | Optional weather proxy (default provider Open-Meteo is keyless and called client-side) |
 
