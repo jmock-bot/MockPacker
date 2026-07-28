@@ -57,6 +57,57 @@ trip planning.
    2. [`supabase/migrations/002_demo.sql`](supabase/migrations/002_demo.sql) — the `seed_demo_trip()` function behind the "Load a demo trip" button
    3. [`supabase/migrations/003_trips_select_policy.sql`](supabase/migrations/003_trips_select_policy.sql) — only needed for databases migrated before the trips select-policy fix landed in 001 (fixes "new row violates row-level security policy for table trips" when creating a trip)
    4. [`supabase/migrations/004_chat.sql`](supabase/migrations/004_chat.sql) — `chat_messages` table + RLS for per-trip group chat
+
+   If the run finishes with a NOTICE about `storage.objects` policies, your
+   project's SQL role can't create storage policies directly. Create them in
+   **Dashboard → Storage → Policies** instead, mirroring the expressions at the
+   bottom of `001_schema.sql`: `trip-photos` (select/insert/delete allowed when
+   `public.is_trip_member((split_part(name, '/', 1))::uuid)` — use
+   `can_contribute` for insert/delete) and `avatars` (public read; users write
+   only under their own `auth.uid()` folder).
+
+   > **Seeing `relation "trip_members" does not exist`?** The SQL Editor runs a
+   > file as a single transaction: if any statement fails, the *entire*
+   > migration rolls back and no tables are created, so every query afterwards
+   > fails with an error like this. Pull the latest `001_schema.sql` (an older
+   > version created a `profiles` policy before the `trip_members` table it
+   > references) and re-run it in full, then `002_demo.sql`. If a piecemeal
+   > run left partial objects behind, reset first:
+   >
+   > <details><summary>Reset snippet (deletes all MockPacker data!)</summary>
+   >
+   > ```sql
+   > drop table if exists trip_feed, notifications, shipments, reactions,
+   >   comments, photos, votes, themes, outfits, packing_items, activities,
+   >   trip_stops, trip_members, trips, profiles cascade;
+   > drop trigger if exists on_auth_user_created on auth.users;
+   > drop function if exists handle_new_user, handle_new_trip, is_trip_member,
+   >   trip_role_of, can_organize, can_contribute, redeem_trip_invite,
+   >   seed_demo_trip cascade;
+   > drop type if exists trip_role, trip_kind, bag_status, shipment_status, theme_status;
+   > drop policy if exists "anyone reads avatars" on storage.objects;
+   > drop policy if exists "user writes own avatar" on storage.objects;
+   > drop policy if exists "user updates own avatar" on storage.objects;
+   > drop policy if exists "user deletes own avatar" on storage.objects;
+   > ```
+   > </details>
+   >
+   > **Seeing `new row violates row-level security policy for table "trips"`
+   > when you create a trip?** Same underlying cause. The app sets the row's
+   > `owner_id` to your signed-in user id, which is exactly what the
+   > `create own trips` policy checks (`owner_id = auth.uid()`), so a
+   > correctly-migrated database accepts the insert. This error means RLS is
+   > enabled on `trips` but that INSERT policy is missing — Postgres then
+   > default-denies the write. It shows up when `001_schema.sql` only ran
+   > partway (e.g. an older version rolled the whole file back and the tables
+   > were later recreated by hand, or the file was run statement-by-statement).
+   > Re-run the **full** `001_schema.sql` — it drops and recreates every policy,
+   > so it's safe to run again; use the reset snippet above first if a piecemeal
+   > run left partial objects behind, then run `001` and `002` in order. To
+   > confirm the policy landed, run
+   > `select policyname from pg_policies where tablename = 'trips';` — you
+   > should see `create own trips` (alongside `members read trips`,
+   > `organizers edit trips`, and `owner deletes trip`).
 3. **Authentication → Providers**: enable **Email**, **Google**, and **Apple**
    (see [OAuth setup](#oauth-setup-google--apple) below for the redirect URLs —
    this is the step people get wrong).
