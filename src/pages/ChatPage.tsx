@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTrip } from '../context/TripContext';
 import { useAuth } from '../context/AuthContext';
-import { Button, EmptyState, Spinner } from '../components/ui';
+import { AvatarStack, Button, EmptyState, Skeleton, SkeletonScreen } from '../components/ui';
 import { MemberDot } from '../components/shared';
 import { Icon } from '../components/Icon';
 
@@ -30,7 +30,31 @@ export function ChatPage() {
         }
       />
     );
-  if (loading) return <Spinner label="Loading the chat" />;
+  // Alternating bubble widths/sides read as "a conversation is loading".
+  if (loading)
+    return (
+      <SkeletonScreen label="Loading the chat">
+        <div className="flex items-center gap-3">
+          <Skeleton className="h-[30px] w-[30px] rounded-full" />
+          <div className="flex-1">
+            <Skeleton className="h-4 w-2/5" />
+            <Skeleton className="mt-1.5 h-3 w-1/4" />
+          </div>
+        </div>
+        <div className="flex flex-col gap-3 rounded-card border border-line bg-cream/60 p-3 dark:bg-cream/20">
+          {[
+            'mr-auto w-3/5',
+            'ml-auto w-2/5',
+            'mr-auto w-1/2',
+            'ml-auto w-3/5',
+            'mr-auto w-2/5',
+          ].map((w, i) => (
+            <Skeleton key={i} className={`h-12 rounded-card ${w}`} />
+          ))}
+        </div>
+        <Skeleton className="h-11 w-full rounded-full" />
+      </SkeletonScreen>
+    );
 
   const submit = async () => {
     const body = draft.trim();
@@ -44,16 +68,10 @@ export function ChatPage() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-3">
-        <div className="flex shrink-0">
-          {members.slice(0, 5).map((m) => (
-            <span key={m.id} className="-ml-2 rounded-full ring-2 ring-paper first:ml-0">
-              <MemberDot member={m} size={30} />
-            </span>
-          ))}
-        </div>
+        <AvatarStack people={members.map((m) => ({ name: m.name, color: m.color }))} max={4} size={30} />
         <div className="min-w-0">
-          <h1 className="truncate text-base font-bold text-ink">{activeTrip.name} chat</h1>
-          <p className="text-xs text-ink-faint">
+          <h1 className="truncate text-title text-ink">{activeTrip.name} chat</h1>
+          <p className="text-caption text-ink-faint">
             {members.length} traveler{members.length === 1 ? '' : 's'} · trip chat
           </p>
         </div>
