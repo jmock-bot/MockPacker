@@ -21,6 +21,7 @@ export function SearchPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [busy, setBusy] = useState(false);
   const [configured, setConfigured] = useState(true);
+  const [provider, setProvider] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<ProductResult[] | null>(null);
   const [saving, setSaving] = useState<Partial<PackingItem> | null>(null);
@@ -42,6 +43,7 @@ export function SearchPage() {
     const res = await searchProducts(q, filters);
     setBusy(false);
     setConfigured(res.configured);
+    setProvider(res.provider ?? null);
     if (!res.ok && res.error) setError(res.error);
     let list = res.results;
     if (store.trim())
@@ -124,9 +126,10 @@ export function SearchPage() {
 
       {!configured && (
         <Warning>
-          Product search isn't connected yet. The site owner needs to set <code>SERPAPI_KEY</code>{' '}
-          (an approved Google Shopping data provider) in the server environment — see the README.
-          You can still add items manually from the Packing page.
+          Product search isn't connected yet. The site owner needs to set a shopping-data provider
+          key in the server environment — any one of <code>SERPAPI_KEY</code>,{' '}
+          <code>SERPER_API_KEY</code>, or <code>SEARCHAPI_KEY</code> turns it on. See the README for
+          setup. You can still add items manually from the Packing page.
         </Warning>
       )}
 
@@ -235,7 +238,8 @@ export function SearchPage() {
 
       {results && results.length > 0 && (
         <p className="text-center text-xs text-ink-faint">
-          Prices come from the search provider and can change at the retailer — verify before buying.
+          Prices come from {provider ?? 'the search provider'} and can change at the retailer —
+          verify before buying.
         </p>
       )}
 

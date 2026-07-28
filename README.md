@@ -198,7 +198,10 @@ the `/api/*` alias.
 | `SUPABASE_URL` | Functions | Optional — Functions fall back to `VITE_SUPABASE_URL` |
 | `SUPABASE_JWKS_URL` | Functions | Optional — derived from the project URL (`…/auth/v1/.well-known/jwks.json`) when unset |
 | `SUPABASE_SECRET_KEY` | **Functions only** | Secret key `sb_secret_…`. **Never referenced by frontend code.** Optional — only the legacy HS256 fallback needs it. Falls back to `SUPABASE_SERVICE_ROLE_KEY` |
-| `SERPAPI_KEY` | Functions | Optional — enables product search |
+| `SERPAPI_KEY` | Functions | Optional — enables product search via [SerpAPI](https://serpapi.com) |
+| `SERPER_API_KEY` | Functions | Optional — enables product search via [Serper.dev](https://serper.dev) |
+| `SEARCHAPI_KEY` | Functions | Optional — enables product search via [SearchAPI.io](https://www.searchapi.io) |
+| `SEARCH_PROVIDER` | Functions | Optional — force one provider: `serpapi`, `serper`, or `searchapi` |
 | `SEARCH_COUNTRY` | Functions | Optional — ISO country for results (default `us`) |
 | `UPS_CLIENT_ID` / `UPS_CLIENT_SECRET` | Functions | Optional — live UPS tracking |
 | `FEDEX_API_KEY` / `FEDEX_SECRET_KEY` | Functions | Optional — live FedEx tracking |
@@ -211,11 +214,41 @@ keys the app still runs** — search shows a clear "not connected yet" state,
 shipping falls back to manual statuses + carrier deep links, and weather uses
 keyless Open-Meteo directly.
 
+### Turning on product search
+
+The Shop page shows *"Product search isn't connected yet"* until the server has
+a shopping-data provider key. MockPacker never scrapes Google — it calls an
+approved provider, and it supports three so you can pick on price and free-tier
+limits:
+
+| Provider | Env var | Sign up |
+| --- | --- | --- |
+| SerpAPI | `SERPAPI_KEY` | <https://serpapi.com/manage-api-key> |
+| Serper.dev | `SERPER_API_KEY` | <https://serper.dev/api-key> |
+| SearchAPI.io | `SEARCHAPI_KEY` | <https://www.searchapi.io/> |
+
+Set **one** of them:
+
+1. Create an account with the provider and copy its API key.
+2. In Netlify: **Site settings → Environment variables → Add a variable**. Name
+   it after the provider above, paste the key, and scope it to **Functions**
+   (it must never be scoped to Builds — that would ship the secret to the
+   browser bundle).
+3. Redeploy (**Deploys → Trigger deploy → Deploy site**). Environment changes
+   only reach Functions on a new deploy.
+4. Open the Shop page and search. The banner disappears, and the footer under
+   the results names the provider that answered.
+
+If more than one key is set, the first configured provider in the table order
+wins; set `SEARCH_PROVIDER` to `serpapi`, `serper`, or `searchapi` to force a
+specific one. For local development put the key in `.env` and run
+`npx netlify dev`.
+
 ### Netlify Functions
 
 | Endpoint | Purpose |
 | --- | --- |
-| `POST /api/product-search` | Server-side product search (SerpAPI Google Shopping). Auth-required, rate-limited |
+| `POST /api/product-search` | Server-side product search (SerpAPI / Serper.dev / SearchAPI.io Google Shopping). Auth-required, rate-limited. Reports `configured:false` until a provider key is set |
 | `POST /api/track-shipment` | Carrier-API integration point (UPS/FedEx/USPS/DHL). Reports `configured:false` until credentials are set |
 | `GET /api/weather` | Optional weather proxy (default provider Open-Meteo is keyless and called client-side) |
 
