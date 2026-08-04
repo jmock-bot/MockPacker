@@ -9,8 +9,10 @@
  *  - Application data is NOT cached here; Supabase queries always go to the
  *    network so trip data stays in sync across the group.
  */
-const SHELL_CACHE = 'mp-shell-v1';
-const ASSET_CACHE = 'mp-assets-v1';
+// Bumped to v2: the precache list gained the brand webfont, and a renamed cache
+// is what makes existing installs pick it up on next activation.
+const SHELL_CACHE = 'mp-shell-v2';
+const ASSET_CACHE = 'mp-assets-v2';
 
 const PRECACHE = [
   '/',
@@ -20,6 +22,9 @@ const PRECACHE = [
   '/icons/icon-maskable-192.png',
   '/icons/icon-maskable-512.png',
   '/icons/apple-touch-icon.png',
+  // Brand typeface. Precached so an offline launch still renders in Inter —
+  // otherwise the app visibly changes face the moment it loses connectivity.
+  '/fonts/inter-latin.woff2',
 ];
 
 self.addEventListener('install', (event) => {

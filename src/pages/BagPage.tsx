@@ -178,17 +178,17 @@ export function BagPage() {
                   <div className="flex gap-1">
                     <Button
                       variant={item.packed ? 'secondary' : 'success'}
-                      className="!min-h-[32px] px-2 text-[11px]"
+                      className="px-3 text-caption"
                       onClick={() => void setItemPacked(item.id, !item.packed)}
                     >
                       {item.packed ? 'Unpack' : 'Mark packed'}
                     </Button>
-                    <Button variant="ghost" className="!min-h-[32px] px-2 text-[11px]" onClick={() => setEditing(item)}>
+                    <Button variant="ghost" className="px-3 text-caption" onClick={() => setEditing(item)}>
                       Edit
                     </Button>
                   </div>
                   {(item.status === 'ordered' || item.status === 'shipped') && (
-                    <Link to="/shipments" className="text-[11px] font-semibold text-maroon underline underline-offset-2">
+                    <Link to="/shipments" className="text-caption font-semibold text-maroon underline underline-offset-2">
                       Track it →
                     </Link>
                   )}

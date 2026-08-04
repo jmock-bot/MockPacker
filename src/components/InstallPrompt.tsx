@@ -92,7 +92,7 @@ export function InstallPrompt() {
             type="button"
             onClick={dismiss}
             aria-label="Dismiss install prompt"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-ink-faint hover:bg-ink/5"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-ink-faint hover:bg-ink/5"
           >
             <Icon name="x" size={18} />
           </button>

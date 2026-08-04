@@ -264,7 +264,7 @@ export function DayDetailPage() {
               <div className="mb-2 flex items-center gap-2">
                 <MemberDot member={m} />
                 <p className="font-bold text-ink">{m.name}</p>
-                {isMe && <Chip className="bg-cream text-ink-faint">you</Chip>}
+                {isMe && <Chip className="bg-cream text-ink-soft">you</Chip>}
               </div>
 
               {/* Recommendation */}
@@ -275,7 +275,7 @@ export function DayDetailPage() {
                   <p className="text-xs text-ink-soft">{rec.pieces.join(' · ')}</p>
                 )}
                 {rec.notes.map((n) => (
-                  <p key={n} className="mt-0.5 text-[11px] text-ink-faint">• {n}</p>
+                  <p key={n} className="mt-0.5 text-caption text-ink-faint">• {n}</p>
                 ))}
               </div>
 
@@ -307,7 +307,7 @@ export function DayDetailPage() {
                                 .filter(Boolean)
                                 .join(' · ')}
                             </p>
-                            {o.notes && <p className="text-[11px] text-ink-faint">{o.notes}</p>}
+                            {o.notes && <p className="text-caption text-ink-faint">{o.notes}</p>}
                           </div>
                         </div>
                         {canContribute && (

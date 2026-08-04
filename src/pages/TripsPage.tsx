@@ -163,7 +163,7 @@ export function TripsPage() {
             onChange={(e) => setJoinCode(e.target.value)}
             placeholder="Paste invitation code"
             aria-label="Invitation code"
-            className="min-h-[44px] w-full rounded-xl border border-line bg-card px-3 text-base text-ink placeholder:text-ink-faint focus:border-maroon focus:outline-none focus:ring-2 focus:ring-maroon/15"
+            className="min-h-[44px] w-full rounded-xl border border-line-control bg-card px-3 text-base text-ink placeholder:text-ink-soft focus:border-maroon focus:outline-none focus:ring-2 focus:ring-maroon/15"
           />
           <Button type="submit" disabled={!joinCode.trim()} className="shrink-0">
             Join

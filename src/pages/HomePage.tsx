@@ -360,7 +360,7 @@ export function HomePage() {
                 <span className="min-w-0 flex-1 text-ink-soft">
                   <strong className="font-semibold text-ink">{f.actor_name}</strong> {f.message}
                 </span>
-                <span className="shrink-0 text-[11px] text-ink-faint">{timeAgo(f.created_at)}</span>
+                <span className="shrink-0 text-caption text-ink-faint">{timeAgo(f.created_at)}</span>
               </li>
             ))}
           </ul>
