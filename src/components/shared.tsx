@@ -30,7 +30,7 @@ export function MemberDot({ member, size = 28 }: { member: TripMember; size?: nu
 
 export function MemberChip({ member }: { member: TripMember }) {
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-cream px-2 py-0.5 text-[11px] font-semibold text-ink-soft">
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-cream px-2 py-0.5 text-caption font-semibold text-ink-soft">
       <span
         aria-hidden="true"
         className="h-2 w-2 rounded-full"
@@ -100,7 +100,7 @@ export function WeatherBadge({ day, compact }: { day: WeatherDay | undefined; co
       </span>
       {!compact && <span>{label}</span>}
       {(day.precipProb ?? 0) >= 30 && (
-        <span className="inline-flex items-center gap-0.5 font-medium text-sky-700 dark:text-sky-400">
+        <span className="inline-flex items-center gap-0.5 font-medium text-maroon">
           <Icon name="droplet" size={13} /> {Math.round(day.precipProb ?? 0)}%
         </span>
       )}
@@ -182,7 +182,7 @@ export function CommentThread({
             <li key={c.id} className="rounded-xl bg-cream/70 px-3 py-2">
               <div className="flex items-baseline justify-between gap-2">
                 <p className="text-xs font-bold text-ink">{c.author_name}</p>
-                <span className="flex items-center gap-2 text-[10px] text-ink-faint">
+                <span className="flex items-center gap-2 text-caption text-ink-faint">
                   {timeAgo(c.created_at)}
                   {c.author_id === session?.user.id && (
                     <button
@@ -215,7 +215,7 @@ export function CommentThread({
             placeholder="Add a comment…"
             aria-label="Add a comment"
           />
-          <Button type="submit" disabled={busy || !draft.trim()} className="shrink-0 px-3">
+          <Button type="submit" loading={busy} disabled={!draft.trim()} className="shrink-0 px-3">
             Post
           </Button>
         </form>
@@ -236,7 +236,7 @@ export function PhotoCard({ photo, actions }: { photo: Photo; actions?: ReactNod
         <div className="flex items-start justify-between gap-2">
           <div>
             {photo.caption && <p className="text-sm font-medium text-ink">{photo.caption}</p>}
-            <p className="text-[11px] text-ink-faint">
+            <p className="text-caption text-ink-faint">
               {photo.uploader_name}
               {member ? ` · for ${member.name}` : ''} · {timeAgo(photo.created_at)}
             </p>

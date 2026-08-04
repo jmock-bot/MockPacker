@@ -86,7 +86,7 @@ export function SearchPage() {
             placeholder="e.g. white linen shirt"
             aria-label="Search products"
           />
-          <Button type="submit" disabled={busy || !query.trim()} className="shrink-0">
+          <Button type="submit" loading={busy} disabled={!query.trim()} className="shrink-0">
             {busy ? '…' : 'Search'}
           </Button>
         </div>
@@ -140,9 +140,9 @@ export function SearchPage() {
                 {r.imageUrl && <img src={r.imageUrl} alt="" className="mx-auto h-20 object-contain" loading="lazy" />}
                 <p className="mt-1 line-clamp-2 text-xs font-medium text-ink">{r.name}</p>
                 <p className="text-sm font-bold tabular-nums text-maroon">{money(r.price)}</p>
-                <p className="text-[11px] text-ink-faint">{r.store}</p>
-                {r.rating != null && <p className="flex items-center justify-center gap-0.5 text-[11px] text-ink-soft"><Icon name="star" size={11} /> {r.rating}{r.reviewCount ? ` (${r.reviewCount})` : ''}</p>}
-                <p className="text-[11px] text-ink-faint">
+                <p className="text-caption text-ink-faint">{r.store}</p>
+                {r.rating != null && <p className="flex items-center justify-center gap-0.5 text-caption text-ink-soft"><Icon name="star" size={11} /> {r.rating}{r.reviewCount ? ` (${r.reviewCount})` : ''}</p>}
+                <p className="text-caption text-ink-faint">
                   {r.shippingCost === 0 ? 'Free shipping' : r.deliveryEstimate ?? ''}
                 </p>
               </div>
@@ -181,12 +181,12 @@ export function SearchPage() {
                       <>
                         <span className="ml-1.5 text-xs text-ink-faint line-through">{money(r.originalPrice)}</span>
                         {r.discountPercent != null && (
-                          <Chip className="ml-1.5 bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300">-{r.discountPercent}%</Chip>
+                          <Chip tone="success" className="ml-1.5">-{r.discountPercent}%</Chip>
                         )}
                       </>
                     )}
                   </p>
-                  <p className="flex items-center gap-1 text-[11px] text-ink-faint">
+                  <p className="flex items-center gap-1 text-caption text-ink-faint">
                     {r.rating != null && (
                       <span className="inline-flex items-center gap-0.5">
                         <Icon name="star" size={11} /> {r.rating}{r.reviewCount ? ` (${r.reviewCount})` : ''}

@@ -158,7 +158,7 @@ export function GroupPage() {
                       type="button"
                       onClick={() => setRemoveTarget(m)}
                       aria-label={`Remove ${m.name}`}
-                      className="flex h-8 w-8 items-center justify-center rounded-lg text-ink-faint hover:bg-ink/5"
+                      className="flex h-11 w-11 items-center justify-center rounded-lg text-ink-faint hover:bg-ink/5"
                     >
                       <Icon name="x" size={16} />
                     </button>
@@ -238,7 +238,7 @@ export function GroupPage() {
                             return (
                               <div key={m.id} className="w-28 shrink-0 rounded-xl border border-line bg-card p-2 text-center">
                                 <MemberDot member={m} size={24} />
-                                <p className="mt-1 truncate text-[11px] font-semibold text-ink">{m.name}</p>
+                                <p className="mt-1 truncate text-caption font-semibold text-ink">{m.name}</p>
                                 {o ? (
                                   <>
                                     {(o.photo_path || o.external_image_url) && (
@@ -248,12 +248,12 @@ export function GroupPage() {
                                         className="mt-1 h-20 w-full rounded-lg"
                                       />
                                     )}
-                                    <p className="mt-1 line-clamp-2 text-[10px] text-ink-soft">
+                                    <p className="mt-1 line-clamp-2 text-caption text-ink-soft">
                                       {o.title || [o.top_item, o.bottom_item].filter(Boolean).join(', ')}
                                     </p>
                                   </>
                                 ) : (
-                                  <p className="mt-2 text-[10px] text-ink-faint">No outfit yet</p>
+                                  <p className="mt-2 text-caption text-ink-faint">No outfit yet</p>
                                 )}
                               </div>
                             );
@@ -285,7 +285,7 @@ export function GroupPage() {
                         Edit
                       </Button>
                       {canOrganize && (
-                        <Button variant="ghost" className="!min-h-[34px] px-2.5 text-xs text-rose-700 dark:text-rose-400" onClick={() => setDeleteThemeTarget(t)}>
+                        <Button variant="ghost" className="!min-h-[34px] px-2.5 text-xs text-danger" onClick={() => setDeleteThemeTarget(t)}>
                           Delete
                         </Button>
                       )}
@@ -336,7 +336,7 @@ export function GroupPage() {
                       type="button"
                       onClick={() => setDeletePhotoTarget(p)}
                       aria-label="Delete photo"
-                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-ink-faint hover:bg-ink/5"
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-ink-faint hover:bg-ink/5"
                     >
                       <Icon name="trash" size={16} />
                     </button>
@@ -361,7 +361,7 @@ export function GroupPage() {
                   <span className="min-w-0 flex-1">
                     <strong className="font-semibold text-ink">{f.actor_name}</strong> {f.message}
                   </span>
-                  <span className="shrink-0 text-[11px] text-ink-faint">{timeAgo(f.created_at)}</span>
+                  <span className="shrink-0 text-caption text-ink-faint">{timeAgo(f.created_at)}</span>
                 </li>
               ))}
             </ul>
@@ -592,7 +592,7 @@ function ThemeFormModal({
         </div>
         <div className="flex gap-2">
           <Button variant="secondary" className="flex-1" onClick={onClose} disabled={busy}>Cancel</Button>
-          <Button className="flex-1" onClick={() => void save()} disabled={busy || !name.trim()}>
+          <Button className="flex-1" onClick={() => void save()} loading={busy} disabled={!name.trim()}>
             {busy ? 'Saving…' : 'Save theme'}
           </Button>
         </div>
@@ -694,7 +694,7 @@ function PhotoUploadModal({
         </div>
         <div className="flex gap-2">
           <Button variant="secondary" className="flex-1" onClick={onClose} disabled={busy}>Cancel</Button>
-          <Button className="flex-1" onClick={() => void save()} disabled={busy || !file}>
+          <Button className="flex-1" onClick={() => void save()} loading={busy} disabled={!file}>
             {busy ? 'Uploading…' : 'Upload'}
           </Button>
         </div>

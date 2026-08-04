@@ -209,7 +209,7 @@ export function ProfilePage() {
         </Field>
       </Card>
 
-      <Button onClick={() => void save()} disabled={busy || !displayName.trim()}>
+      <Button onClick={() => void save()} loading={busy} disabled={!displayName.trim()}>
         {busy ? 'Saving…' : 'Save profile'}
       </Button>
 

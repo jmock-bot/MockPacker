@@ -165,7 +165,7 @@ export function NewTripPage() {
               aria-hidden="true"
               className={`h-1.5 w-full rounded-full ${i <= step ? 'bg-maroon' : 'bg-line'}`}
             />
-            <span className={`text-[10px] font-semibold ${i === step ? 'text-maroon' : 'text-ink-faint'}`}>
+            <span className={`text-caption font-semibold ${i === step ? 'text-maroon' : 'text-ink-faint'}`}>
               {label}
             </span>
           </li>
@@ -328,7 +328,7 @@ export function NewTripPage() {
                   </Select>
                   <Button
                     variant="ghost"
-                    className="!min-h-[36px] px-2 text-xs text-rose-700 dark:text-rose-400"
+                    className="!min-h-[36px] px-2 text-xs text-danger"
                     onClick={() => setTravelers((prev) => prev.filter((_, j) => j !== i))}
                   >
                     Remove
@@ -445,7 +445,7 @@ export function NewTripPage() {
           {step < STEPS.length - 1 ? (
             <Button onClick={next}>Continue →</Button>
           ) : (
-            <Button onClick={() => void submit()} disabled={busy}>
+            <Button onClick={() => void submit()} loading={busy}>
               {busy ? 'Building your packing list…' : <><Icon name="bag" size={18} /> Create trip + packing list</>}
             </Button>
           )}

@@ -53,7 +53,7 @@ export function JoinPage() {
             )}
           </Field>
           {error && <Warning tone="rose">{error}</Warning>}
-          <Button onClick={() => void join()} disabled={busy || !code.trim()}>
+          <Button onClick={() => void join()} loading={busy} disabled={!code.trim()}>
             {busy ? 'Joining…' : 'Join trip'}
           </Button>
           <Button variant="ghost" onClick={() => navigate('/')}>

@@ -26,6 +26,9 @@ export default {
         card: token('--color-surface'),
         line: token('--color-border'),
         'line-strong': token('--color-border-strong'),
+        // Form-control edges only. Decorative dividers carry no contrast
+        // requirement; an input's visible boundary does (WCAG 1.4.11, 3:1).
+        'line-control': token('--color-border-control'),
         // Brand accent (confident teal)
         maroon: {
           DEFAULT: token('--color-accent'),
@@ -42,17 +45,21 @@ export default {
         danger: token('--color-danger'),
       },
       fontFamily: {
-        // NOTE: Satoshi and Inter are listed but no webfont is currently
-        // loaded, so these fall through to the system UI face. To adopt a
-        // brand typeface, self-host it as woff2 (keeps the PWA offline-safe
-        // and CSP-clean), add an @font-face block in index.css, and precache
-        // the file in public/sw.js.
+        // Inter is now actually loaded — self-hosted variable woff2, declared in
+        // src/index.css, precached in public/sw.js. It leads the stack so the
+        // type scale's optical letter-spacing (-0.021em on display sizes) is
+        // applied to the face it was tuned for rather than to whatever system
+        // UI font the OS happens to supply.
+        //
+        // Satoshi is kept ahead of it for anyone who licenses and self-hosts it
+        // later: drop the woff2 in public/fonts/, add an @font-face block, and
+        // it takes over with no other change.
         sans: [
           'Satoshi',
+          'Inter',
           'SF Pro Text',
           '-apple-system',
           'BlinkMacSystemFont',
-          'Inter',
           'system-ui',
           'Segoe UI',
           'Roboto',

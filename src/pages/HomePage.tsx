@@ -338,7 +338,7 @@ export function HomePage() {
           <p className="text-sm text-ink-soft">
             {undelivered.length} shipment{undelivered.length > 1 ? 's' : ''} not delivered yet
             {problemShipments.length > 0 && (
-              <span className="font-semibold text-rose-700 dark:text-rose-400">
+              <span className="font-semibold text-danger">
                 {' '}— {problemShipments.length} need{problemShipments.length === 1 ? 's' : ''} attention
               </span>
             )}
@@ -360,7 +360,7 @@ export function HomePage() {
                 <span className="min-w-0 flex-1 text-ink-soft">
                   <strong className="font-semibold text-ink">{f.actor_name}</strong> {f.message}
                 </span>
-                <span className="shrink-0 text-[11px] text-ink-faint">{timeAgo(f.created_at)}</span>
+                <span className="shrink-0 text-caption text-ink-faint">{timeAgo(f.created_at)}</span>
               </li>
             ))}
           </ul>

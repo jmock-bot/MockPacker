@@ -41,13 +41,19 @@ const BUTTON_STYLES: Record<ButtonVariant, string> = {
     'bg-card text-ink border border-line shadow-e1 hover:border-line-strong hover:shadow-e2 active:bg-cream active:shadow-none',
   tertiary: 'bg-transparent text-ink-soft hover:bg-ink/5 hover:text-ink active:bg-ink/10',
   ghost: 'bg-transparent text-ink-soft hover:bg-ink/5 hover:text-ink active:bg-ink/10',
-  destructive: 'bg-danger text-white shadow-e1 hover:shadow-e2 hover:brightness-110 active:brightness-95 active:shadow-none',
-  danger: 'bg-danger text-white shadow-e1 hover:shadow-e2 hover:brightness-110 active:brightness-95 active:shadow-none',
-  success: 'bg-success text-white shadow-e1 hover:shadow-e2 hover:brightness-110 active:brightness-95 active:shadow-none',
+  // text-on-accent, not text-white: the state tokens flip to LIGHT tints in
+  // dark mode, where white text lands at 3.00:1 (danger), 1.94:1 (success) and
+  // 2.22:1 (warning) — all failing AA on the app's destructive actions.
+  // --color-on-accent already flips to near-black, giving 5.91:1 / 9.17:1.
+  destructive: 'bg-danger text-on-accent shadow-e1 hover:shadow-e2 hover:brightness-110 active:brightness-95 active:shadow-none',
+  danger: 'bg-danger text-on-accent shadow-e1 hover:shadow-e2 hover:brightness-110 active:brightness-95 active:shadow-none',
+  success: 'bg-success text-on-accent shadow-e1 hover:shadow-e2 hover:brightness-110 active:brightness-95 active:shadow-none',
 };
 
 const BUTTON_SIZES: Record<ButtonSize, string> = {
-  sm: 'min-h-[34px] px-2.5 text-caption gap-1.5',
+  // 44px floor on every size. `sm` was 34px, which put every compact button in
+  // the app under the minimum touch target.
+  sm: 'min-h-[44px] px-3 text-caption gap-1.5',
   md: 'min-h-[44px] px-4 text-label gap-2',
   lg: 'min-h-[52px] px-5 text-body gap-2',
 };
@@ -143,7 +149,10 @@ export function IconButton({
   size?: ButtonSize;
   variant?: ButtonVariant;
 }) {
-  const box = size === 'sm' ? 'h-9 w-9' : size === 'lg' ? 'h-12 w-12' : 'h-11 w-11';
+  // Every size clears the 44px touch minimum; `sm` was 36px. The ladder now
+  // varies the icon a caller puts inside rather than shrinking the target —
+  // the same approach Material takes (48dp target, 24dp glyph).
+  const box = size === 'lg' ? 'h-12 w-12' : 'h-11 w-11';
   return (
     <button
       {...props}
@@ -215,10 +224,40 @@ export function SectionTitle({ children, action }: { children: ReactNode; action
 
 /* ---------- Chips ---------- */
 
-export function Chip({ children, className = '' }: { children: ReactNode; className?: string }) {
+/**
+ * Chip tones. Each is `bg-<token>/15 text-<token>` — one class pair that works
+ * in BOTH themes with no `dark:` variant, because the tokens themselves flip.
+ * That is the whole point of having semantic colors: the 21 chips in this app
+ * previously carried hand-written light AND dark Tailwind palette classes
+ * (a light pair plus a matching `dark:` pair), four values each to keep in
+ * sync by hand.
+ *
+ * Every tone is verified >=4.5:1 against its own tint in both themes.
+ * `info` maps to the brand accent rather than introducing a fifth hue —
+ * the palette is deliberately one accent plus three states.
+ */
+export type ChipTone = 'neutral' | 'success' | 'warning' | 'danger' | 'info';
+
+const CHIP_TONES: Record<ChipTone, string> = {
+  neutral: 'bg-cream text-ink-soft',
+  success: 'bg-success/15 text-success',
+  warning: 'bg-warning/15 text-warning',
+  danger: 'bg-danger/15 text-danger',
+  info: 'bg-maroon/15 text-maroon',
+};
+
+export function Chip({
+  children,
+  tone = 'neutral',
+  className = '',
+}: {
+  children: ReactNode;
+  tone?: ChipTone;
+  className?: string;
+}) {
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-overline ${className}`}
+      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-overline ${CHIP_TONES[tone]} ${className}`}
     >
       {children}
     </span>
@@ -527,8 +566,17 @@ export function Field({
   );
 }
 
+// border-line-control, not border-line: the field background is only 1.04:1
+// against the page, so this border is the sole visual boundary of the control
+// and has to clear WCAG 1.4.11's 3:1. Placeholders use ink-soft because
+// ink-faint is 4.25:1 on cream-adjacent fills.
+// Disabled state matches the button contract (45% opacity, no pointer events)
+// so a dead field reads as dead. Without it a disabled input was pixel-identical
+// to a live one, and the only feedback was that typing did nothing.
 const inputClass =
-  'min-h-[44px] w-full rounded-xl border border-line bg-card px-3 text-base text-ink placeholder:text-ink-faint focus:border-maroon focus:outline-none focus:ring-2 focus:ring-maroon/15';
+  'min-h-[44px] w-full rounded-xl border border-line-control bg-card px-3 text-base text-ink placeholder:text-ink-soft ' +
+  'focus:border-maroon focus:outline-none focus:ring-2 focus:ring-maroon/15 ' +
+  'disabled:cursor-not-allowed disabled:opacity-45 disabled:bg-cream';
 
 export function TextInput(props: InputHTMLAttributes<HTMLInputElement>) {
   return <input {...props} className={`${inputClass} ${props.className ?? ''}`} />;
@@ -575,7 +623,7 @@ export function TextArea(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {
     <textarea
       rows={3}
       {...props}
-      className={`w-full rounded-xl border border-line bg-card px-3 py-2 text-base text-ink placeholder:text-ink-faint focus:border-maroon focus:outline-none focus:ring-2 focus:ring-maroon/15 ${props.className ?? ''}`}
+      className={`w-full rounded-xl border border-line-control bg-card px-3 py-2 text-base text-ink placeholder:text-ink-soft focus:border-maroon focus:outline-none focus:ring-2 focus:ring-maroon/15 ${props.className ?? ''}`}
     />
   );
 }

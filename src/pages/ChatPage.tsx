@@ -97,7 +97,7 @@ export function ChatPage() {
               return (
                 <div
                   key={m.id}
-                  className="ml-auto max-w-[78%] rounded-2xl rounded-br-md bg-maroon px-3 py-2 text-sm leading-relaxed text-on-accent"
+                  className="ml-auto max-w-[78%] rounded-lg rounded-br-sm bg-maroon px-3 py-2 text-sm leading-relaxed text-on-accent"
                 >
                   {m.body}
                 </div>
@@ -109,13 +109,19 @@ export function ChatPage() {
                 {member ? (
                   <MemberDot member={member} size={22} />
                 ) : (
-                  <span className="flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full bg-line text-[9px] font-bold text-ink-soft">
+                  // Decorative: the author's full name is rendered beside it,
+                  // so the initials are redundant to a screen reader. Hidden
+                  // rather than enlarged — 12px would not fit a 22px circle.
+                  <span
+                    aria-hidden="true"
+                    className="flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full bg-line text-[9px] font-bold text-ink-soft"
+                  >
                     {m.author_name.slice(0, 2).toUpperCase() || '?'}
                   </span>
                 )}
                 <div className="min-w-0">
-                  <p className="mb-0.5 ml-0.5 text-[10px] font-semibold text-ink-soft">{m.author_name}</p>
-                  <div className="rounded-2xl rounded-bl-md border border-line bg-card px-3 py-2 text-sm leading-relaxed text-ink">
+                  <p className="mb-0.5 ml-0.5 text-caption font-semibold text-ink-soft">{m.author_name}</p>
+                  <div className="rounded-lg rounded-bl-sm border border-line bg-card px-3 py-2 text-sm leading-relaxed text-ink">
                     {m.body}
                   </div>
                 </div>
@@ -139,11 +145,11 @@ export function ChatPage() {
             onChange={(e) => setDraft(e.target.value)}
             placeholder="Message the group"
             aria-label="Message the group"
-            className="min-h-[44px] w-full rounded-full border border-line bg-cream px-4 text-base text-ink placeholder:text-ink-faint focus:border-maroon focus:outline-none focus:ring-2 focus:ring-maroon/15"
+            className="min-h-[44px] w-full rounded-full border border-line-control bg-cream px-4 text-base text-ink placeholder:text-ink-soft focus:border-maroon focus:outline-none focus:ring-2 focus:ring-maroon/15"
           />
           <Button
             type="submit"
-            disabled={busy || !draft.trim()}
+            loading={busy} disabled={!draft.trim()}
             aria-label="Send message"
             className="h-11 w-11 shrink-0 !min-h-0 !rounded-full !px-0"
           >

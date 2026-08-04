@@ -13,6 +13,17 @@
       content="MockPacker — collaborative trip planning and packing. Personalized packing lists, weather-aware outfit plans, group themes, shopping, and shipment tracking."
     />
     <link rel="manifest" href="/manifest.webmanifest" />
+    <!-- The font is discovered inside the CSS, which the browser only parses
+         after fetching it — preloading starts the download in parallel with the
+         stylesheet and removes one round trip from first paint. Latin only; the
+         ext subset loads on demand via its unicode-range. -->
+    <link
+      rel="preload"
+      href="/fonts/inter-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
     <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />

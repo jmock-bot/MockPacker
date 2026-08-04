@@ -172,7 +172,7 @@ export function ItemFormModal({
           <Button variant="secondary" className="flex-1" onClick={onClose} disabled={busy}>
             Cancel
           </Button>
-          <Button className="flex-1" onClick={() => void save()} disabled={busy || !name.trim()}>
+          <Button className="flex-1" onClick={() => void save()} loading={busy} disabled={!name.trim()}>
             {busy ? 'Saving…' : item ? 'Save changes' : 'Add item'}
           </Button>
         </div>
