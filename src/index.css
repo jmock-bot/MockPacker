@@ -79,9 +79,13 @@
   --color-text-faint: 117 115 107; /* #75736B captions, metadata */
 
   /* Semantic (used sparingly, only for state) */
-  --color-success: 31 106 47; /* #1F6A2F */
-  --color-warning: 166 94 0; /* #A65E00 */
-  --color-danger: 178 46 35; /* #B22E23 */
+  /* State colors double as their own tinted backgrounds (`bg-success/15
+     text-success`), so each has to clear AA against a 15% wash of ITSELF, not
+     just against the page. #A65E00 managed only 4.08:1 that way; #8F5100 gets
+     5.04:1 on the tint and 6.01:1 on the page, and still reads amber. */
+  --color-success: 31 106 47; /* #1F6A2F — 5.32:1 on its own /15 tint */
+  --color-warning: 143 81 0; /* #8F5100 — 5.04:1 on its own /15 tint */
+  --color-danger: 178 46 35; /* #B22E23 — 5.00:1 on its own /15 tint */
 
   /* Radii */
   --radius-sm: 10px; /* chips, inputs, small controls */

@@ -285,7 +285,7 @@ export function GroupPage() {
                         Edit
                       </Button>
                       {canOrganize && (
-                        <Button variant="ghost" className="!min-h-[34px] px-2.5 text-xs text-rose-700 dark:text-rose-400" onClick={() => setDeleteThemeTarget(t)}>
+                        <Button variant="ghost" className="!min-h-[34px] px-2.5 text-xs text-danger" onClick={() => setDeleteThemeTarget(t)}>
                           Delete
                         </Button>
                       )}
@@ -592,7 +592,7 @@ function ThemeFormModal({
         </div>
         <div className="flex gap-2">
           <Button variant="secondary" className="flex-1" onClick={onClose} disabled={busy}>Cancel</Button>
-          <Button className="flex-1" onClick={() => void save()} disabled={busy || !name.trim()}>
+          <Button className="flex-1" onClick={() => void save()} loading={busy} disabled={!name.trim()}>
             {busy ? 'Saving…' : 'Save theme'}
           </Button>
         </div>
@@ -694,7 +694,7 @@ function PhotoUploadModal({
         </div>
         <div className="flex gap-2">
           <Button variant="secondary" className="flex-1" onClick={onClose} disabled={busy}>Cancel</Button>
-          <Button className="flex-1" onClick={() => void save()} disabled={busy || !file}>
+          <Button className="flex-1" onClick={() => void save()} loading={busy} disabled={!file}>
             {busy ? 'Uploading…' : 'Upload'}
           </Button>
         </div>

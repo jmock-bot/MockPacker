@@ -100,7 +100,7 @@ export function WeatherBadge({ day, compact }: { day: WeatherDay | undefined; co
       </span>
       {!compact && <span>{label}</span>}
       {(day.precipProb ?? 0) >= 30 && (
-        <span className="inline-flex items-center gap-0.5 font-medium text-sky-700 dark:text-sky-400">
+        <span className="inline-flex items-center gap-0.5 font-medium text-maroon">
           <Icon name="droplet" size={13} /> {Math.round(day.precipProb ?? 0)}%
         </span>
       )}
@@ -215,7 +215,7 @@ export function CommentThread({
             placeholder="Add a comment…"
             aria-label="Add a comment"
           />
-          <Button type="submit" disabled={busy || !draft.trim()} className="shrink-0 px-3">
+          <Button type="submit" loading={busy} disabled={!draft.trim()} className="shrink-0 px-3">
             Post
           </Button>
         </form>

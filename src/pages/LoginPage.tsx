@@ -68,7 +68,7 @@ export function LoginPage() {
           alt=""
           width={64}
           height={64}
-          className="mx-auto mb-5 h-16 w-16 rounded-2xl shadow-raised"
+          className="mx-auto mb-5 h-16 w-16 rounded-lg shadow-raised"
         />
         <h1 className="mx-auto max-w-xs text-[1.75rem] font-bold leading-tight tracking-tight text-balance">
           Turning group chats into group trips.
@@ -153,7 +153,7 @@ export function LoginPage() {
 
           {error && <Warning tone="rose">{error}</Warning>}
 
-          <Button type="submit" disabled={busy}>
+          <Button type="submit" loading={busy}>
             {busy
               ? 'One moment…'
               : mode === 'signin'

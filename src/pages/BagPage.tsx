@@ -141,8 +141,8 @@ export function BagPage() {
                   <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
                     {member && <MemberChip member={member} />}
                     <Chip className={BAG_STATUS_META[item.status].chip}>{BAG_STATUS_META[item.status].label}</Chip>
-                    {item.packed && <Chip className="bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300"><Icon name="check" size={12} /> Packed</Chip>}
-                    {item.store && <Chip className="bg-cream text-ink-soft">{item.store}</Chip>}
+                    {item.packed && <Chip tone="success"><Icon name="check" size={12} /> Packed</Chip>}
+                    {item.store && <Chip tone="neutral">{item.store}</Chip>}
                     {item.est_price != null && (
                       <span className="text-xs font-semibold tabular-nums text-ink">{money(item.est_price)}</span>
                     )}

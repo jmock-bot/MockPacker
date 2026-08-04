@@ -190,8 +190,8 @@ export function DayDetailPage() {
           </SectionTitle>
           {theme.description && <p className="text-sm text-ink-soft">{theme.description}</p>}
           <div className="mt-2 flex flex-wrap gap-1.5">
-            {theme.colors && <Chip className="bg-cream text-ink-soft">Colors: {theme.colors}</Chip>}
-            {theme.dress_code && <Chip className="bg-cream text-ink-soft">{theme.dress_code}</Chip>}
+            {theme.colors && <Chip tone="neutral">Colors: {theme.colors}</Chip>}
+            {theme.dress_code && <Chip tone="neutral">{theme.dress_code}</Chip>}
           </div>
           {theme.required_accessories && (
             <p className="mt-2 text-xs text-ink-faint">Accessories: {theme.required_accessories}</p>
@@ -223,9 +223,9 @@ export function DayDetailPage() {
                   </p>
                   <div className="mt-1 flex flex-wrap gap-1.5">
                     {a.dress_code && <Chip className="bg-maroon-tint text-maroon">{a.dress_code}</Chip>}
-                    <Chip className="bg-cream text-ink-soft">{a.setting}</Chip>
-                    {a.intensity === 'high' && <Chip className="bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300">Very active</Chip>}
-                    {a.equipment && <Chip className="bg-sky-100 text-sky-800 dark:bg-sky-500/15 dark:text-sky-300"><Icon name="bag" size={12} /> {a.equipment}</Chip>}
+                    <Chip tone="neutral">{a.setting}</Chip>
+                    {a.intensity === 'high' && <Chip tone="warning">Very active</Chip>}
+                    {a.equipment && <Chip tone="info"><Icon name="bag" size={12} /> {a.equipment}</Chip>}
                   </div>
                   {a.notes && <p className="mt-1 text-xs text-ink-faint">{a.notes}</p>}
                 </div>
@@ -264,7 +264,7 @@ export function DayDetailPage() {
               <div className="mb-2 flex items-center gap-2">
                 <MemberDot member={m} />
                 <p className="font-bold text-ink">{m.name}</p>
-                {isMe && <Chip className="bg-cream text-ink-soft">you</Chip>}
+                {isMe && <Chip tone="neutral">you</Chip>}
               </div>
 
               {/* Recommendation */}
@@ -300,7 +300,7 @@ export function DayDetailPage() {
                             <p className="text-sm font-semibold text-ink">
                               {o.title || 'Outfit option'}
                               {o.chosen && <Chip className="ml-1.5 bg-maroon text-on-accent">Wearing this</Chip>}
-                              {o.approved && <Chip className="ml-1.5 bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300">Approved</Chip>}
+                              {o.approved && <Chip tone="success" className="ml-1.5">Approved</Chip>}
                             </p>
                             <p className="text-xs text-ink-soft">
                               {[o.top_item, o.bottom_item, o.shoes, o.outerwear, o.accessories]
@@ -325,7 +325,7 @@ export function DayDetailPage() {
                                 <Button variant="ghost" className="!min-h-[34px] px-2.5 text-xs" onClick={() => setEditingOutfit(o)}>
                                   Edit
                                 </Button>
-                                <Button variant="ghost" className="!min-h-[34px] px-2.5 text-xs text-rose-700 dark:text-rose-400" onClick={() => setConfirmDeleteOutfit(o)}>
+                                <Button variant="ghost" className="!min-h-[34px] px-2.5 text-xs text-danger" onClick={() => setConfirmDeleteOutfit(o)}>
                                   Delete
                                 </Button>
                               </>
@@ -513,7 +513,7 @@ function OutfitFormModal({
           <Button variant="secondary" className="flex-1" onClick={onClose} disabled={busy}>
             Cancel
           </Button>
-          <Button className="flex-1" onClick={() => void save()} disabled={busy}>
+          <Button className="flex-1" onClick={() => void save()} loading={busy}>
             {busy ? 'Saving…' : 'Save outfit'}
           </Button>
         </div>

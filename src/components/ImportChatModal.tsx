@@ -285,8 +285,8 @@ export function ImportChatModal({ open, onClose }: { open: boolean; onClose: () 
 
       {step === 2 && (
         <div className="flex flex-col items-center gap-3 py-2 text-center">
-          <span className="flex h-[52px] w-[52px] items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-500/15">
-            <Icon name="check" size={26} className="text-emerald-700 dark:text-emerald-400" />
+          <span className="flex h-[52px] w-[52px] items-center justify-center rounded-full bg-success/15">
+            <Icon name="check" size={26} className="text-success" />
           </span>
           <h3 className="text-base font-bold text-ink">{createdName} is ready</h3>
           <p className="text-sm text-ink-soft">

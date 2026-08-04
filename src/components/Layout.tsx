@@ -171,7 +171,7 @@ export function Layout() {
         )}
 
         {offline && (
-          <div role="status" className="bg-amber-100 px-4 py-2 text-center text-xs font-semibold text-amber-900 dark:bg-amber-500/15 dark:text-amber-200">
+          <div role="status" className="bg-warning/15 px-4 py-2 text-center text-xs font-semibold text-warning">
             You're offline — showing the latest saved data.
           </div>
         )}

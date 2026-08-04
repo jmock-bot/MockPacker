@@ -86,7 +86,7 @@ export function SearchPage() {
             placeholder="e.g. white linen shirt"
             aria-label="Search products"
           />
-          <Button type="submit" disabled={busy || !query.trim()} className="shrink-0">
+          <Button type="submit" loading={busy} disabled={!query.trim()} className="shrink-0">
             {busy ? '…' : 'Search'}
           </Button>
         </div>
@@ -181,7 +181,7 @@ export function SearchPage() {
                       <>
                         <span className="ml-1.5 text-xs text-ink-faint line-through">{money(r.originalPrice)}</span>
                         {r.discountPercent != null && (
-                          <Chip className="ml-1.5 bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300">-{r.discountPercent}%</Chip>
+                          <Chip tone="success" className="ml-1.5">-{r.discountPercent}%</Chip>
                         )}
                       </>
                     )}

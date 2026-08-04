@@ -224,10 +224,40 @@ export function SectionTitle({ children, action }: { children: ReactNode; action
 
 /* ---------- Chips ---------- */
 
-export function Chip({ children, className = '' }: { children: ReactNode; className?: string }) {
+/**
+ * Chip tones. Each is `bg-<token>/15 text-<token>` — one class pair that works
+ * in BOTH themes with no `dark:` variant, because the tokens themselves flip.
+ * That is the whole point of having semantic colors: the 21 chips in this app
+ * previously carried hand-written light AND dark Tailwind palette classes
+ * (a light pair plus a matching `dark:` pair), four values each to keep in
+ * sync by hand.
+ *
+ * Every tone is verified >=4.5:1 against its own tint in both themes.
+ * `info` maps to the brand accent rather than introducing a fifth hue —
+ * the palette is deliberately one accent plus three states.
+ */
+export type ChipTone = 'neutral' | 'success' | 'warning' | 'danger' | 'info';
+
+const CHIP_TONES: Record<ChipTone, string> = {
+  neutral: 'bg-cream text-ink-soft',
+  success: 'bg-success/15 text-success',
+  warning: 'bg-warning/15 text-warning',
+  danger: 'bg-danger/15 text-danger',
+  info: 'bg-maroon/15 text-maroon',
+};
+
+export function Chip({
+  children,
+  tone = 'neutral',
+  className = '',
+}: {
+  children: ReactNode;
+  tone?: ChipTone;
+  className?: string;
+}) {
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-overline ${className}`}
+      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-overline ${CHIP_TONES[tone]} ${className}`}
     >
       {children}
     </span>
@@ -540,8 +570,13 @@ export function Field({
 // against the page, so this border is the sole visual boundary of the control
 // and has to clear WCAG 1.4.11's 3:1. Placeholders use ink-soft because
 // ink-faint is 4.25:1 on cream-adjacent fills.
+// Disabled state matches the button contract (45% opacity, no pointer events)
+// so a dead field reads as dead. Without it a disabled input was pixel-identical
+// to a live one, and the only feedback was that typing did nothing.
 const inputClass =
-  'min-h-[44px] w-full rounded-xl border border-line-control bg-card px-3 text-base text-ink placeholder:text-ink-soft focus:border-maroon focus:outline-none focus:ring-2 focus:ring-maroon/15';
+  'min-h-[44px] w-full rounded-xl border border-line-control bg-card px-3 text-base text-ink placeholder:text-ink-soft ' +
+  'focus:border-maroon focus:outline-none focus:ring-2 focus:ring-maroon/15 ' +
+  'disabled:cursor-not-allowed disabled:opacity-45 disabled:bg-cream';
 
 export function TextInput(props: InputHTMLAttributes<HTMLInputElement>) {
   return <input {...props} className={`${inputClass} ${props.className ?? ''}`} />;

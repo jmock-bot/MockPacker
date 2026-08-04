@@ -127,14 +127,14 @@ export function ShipmentsPage() {
                     </p>
                     <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
                       <Chip className={meta.chip}>{meta.label}</Chip>
-                      <Chip className="bg-cream text-ink-soft">{carrierName(s.carrier)}</Chip>
+                      <Chip tone="neutral">{carrierName(s.carrier)}</Chip>
                       {member && <MemberChip member={member} />}
-                      {item && <Chip className="bg-sky-100 text-sky-800 dark:bg-sky-500/15 dark:text-sky-300"><Icon name="bag" size={12} /> {item.name}</Chip>}
+                      {item && <Chip tone="info"><Icon name="bag" size={12} /> {item.name}</Chip>}
                     </div>
                   </div>
                   <div className="text-right text-xs text-ink-faint">
                     {s.eta_date && (
-                      <p className={s.eta_date >= activeTrip.start_date ? 'font-bold text-rose-700 dark:text-rose-400' : ''}>
+                      <p className={s.eta_date >= activeTrip.start_date ? 'font-bold text-danger' : ''}>
                         ETA {shortDate(s.eta_date)}
                       </p>
                     )}
@@ -148,13 +148,13 @@ export function ShipmentsPage() {
                     {[0, 1, 2, 3, 4, 5].map((i) => (
                       <span
                         key={i}
-                        className={`h-1.5 flex-1 rounded-full ${i <= progress ? (s.status === 'delivered' ? 'bg-emerald-600' : 'bg-maroon') : 'bg-line'}`}
+                        className={`h-1.5 flex-1 rounded-full ${i <= progress ? (s.status === 'delivered' ? 'bg-success' : 'bg-maroon') : 'bg-line'}`}
                       />
                     ))}
                   </div>
                 )}
                 {meta.problem && (
-                  <p className="mt-1.5 text-xs font-semibold text-rose-700 dark:text-rose-400">
+                  <p className="mt-1.5 text-xs font-semibold text-danger">
                     Needs attention — check with the carrier or retailer.
                   </p>
                 )}
@@ -190,7 +190,7 @@ export function ShipmentsPage() {
                   <Button variant="ghost" className="!min-h-[34px] px-2.5 text-xs" onClick={() => { setEditing(s); setFormOpen(true); }}>
                     Edit
                   </Button>
-                  <Button variant="ghost" className="!min-h-[34px] px-2.5 text-xs text-rose-700 dark:text-rose-400" onClick={() => setDeleteTarget(s)}>
+                  <Button variant="ghost" className="!min-h-[34px] px-2.5 text-xs text-danger" onClick={() => setDeleteTarget(s)}>
                     Delete
                   </Button>
                 </div>
@@ -355,7 +355,7 @@ function ShipmentFormModal({
         </Field>
         <div className="flex gap-2">
           <Button variant="secondary" className="flex-1" onClick={onClose} disabled={busy}>Cancel</Button>
-          <Button className="flex-1" onClick={() => void save()} disabled={busy}>
+          <Button className="flex-1" onClick={() => void save()} loading={busy}>
             {busy ? 'Saving…' : 'Save shipment'}
           </Button>
         </div>

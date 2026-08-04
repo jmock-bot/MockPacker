@@ -78,7 +78,7 @@ export function InstallPrompt() {
 
   return (
     <>
-      <div className="fixed inset-x-3 bottom-[calc(64px+env(safe-area-inset-bottom))] z-30 mx-auto max-w-md rounded-2xl border border-line bg-card p-3 shadow-raised lg:bottom-4 lg:right-4 lg:left-auto">
+      <div className="fixed inset-x-3 bottom-[calc(64px+env(safe-area-inset-bottom))] z-30 mx-auto max-w-md rounded-card border border-line bg-card p-3 shadow-raised lg:bottom-4 lg:right-4 lg:left-auto">
         <div className="flex items-center gap-3">
           <img src="/icons/icon-192.png" alt="" width={40} height={40} className="h-10 w-10 shrink-0 rounded-xl" />
           <div className="min-w-0 flex-1">

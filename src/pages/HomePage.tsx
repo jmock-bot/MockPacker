@@ -338,7 +338,7 @@ export function HomePage() {
           <p className="text-sm text-ink-soft">
             {undelivered.length} shipment{undelivered.length > 1 ? 's' : ''} not delivered yet
             {problemShipments.length > 0 && (
-              <span className="font-semibold text-rose-700 dark:text-rose-400">
+              <span className="font-semibold text-danger">
                 {' '}— {problemShipments.length} need{problemShipments.length === 1 ? 's' : ''} attention
               </span>
             )}

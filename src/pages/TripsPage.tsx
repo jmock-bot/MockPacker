@@ -115,7 +115,7 @@ export function TripsPage() {
                 </div>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {isActive ? (
-                    <Chip className="bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300">Active trip</Chip>
+                    <Chip tone="success">Active trip</Chip>
                   ) : (
                     <Button
                       variant="secondary"
@@ -130,7 +130,7 @@ export function TripsPage() {
                   )}
                   <Button
                     variant="ghost"
-                    className="!min-h-[36px] px-3 text-xs text-rose-700 dark:text-rose-400"
+                    className="!min-h-[36px] px-3 text-xs text-danger"
                     onClick={() => setConfirmDelete(t)}
                   >
                     Delete

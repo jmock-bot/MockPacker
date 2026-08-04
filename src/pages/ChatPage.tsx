@@ -97,7 +97,7 @@ export function ChatPage() {
               return (
                 <div
                   key={m.id}
-                  className="ml-auto max-w-[78%] rounded-2xl rounded-br-md bg-maroon px-3 py-2 text-sm leading-relaxed text-on-accent"
+                  className="ml-auto max-w-[78%] rounded-lg rounded-br-sm bg-maroon px-3 py-2 text-sm leading-relaxed text-on-accent"
                 >
                   {m.body}
                 </div>
@@ -121,7 +121,7 @@ export function ChatPage() {
                 )}
                 <div className="min-w-0">
                   <p className="mb-0.5 ml-0.5 text-caption font-semibold text-ink-soft">{m.author_name}</p>
-                  <div className="rounded-2xl rounded-bl-md border border-line bg-card px-3 py-2 text-sm leading-relaxed text-ink">
+                  <div className="rounded-lg rounded-bl-sm border border-line bg-card px-3 py-2 text-sm leading-relaxed text-ink">
                     {m.body}
                   </div>
                 </div>
@@ -149,7 +149,7 @@ export function ChatPage() {
           />
           <Button
             type="submit"
-            disabled={busy || !draft.trim()}
+            loading={busy} disabled={!draft.trim()}
             aria-label="Send message"
             className="h-11 w-11 shrink-0 !min-h-0 !rounded-full !px-0"
           >

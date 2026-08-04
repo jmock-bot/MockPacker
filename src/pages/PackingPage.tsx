@@ -160,11 +160,11 @@ export function PackingPage() {
                         {item.qty > 1 && <span className="ml-1 text-xs text-ink-faint">×{item.qty}</span>}
                       </p>
                       <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
-                        {member ? <MemberChip member={member} /> : <Chip className="bg-cream text-ink-soft">Shared</Chip>}
+                        {member ? <MemberChip member={member} /> : <Chip tone="neutral">Shared</Chip>}
                         <Chip className={BAG_STATUS_META[item.status].chip}>{BAG_STATUS_META[item.status].label}</Chip>
-                        {!item.required && <Chip className="bg-cream text-ink-soft">Optional</Chip>}
-                        {item.last_minute && <Chip className="bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300">Last minute</Chip>}
-                        {item.day && <Chip className="bg-sky-100 text-sky-800 dark:bg-sky-500/15 dark:text-sky-300">{shortDate(item.day).replace(/, \d{4}$/, '')}</Chip>}
+                        {!item.required && <Chip tone="neutral">Optional</Chip>}
+                        {item.last_minute && <Chip tone="warning">Last minute</Chip>}
+                        {item.day && <Chip tone="info">{shortDate(item.day).replace(/, \d{4}$/, '')}</Chip>}
                       </div>
                       {item.notes && <p className="mt-0.5 text-xs text-ink-faint">{item.notes}</p>}
                     </div>
