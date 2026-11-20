@@ -4,6 +4,7 @@
  * Forecasts only exist ~16 days out; farther dates return null fields and the
  * UI shows "forecast not available yet".
  */
+import type { IconName } from '../components/Icon';
 import type { WeatherDay } from './types';
 
 export interface GeoResult {
@@ -162,16 +163,17 @@ export async function fetchTripWeather(
 }
 
 /** WMO weather code → human label + icon. */
-export function weatherLabel(code: number | null): { label: string; icon: string } {
-  if (code == null) return { label: 'Forecast not available yet', icon: '🗓️' };
-  if (code === 0) return { label: 'Clear', icon: '☀️' };
-  if (code <= 2) return { label: 'Partly cloudy', icon: '🌤️' };
-  if (code === 3) return { label: 'Overcast', icon: '☁️' };
-  if (code <= 48) return { label: 'Fog', icon: '🌫️' };
-  if (code <= 57) return { label: 'Drizzle', icon: '🌦️' };
-  if (code <= 67) return { label: 'Rain', icon: '🌧️' };
-  if (code <= 77) return { label: 'Snow', icon: '🌨️' };
-  if (code <= 82) return { label: 'Showers', icon: '🌧️' };
-  if (code <= 86) return { label: 'Snow showers', icon: '🌨️' };
-  return { label: 'Thunderstorms', icon: '⛈️' };
+export function weatherLabel(code: number | null): { label: string; icon: IconName } {
+  if (code == null) return { label: 'Forecast not available yet', icon: 'calendar-empty' };
+  if (code === 0) return { label: 'Clear', icon: 'sun' };
+  if (code <= 2) return { label: 'Partly cloudy', icon: 'cloud-sun' };
+  if (code === 3) return { label: 'Overcast', icon: 'cloud' };
+  if (code <= 48) return { label: 'Fog', icon: 'cloud-fog' };
+  if (code <= 57) return { label: 'Drizzle', icon: 'cloud-rain' };
+  if (code <= 67) return { label: 'Rain', icon: 'cloud-rain' };
+  if (code <= 77) return { label: 'Snow', icon: 'snowflake' };
+  if (code <= 82) return { label: 'Showers', icon: 'cloud-rain' };
+  if (code <= 86) return { label: 'Snow showers', icon: 'snowflake' };
+  return { label: 'Thunderstorms', icon: 'cloud-lightning' };
 }
+

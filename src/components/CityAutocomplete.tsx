@@ -103,7 +103,7 @@ export function CityAutocomplete({
   };
 
   const inputClass =
-    'min-h-[44px] w-full rounded-xl border border-line bg-card px-3 text-base text-ink placeholder:text-ink-faint focus:border-maroon focus:outline-none focus:ring-2 focus:ring-maroon/15';
+    'min-h-[44px] w-full rounded-xl border border-line bg-card px-3 text-body text-ink placeholder:text-ink-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/15';
 
   return (
     <div ref={boxRef} className="relative">
@@ -128,14 +128,14 @@ export function CityAutocomplete({
       {loading && (
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin rounded-full border-2 border-line border-t-maroon"
+          className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin rounded-full border-2 border-line border-t-ink"
         />
       )}
       {open && results.length > 0 && (
         <ul
           id={listId}
           role="listbox"
-          className="absolute z-20 mt-1 max-h-64 w-full overflow-y-auto rounded-xl border border-line bg-card py-1 shadow-raised"
+          className="absolute z-controls mt-1 max-h-64 w-full overflow-y-auto rounded-xl border border-line bg-card py-1 shadow-controls"
         >
           {results.map((p, i) => (
             <li
@@ -148,8 +148,8 @@ export function CityAutocomplete({
                 choose(p);
               }}
               onMouseEnter={() => setActive(i)}
-              className={`cursor-pointer px-3 py-2 text-sm ${
-                i === active ? 'bg-maroon-tint text-maroon' : 'text-ink-soft'
+              className={`cursor-pointer px-3 py-2 text-body ${
+                i === active ? 'bg-accent-tint text-accent' : 'text-ink-soft'
               }`}
             >
               <span className="font-medium text-ink">{p.name}</span>
@@ -161,7 +161,7 @@ export function CityAutocomplete({
         </ul>
       )}
       {open && !loading && results.length === 0 && value.trim().length >= 2 && (
-        <div className="absolute z-20 mt-1 w-full rounded-xl border border-line bg-card px-3 py-2 text-sm text-ink-faint shadow-raised">
+        <div className="absolute z-controls mt-1 w-full rounded-xl border border-line bg-card px-3 py-2 text-body text-ink-faint shadow-controls">
           No matches — you can still type the city name.
         </div>
       )}

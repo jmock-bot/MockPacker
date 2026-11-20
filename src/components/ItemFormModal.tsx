@@ -145,12 +145,12 @@ export function ItemFormModal({
           </Field>
         </div>
         <div className="flex flex-wrap gap-x-6 gap-y-2">
-          <label className="flex min-h-[44px] cursor-pointer items-center gap-2 text-sm font-medium text-ink-soft">
-            <input type="checkbox" checked={required} onChange={(e) => setRequired(e.target.checked)} className="h-5 w-5 rounded accent-[#0B6E6E]" />
+          <label className="flex min-h-[44px] cursor-pointer items-center gap-2 text-body font-medium text-ink-soft">
+            <input type="checkbox" checked={required} onChange={(e) => setRequired(e.target.checked)} className="h-5 w-5 rounded accent-accent" />
             Required
           </label>
-          <label className="flex min-h-[44px] cursor-pointer items-center gap-2 text-sm font-medium text-ink-soft">
-            <input type="checkbox" checked={lastMinute} onChange={(e) => setLastMinute(e.target.checked)} className="h-5 w-5 rounded accent-[#0B6E6E]" />
+          <label className="flex min-h-[44px] cursor-pointer items-center gap-2 text-body font-medium text-ink-soft">
+            <input type="checkbox" checked={lastMinute} onChange={(e) => setLastMinute(e.target.checked)} className="h-5 w-5 rounded accent-accent" />
             Pack at the last minute
           </label>
         </div>

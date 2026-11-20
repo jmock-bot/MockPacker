@@ -60,30 +60,31 @@ export function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-dvh flex-col bg-paper">
-      {/* Hero — one simple promise */}
-      <div className="bg-maroon px-6 pb-10 pt-[max(3rem,env(safe-area-inset-top))] text-center text-on-accent">
+    <div className="flex min-h-dvh flex-col">
+      {/* Hero — the wordmark, set directly on the canvas. */}
+      <header className="hero-glide px-6 pb-6 pt-[max(3rem,env(safe-area-inset-top))] text-center">
         <img
           src="/icons/icon-192.png"
           alt=""
           width={64}
           height={64}
-          className="mx-auto mb-5 h-16 w-16 rounded-lg shadow-raised"
+          className="mx-auto mb-5 h-16 w-16 rounded-lg"
         />
-        <h1 className="mx-auto max-w-xs text-[1.75rem] font-bold leading-tight tracking-tight text-balance">
+        <h1 className="text-display text-ink">MockPacker</h1>
+        <p className="mx-auto mt-3 max-w-xs text-body font-semibold text-ink text-balance">
           Turning group chats into group trips.
-        </h1>
-        <p className="mx-auto mt-3 max-w-xs text-sm leading-snug text-on-accent/85 text-balance">
+        </p>
+        <p className="mx-auto mt-2 max-w-xs text-body text-ink-soft text-balance">
           MockPacker keeps your group's packing lists, daily outfit plans, and shipment tracking in
           one place — with a Trip Readiness score so nothing gets left behind.
         </p>
-      </div>
+      </header>
 
-      <main className="mx-auto w-full max-w-md flex-1 px-6 py-8">
-        <h2 className="text-lg font-bold text-ink">
+      <main className="plane-content mx-auto mb-6 w-[calc(100%-2rem)] max-w-md flex-1 rounded-xl px-6 py-8">
+        <h2 className="text-body font-bold text-ink">
           {mode === 'signup' ? 'Create your account' : mode === 'signin' ? 'Sign in' : mode === 'magic' ? 'Email me a link' : 'Reset password'}
         </h2>
-        <p className="mb-5 text-sm text-ink-faint">{TAGLINES[mode]}</p>
+        <p className="mb-5 text-body text-ink-faint">{TAGLINES[mode]}</p>
 
         <div className="flex flex-col gap-2">
           <Button variant="secondary" onClick={() => void oauth('google')}>
@@ -103,7 +104,7 @@ export function LoginPage() {
           </Button>
         </div>
 
-        <div className="my-5 flex items-center gap-3 text-xs text-ink-faint" aria-hidden="true">
+        <div className="my-5 flex items-center gap-3 text-caption text-ink-faint" aria-hidden="true">
           <span className="h-px flex-1 bg-line" /> or <span className="h-px flex-1 bg-line" />
         </div>
 
@@ -164,21 +165,21 @@ export function LoginPage() {
           </Button>
         </form>
 
-        <div className="mt-5 flex flex-col gap-2 text-center text-sm">
+        <div className="mt-5 flex flex-col gap-2 text-center text-body">
           {mode === 'signin' ? (
             <>
-              <button type="button" className="font-semibold text-maroon underline underline-offset-2" onClick={() => setMode('signup')}>
+              <button type="button" className="min-h-[44px] font-semibold text-accent underline underline-offset-2" onClick={() => setMode('signup')}>
                 New here? Create an account
               </button>
-              <button type="button" className="text-ink-faint underline underline-offset-2" onClick={() => setMode('magic')}>
+              <button type="button" className="min-h-[44px] text-accent underline underline-offset-2" onClick={() => setMode('magic')}>
                 Email me a magic link instead
               </button>
-              <button type="button" className="text-ink-faint underline underline-offset-2" onClick={() => setMode('reset')}>
+              <button type="button" className="min-h-[44px] text-accent underline underline-offset-2" onClick={() => setMode('reset')}>
                 Forgot password?
               </button>
             </>
           ) : (
-            <button type="button" className="font-semibold text-maroon underline underline-offset-2" onClick={() => setMode('signin')}>
+            <button type="button" className="min-h-[44px] font-semibold text-accent underline underline-offset-2" onClick={() => setMode('signin')}>
               Back to sign in
             </button>
           )}

@@ -54,6 +54,9 @@
     </script>
   </head>
   <body>
+    <!-- Plane 1: the fixed atmospheric canvas. Pure CSS (see #canvas in
+         src/index.css); it never scrolls, animates or takes input. -->
+    <div id="canvas" aria-hidden="true"></div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

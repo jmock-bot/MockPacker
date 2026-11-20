@@ -67,17 +67,17 @@ export function HomePage() {
   if (tripsLoading)
     return (
       <SkeletonScreen label="Loading your trips">
-        <Card>
-          <div className="flex items-start justify-between gap-4">
-            <div className="min-w-0 flex-1">
-              <Skeleton className="h-3 w-24" />
-              <Skeleton className="mt-2 h-7 w-3/5" />
-              <Skeleton className="mt-2 h-4 w-2/5" />
-              <Skeleton className="mt-4 h-8 w-32" />
-            </div>
+        <div className="pb-8 pt-2">
+          <Skeleton className="h-3 w-40" />
+          <Skeleton className="mt-3 h-12 w-36" />
+          <Skeleton className="mt-3 h-4 w-28" />
+        </div>
+        <Card className="-mt-8">
+          <div className="flex items-center gap-4">
             <Skeleton className="h-24 w-24 shrink-0 rounded-full" />
+            <Skeleton className="h-4 w-32" />
           </div>
-          <div className="mt-5 grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-3">
+          <div className="mt-5 grid grid-cols-[repeat(auto-fit,minmax(8.5rem,1fr))] gap-x-6 gap-y-3">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i}>
                 <Skeleton className="mb-1.5 h-3 w-full" />
@@ -86,10 +86,10 @@ export function HomePage() {
             ))}
           </div>
         </Card>
-        <Skeleton className="h-[76px] w-full rounded-card" />
+        <Skeleton className="h-[76px] w-full rounded-lg" />
         <div className="grid gap-2 sm:grid-cols-2">
-          <Skeleton className="h-14 w-full rounded-card" />
-          <Skeleton className="h-14 w-full rounded-card" />
+          <Skeleton className="h-14 w-full rounded-lg" />
+          <Skeleton className="h-14 w-full rounded-lg" />
         </div>
         <div className="grid gap-4 lg:grid-cols-2">
           <SkeletonCard />
@@ -156,33 +156,46 @@ export function HomePage() {
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Hero: trip + countdown + readiness */}
-      <Card className="!p-5" accent="rgb(var(--color-accent))">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-wide text-maroon">
-              {departed ? 'In progress / past' : 'Upcoming trip'}
-            </p>
-            <h1 className="truncate text-xl font-bold text-ink">{activeTrip.name}</h1>
-            <p className="text-sm text-ink-faint">
-              {[activeTrip.city, activeTrip.region].filter(Boolean).join(', ')} ·{' '}
-              {shortDate(activeTrip.start_date)} – {shortDate(activeTrip.end_date)}
-            </p>
-            {!departed && countdown != null && (
-              <p className="mt-2 text-2xl font-bold tabular-nums text-maroon">
-                {countdown === 0 ? 'Departure day!' : `${countdown} day${countdown === 1 ? '' : 's'} to go`}
-              </p>
-            )}
-          </div>
-          {readiness && (
-            <div className="flex flex-col items-center gap-1">
-              <ReadinessRing value={readiness.overall} />
-              <p className="text-xs font-semibold text-ink-faint">Trip Readiness</p>
-            </div>
-          )}
-        </div>
+      {/* PLANE 2a — hero. One dominant element: the countdown numeral, set
+          directly on the canvas (no surface). It drifts ~10px against the
+          content as you scroll, and the readiness card below overlaps its
+          bottom padding so the two read as separate layers. */}
+      <header className="hero-glide pb-8 pt-2">
+        <h1 className="truncate text-label text-ink-soft">
+          {activeTrip.name}
+          <span className="font-medium">
+            {' · '}
+            {[activeTrip.city, activeTrip.region].filter(Boolean).join(', ') || (departed ? 'In progress / past' : 'Upcoming trip')}
+          </span>
+        </h1>
+        {!departed && countdown != null ? (
+          <p className="mt-1 text-ink">
+            <span className="text-display tabular-nums">{countdown === 0 ? 'Today' : countdown}</span>{' '}
+            <span className="text-body font-semibold text-ink-soft">
+              {countdown === 0 ? 'Departure day!' : `day${countdown === 1 ? '' : 's'} to go`}
+            </span>
+          </p>
+        ) : (
+          <p className="mt-1 line-clamp-2 text-display text-ink">{activeTrip.name}</p>
+        )}
+        <p className="mt-1 text-body text-ink-soft">
+          {shortDate(activeTrip.start_date)} – {shortDate(activeTrip.end_date)}
+        </p>
+      </header>
+
+      {/* PLANE 2b — content. Overlaps the hero's bottom padding. */}
+      <Card className="relative z-content -mt-8">
         {readiness && (
-          <div className="mt-4 grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-3">
+          <div className="flex items-center gap-4">
+            <ReadinessRing value={readiness.overall} />
+            <div className="min-w-0">
+              <p className="text-body font-bold text-ink">Trip Readiness</p>
+              <p className="text-caption text-ink-soft">Across packing, shopping, shipping and more</p>
+            </div>
+          </div>
+        )}
+        {readiness && (
+          <div className="mt-5 grid grid-cols-[repeat(auto-fit,minmax(8.5rem,1fr))] gap-x-6 gap-y-3">
             {(
               [
                 ['Packing', readiness.breakdown.packing],
@@ -194,9 +207,9 @@ export function HomePage() {
               ] as const
             ).map(([label, v]) => (
               <div key={label}>
-                <div className="mb-1 flex justify-between text-xs">
+                <div className="mb-1 flex flex-wrap justify-between gap-x-2 text-caption">
                   <span className="font-medium text-ink-soft">{label}</span>
-                  <span className="tabular-nums text-ink-faint">{percent(v)}</span>
+                  <span className="tabular-nums text-ink-soft">{percent(v)}</span>
                 </div>
                 <ProgressBar value={v} label={`${label} progress`} />
               </div>
@@ -209,14 +222,14 @@ export function HomePage() {
       <button
         type="button"
         onClick={() => setImportOpen(true)}
-        className="flex items-center gap-3 rounded-card bg-maroon px-4 py-3.5 text-left text-on-accent"
+        className="plane-content motion-safe-transform flex items-center gap-3 rounded-lg px-4 py-3.5 text-left transition-[transform] duration-press ease-press active:scale-[.98]"
       >
-        <Icon name="sparkle" size={22} className="shrink-0" />
+        <Icon name="sparkle" size={22} className="shrink-0 text-ink-soft" />
         <span className="min-w-0 flex-1">
-          <span className="block text-sm font-bold">New: start a trip from a group chat</span>
-          <span className="block text-xs opacity-85">Paste the chat — we'll find the dates, spot &amp; crew</span>
+          <span className="block text-body font-bold text-ink">New: start a trip from a group chat</span>
+          <span className="block text-caption text-ink-soft">Paste the chat — we'll find the dates, spot &amp; crew</span>
         </span>
-        <span className="shrink-0 rounded-lg bg-white px-3 py-1.5 text-xs font-bold text-maroon">Try it</span>
+        <span className="shrink-0 rounded-md bg-accent px-3 py-1.5 text-label text-on-accent">Try it</span>
       </button>
       <ImportChatModal open={importOpen} onClose={() => setImportOpen(false)} />
 
@@ -240,10 +253,10 @@ export function HomePage() {
               <Link
                 key={s.text}
                 to={s.to}
-                className="flex min-h-[56px] items-center gap-3 rounded-card border border-line bg-card px-4 shadow-card transition-colors hover:border-maroon"
+                className="plane-content motion-safe-transform flex min-h-[56px] items-center gap-3 rounded-lg px-4 transition-[transform] duration-press ease-press hover:border-accent active:scale-[.98]"
               >
-                <Icon name={s.icon} size={22} className="text-maroon" />
-                <span className="text-sm font-medium text-ink">{s.text}</span>
+                <Icon name={s.icon} size={22} className="text-accent" />
+                <span className="text-body font-medium text-ink">{s.text}</span>
                 <Icon name="chevron-right" size={18} className="ml-auto text-ink-faint" />
               </Link>
             ))}
@@ -256,7 +269,7 @@ export function HomePage() {
         <Card>
           <SectionTitle
             action={
-              <Link to="/days" className="text-xs font-semibold text-maroon underline underline-offset-2">
+              <Link to="/days" className="inline-flex min-h-[44px] items-center text-label font-semibold text-accent underline underline-offset-2">
                 Daily plans →
               </Link>
             }
@@ -264,16 +277,16 @@ export function HomePage() {
             Weather in {activeTrip.city || 'your destination'}
           </SectionTitle>
           {weather.length === 0 ? (
-            <p className="text-sm text-ink-faint">
+            <p className="text-body text-ink-faint">
               No forecast yet — add a destination city to the trip to see weather.
             </p>
           ) : (
             <ul className="flex flex-col gap-1.5">
               {weather.slice(0, 5).map((w) => (
-                <li key={w.date} className="flex items-center justify-between gap-2">
+                <li key={w.date} className="flex flex-wrap items-center justify-between gap-x-2">
                   <Link
                     to={`/days/${w.date}`}
-                    className={`text-sm font-medium underline-offset-2 hover:underline ${w.date === today ? 'text-maroon' : 'text-ink-soft'}`}
+                    className={`inline-flex min-h-[44px] items-center text-body text-accent underline-offset-2 hover:underline ${w.date === today ? 'font-bold' : 'font-medium'}`}
                   >
                     {weekday(w.date)} {shortDate(w.date).replace(/, \d{4}$/, '')}
                   </Link>
@@ -288,7 +301,7 @@ export function HomePage() {
         <Card>
           <SectionTitle
             action={
-              <Link to="/packing" className="text-xs font-semibold text-maroon underline underline-offset-2">
+              <Link to="/packing" className="inline-flex min-h-[44px] items-center text-label font-semibold text-accent underline underline-offset-2">
                 Packing →
               </Link>
             }
@@ -301,8 +314,8 @@ export function HomePage() {
                 <li key={member.id} className="flex items-center gap-3">
                   <MemberDot member={member} />
                   <div className="min-w-0 flex-1">
-                    <div className="mb-1 flex justify-between text-xs">
-                      <span className="font-medium text-ink">
+                    <div className="mb-1 flex flex-wrap justify-between gap-x-2 text-caption">
+                      <span className="text-label text-ink">
                         {member.name}
                         {!member.joined && member.role !== 'owner' && (
                           <span className="ml-1 text-ink-faint">(invited)</span>
@@ -318,24 +331,24 @@ export function HomePage() {
               ))}
             </ul>
           ) : (
-            <p className="text-sm text-ink-faint">Add travelers and packing items to see progress.</p>
+            <p className="text-body text-ink-faint">Add travelers and packing items to see progress.</p>
           )}
         </Card>
       </div>
 
       {/* Shipments needing attention */}
       {undelivered.length > 0 && (
-        <Card>
+        <Card quiet>
           <SectionTitle
             action={
-              <Link to="/shipments" className="text-xs font-semibold text-maroon underline underline-offset-2">
+              <Link to="/shipments" className="inline-flex min-h-[44px] items-center text-label font-semibold text-accent underline underline-offset-2">
                 All shipments →
               </Link>
             }
           >
             Deliveries on the way
           </SectionTitle>
-          <p className="text-sm text-ink-soft">
+          <p className="text-body text-ink-soft">
             {undelivered.length} shipment{undelivered.length > 1 ? 's' : ''} not delivered yet
             {problemShipments.length > 0 && (
               <span className="font-semibold text-danger">
@@ -348,14 +361,14 @@ export function HomePage() {
       )}
 
       {/* Recent group activity */}
-      <Card>
+      <Card quiet>
         <SectionTitle>Recent group activity</SectionTitle>
         {feed.length === 0 ? (
-          <p className="text-sm text-ink-faint">Activity from your travel group will show up here.</p>
+          <p className="text-body text-ink-faint">Activity from your travel group will show up here.</p>
         ) : (
           <ul className="flex flex-col gap-2">
             {feed.slice(0, 8).map((f) => (
-              <li key={f.id} className="flex items-start gap-2.5 text-sm">
+              <li key={f.id} className="flex items-start gap-2.5 text-body">
                 <Icon name={FEED_ICONS[f.kind] ?? 'sparkle'} size={18} className="mt-0.5 shrink-0 text-ink-faint" />
                 <span className="min-w-0 flex-1 text-ink-soft">
                   <strong className="font-semibold text-ink">{f.actor_name}</strong> {f.message}
@@ -370,7 +383,7 @@ export function HomePage() {
       {/* Other trips + CTA */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         {trips.length > 1 ? (
-          <Link to="/trips" className="text-sm font-semibold text-maroon underline underline-offset-2">
+          <Link to="/trips" className="inline-flex min-h-[44px] items-center text-body font-semibold text-accent underline underline-offset-2">
             {trips.length - 1} other trip{trips.length > 2 ? 's' : ''} →
           </Link>
         ) : (

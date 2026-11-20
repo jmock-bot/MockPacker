@@ -78,14 +78,14 @@ export function InstallPrompt() {
 
   return (
     <>
-      <div className="fixed inset-x-3 bottom-[calc(64px+env(safe-area-inset-bottom))] z-30 mx-auto max-w-md rounded-card border border-line bg-card p-3 shadow-raised lg:bottom-4 lg:right-4 lg:left-auto">
+      <div className="fixed inset-x-3 bottom-[calc(64px+env(safe-area-inset-bottom))] z-controls mx-auto max-w-md rounded-lg border border-line bg-card p-3 shadow-controls lg:bottom-4 lg:right-4 lg:left-auto">
         <div className="flex items-center gap-3">
           <img src="/icons/icon-192.png" alt="" width={40} height={40} className="h-10 w-10 shrink-0 rounded-xl" />
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-bold text-ink">Install MockPacker</p>
-            <p className="text-xs text-ink-faint">Full-screen, with your packing list at the airport.</p>
+            <p className="text-body font-bold text-ink">Install MockPacker</p>
+            <p className="text-caption text-ink-faint">Full-screen, with your packing list at the airport.</p>
           </div>
-          <Button onClick={() => void install()} className="shrink-0 !min-h-[40px] px-3 text-xs">
+          <Button onClick={() => void install()} className="shrink-0 px-3 text-caption">
             Install
           </Button>
           <button
@@ -100,9 +100,9 @@ export function InstallPrompt() {
       </div>
 
       <Modal open={showIosHelp} onClose={() => setShowIosHelp(false)} title="Add to your Home Screen">
-        <ol className="flex flex-col gap-4 text-sm text-ink-soft">
+        <ol className="flex flex-col gap-4 text-body text-ink-soft">
           <li className="flex items-start gap-3">
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-maroon text-xs font-bold text-on-accent">1</span>
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ink text-label font-bold text-paper">1</span>
             <span>
               Tap the <strong>Share</strong> button
               <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" className="mx-1 inline align-text-bottom" fill="none" stroke="currentColor" strokeWidth="1.8">
@@ -112,11 +112,11 @@ export function InstallPrompt() {
             </span>
           </li>
           <li className="flex items-start gap-3">
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-maroon text-xs font-bold text-on-accent">2</span>
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ink text-label font-bold text-paper">2</span>
             <span>Scroll down and tap <strong>Add to Home Screen</strong>.</span>
           </li>
           <li className="flex items-start gap-3">
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-maroon text-xs font-bold text-on-accent">3</span>
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ink text-label font-bold text-paper">3</span>
             <span>Tap <strong>Add</strong>. MockPacker opens full-screen from your Home Screen.</span>
           </li>
         </ol>

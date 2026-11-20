@@ -32,14 +32,14 @@ export function JoinPage() {
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-4 p-6">
+      <header className="hero-glide text-center">
+        <Icon name="briefcase" size={40} className="mx-auto text-ink-soft" />
+        <h1 className="mt-2 text-display text-ink">Join a trip</h1>
+        <p className="mt-1 text-body text-ink-soft">
+          Enter the invitation code from your trip organizer to join the group.
+        </p>
+      </header>
       <Card>
-        <div className="mb-4 text-center">
-          <Icon name="briefcase" size={40} className="mx-auto text-maroon" />
-          <h1 className="mt-2 text-xl font-bold text-ink">Join a trip</h1>
-          <p className="text-sm text-ink-faint">
-            Enter the invitation code from your trip organizer to join the group.
-          </p>
-        </div>
         <div className="flex flex-col gap-4">
           <Field label="Invitation code" required>
             {(id) => (
@@ -56,7 +56,7 @@ export function JoinPage() {
           <Button onClick={() => void join()} loading={busy} disabled={!code.trim()}>
             {busy ? 'Joining…' : 'Join trip'}
           </Button>
-          <Button variant="ghost" onClick={() => navigate('/')}>
+          <Button variant="tertiary" onClick={() => navigate('/')}>
             Skip for now
           </Button>
         </div>

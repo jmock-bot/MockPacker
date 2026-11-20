@@ -24,7 +24,7 @@ export function ChatPage() {
         title="No trip selected"
         body="Trip chat lives inside a trip — open one first."
         action={
-          <Link to="/trips" className="text-sm font-semibold text-maroon underline underline-offset-2">
+          <Link to="/trips" className="inline-flex min-h-[44px] items-center text-body font-semibold text-accent underline underline-offset-2">
             Go to Trips →
           </Link>
         }
@@ -41,7 +41,7 @@ export function ChatPage() {
             <Skeleton className="mt-1.5 h-3 w-1/4" />
           </div>
         </div>
-        <div className="flex flex-col gap-3 rounded-card border border-line bg-cream/60 p-3 dark:bg-cream/20">
+        <div className="flex flex-col gap-3 rounded-lg border border-line bg-cream/60 p-3 dark:bg-cream/20">
           {[
             'mr-auto w-3/5',
             'ml-auto w-2/5',
@@ -49,7 +49,7 @@ export function ChatPage() {
             'ml-auto w-3/5',
             'mr-auto w-2/5',
           ].map((w, i) => (
-            <Skeleton key={i} className={`h-12 rounded-card ${w}`} />
+            <Skeleton key={i} className={`h-12 rounded-lg ${w}`} />
           ))}
         </div>
         <Skeleton className="h-11 w-full rounded-full" />
@@ -67,26 +67,27 @@ export function ChatPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center gap-3">
-        <AvatarStack people={members.map((m) => ({ name: m.name, color: m.color }))} max={4} size={30} />
-        <div className="min-w-0">
-          <h1 className="truncate text-title text-ink">{activeTrip.name} chat</h1>
-          <p className="text-caption text-ink-faint">
+      {/* Hero: the trip. The conversation below stays quiet. */}
+      <header className="hero-glide pt-2">
+        <div className="flex items-center gap-3">
+          <AvatarStack people={members.map((m) => ({ name: m.name, color: m.color }))} max={4} size={30} />
+          <p className="text-caption text-ink-soft">
             {members.length} traveler{members.length === 1 ? '' : 's'} · trip chat
           </p>
         </div>
-      </div>
+        <h1 className="mt-2 line-clamp-2 text-display text-ink">{activeTrip.name}</h1>
+      </header>
 
-      <div className="flex max-h-[65vh] flex-col gap-2.5 overflow-y-auto rounded-card border border-line bg-cream/60 p-3 dark:bg-cream/20">
+      <div className="flex max-h-[calc(100dvh-27rem)] min-h-[14rem] flex-col gap-2.5 overflow-y-auto rounded-lg border border-line bg-cream/60 p-3 shadow-content dark:bg-cream/20">
         {chatMessages.length === 0 ? (
-          <p className="py-6 text-center text-sm text-ink-faint">No messages yet — say hi to the group.</p>
+          <p className="py-6 text-center text-body text-ink-faint">No messages yet — say hi to the group.</p>
         ) : (
           chatMessages.map((m) => {
             if (m.kind === 'system')
               return (
                 <div
                   key={m.id}
-                  className="mx-auto max-w-[85%] rounded-full bg-maroon-tint px-3 py-1.5 text-center text-xs font-semibold text-maroon"
+                  className="mx-auto max-w-[85%] rounded-full bg-ink/10 px-3 py-1.5 text-center text-label font-semibold text-ink"
                 >
                   {m.body}
                 </div>
@@ -97,7 +98,7 @@ export function ChatPage() {
               return (
                 <div
                   key={m.id}
-                  className="ml-auto max-w-[78%] rounded-lg rounded-br-sm bg-maroon px-3 py-2 text-sm leading-relaxed text-on-accent"
+                  className="ml-auto max-w-[78%] rounded-lg rounded-br-sm bg-ink px-3 py-2 text-body leading-relaxed text-paper"
                 >
                   {m.body}
                 </div>
@@ -114,14 +115,14 @@ export function ChatPage() {
                   // rather than enlarged — 12px would not fit a 22px circle.
                   <span
                     aria-hidden="true"
-                    className="flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full bg-line text-[9px] font-bold text-ink-soft"
+                    className="flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full bg-line text-caption font-bold text-ink-soft"
                   >
                     {m.author_name.slice(0, 2).toUpperCase() || '?'}
                   </span>
                 )}
                 <div className="min-w-0">
                   <p className="mb-0.5 ml-0.5 text-caption font-semibold text-ink-soft">{m.author_name}</p>
-                  <div className="rounded-lg rounded-bl-sm border border-line bg-card px-3 py-2 text-sm leading-relaxed text-ink">
+                  <div className="rounded-lg rounded-bl-sm border border-line bg-card px-3 py-2 text-body leading-relaxed text-ink">
                     {m.body}
                   </div>
                 </div>
@@ -145,7 +146,7 @@ export function ChatPage() {
             onChange={(e) => setDraft(e.target.value)}
             placeholder="Message the group"
             aria-label="Message the group"
-            className="min-h-[44px] w-full rounded-full border border-line-control bg-cream px-4 text-base text-ink placeholder:text-ink-soft focus:border-maroon focus:outline-none focus:ring-2 focus:ring-maroon/15"
+            className="min-h-[44px] w-full rounded-full border border-line-control bg-cream px-4 text-body text-ink placeholder:text-ink-soft focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/15"
           />
           <Button
             type="submit"
@@ -157,7 +158,7 @@ export function ChatPage() {
           </Button>
         </form>
       ) : (
-        <p className="text-center text-xs text-ink-faint">Viewers can read the chat but can't post.</p>
+        <p className="text-center text-caption text-ink-faint">Viewers can read the chat but can't post.</p>
       )}
     </div>
   );

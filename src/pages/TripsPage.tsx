@@ -48,21 +48,28 @@ export function TripsPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between gap-3">
-        <h1 className="text-xl font-bold text-ink">Trips</h1>
-        <Button onClick={() => navigate('/trips/new')}><Icon name="plus" size={16} /> Plan a Trip</Button>
-      </div>
+      {/* Hero: how many trips you have. */}
+      <header className="hero-glide flex items-end justify-between gap-3 pt-2">
+        <div className="min-w-0">
+          <h1 className="truncate text-label text-ink-soft">Trips{activeTrip ? ` · Active: ${activeTrip.name}` : ''}</h1>
+          <p className="mt-1 text-ink">
+            <span className="text-display tabular-nums">{trips.length}</span>{' '}
+            <span className="text-body font-semibold text-ink-soft">trip{trips.length === 1 ? '' : 's'}</span>
+          </p>
+        </div>
+        <Button className="shrink-0 whitespace-nowrap" onClick={() => navigate('/trips/new')}><Icon name="plus" size={16} /> Plan a Trip</Button>
+      </header>
 
       <button
         type="button"
         onClick={() => setImportOpen(true)}
-        className="flex items-center gap-3 rounded-card border border-dashed border-maroon bg-maroon-tint px-4 py-3 text-left"
+        className="plane-content motion-safe-transform flex min-h-[56px] items-center gap-3 rounded-lg px-4 py-3 text-left transition-[transform] duration-press ease-press active:scale-[.98]"
       >
-        <Icon name="comment" size={20} className="shrink-0 text-maroon" />
-        <span className="flex-1 text-sm font-semibold text-maroon">
+        <Icon name="comment" size={20} className="shrink-0 text-ink-soft" />
+        <span className="flex-1 text-body font-semibold text-ink">
           Or create a trip from a group chat
         </span>
-        <Icon name="chevron-right" size={18} className="shrink-0 text-maroon" />
+        <Icon name="chevron-right" size={18} className="shrink-0 text-accent" />
       </button>
       <ImportChatModal open={importOpen} onClose={() => setImportOpen(false)} />
 
@@ -94,21 +101,21 @@ export function TripsPage() {
             const dd = daysUntil(t.start_date);
             const isActive = activeTrip?.id === t.id;
             return (
-              <Card key={t.id} accent={isActive ? 'rgb(var(--color-accent))' : undefined}>
+              <Card key={t.id}>
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="flex items-center gap-2 font-bold text-ink">
-                      <Icon name={TYPE_ICONS[t.trip_type]} size={18} className="shrink-0 text-maroon" />
+                    <p className="flex items-center gap-2 text-body font-bold text-ink">
+                      <Icon name={TYPE_ICONS[t.trip_type]} size={18} className="shrink-0 text-ink-soft" />
                       <span className="truncate">{t.name}</span>
-                      {t.is_demo && <Chip className="bg-maroon-tint text-maroon">Demo</Chip>}
+                      {t.is_demo && <Chip tone="info">Demo</Chip>}
                     </p>
-                    <p className="text-sm text-ink-faint">
+                    <p className="text-body text-ink-faint">
                       {[t.city, t.region].filter(Boolean).join(', ')}
                     </p>
-                    <p className="text-xs text-ink-faint">
+                    <p className="text-caption text-ink-faint">
                       {shortDate(t.start_date)} – {shortDate(t.end_date)}
                       {dd != null && dd >= 0 && (
-                        <span className="ml-2 font-semibold text-maroon">in {dd}d</span>
+                        <span className="ml-2 font-semibold text-ink">in {dd}d</span>
                       )}
                     </p>
                   </div>
@@ -119,7 +126,7 @@ export function TripsPage() {
                   ) : (
                     <Button
                       variant="secondary"
-                      className="!min-h-[36px] px-3 text-xs"
+                      className=" px-3 text-caption"
                       onClick={() => {
                         setActiveTripId(t.id);
                         navigate('/');
@@ -129,8 +136,8 @@ export function TripsPage() {
                     </Button>
                   )}
                   <Button
-                    variant="ghost"
-                    className="!min-h-[36px] px-3 text-xs text-danger"
+                    variant="tertiary"
+                    className=" px-3 text-caption text-danger"
                     onClick={() => setConfirmDelete(t)}
                   >
                     Delete
@@ -163,19 +170,19 @@ export function TripsPage() {
             onChange={(e) => setJoinCode(e.target.value)}
             placeholder="Paste invitation code"
             aria-label="Invitation code"
-            className="min-h-[44px] w-full rounded-xl border border-line-control bg-card px-3 text-base text-ink placeholder:text-ink-soft focus:border-maroon focus:outline-none focus:ring-2 focus:ring-maroon/15"
+            className="min-h-[44px] w-full rounded-xl border border-line-control bg-card px-3 text-body text-ink placeholder:text-ink-soft focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/15"
           />
           <Button type="submit" disabled={!joinCode.trim()} className="shrink-0">
             Join
           </Button>
         </form>
-        <p className="mt-2 text-xs text-ink-faint">
+        <p className="mt-2 text-caption text-ink-faint">
           Or open the invitation link your organizer shared — it looks like{' '}
-          <code>{window.location.origin}/join/…</code>
+          <code className="break-all">{window.location.origin}/join/…</code>
         </p>
       </Card>
 
-      <p className="text-center text-xs text-ink-faint">
+      <p className="text-center text-caption text-ink-faint">
         Looking for your packing list? Open a trip, then head to{' '}
         <Link to="/packing" className="underline underline-offset-2">Packing</Link>.
       </p>

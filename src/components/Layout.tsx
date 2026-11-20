@@ -73,15 +73,15 @@ export function Layout() {
   };
 
   return (
-    <div className="min-h-dvh bg-paper lg:flex">
+    <div className="min-h-dvh lg:flex">
       {/* Desktop sidebar */}
-      <aside className="hidden w-60 shrink-0 border-r border-line bg-card lg:flex lg:flex-col">
+      <aside className="plane-chrome hidden w-60 shrink-0 border-r border-line lg:flex lg:flex-col">
         <div className="border-b border-line p-4">
           <div className="flex items-center gap-2.5">
             <img src="/icons/icon-192.png" alt="" width={34} height={34} className="h-[34px] w-[34px] rounded-lg" />
             <div>
-              <p className="text-sm font-bold text-maroon">MockPacker</p>
-              <p className="text-xs text-ink-faint">From: The Group Chat To: The Group Trip</p>
+              <p className="text-body font-bold text-ink">MockPacker</p>
+              <p className="text-caption text-ink-faint">From: The Group Chat To: The Group Trip</p>
             </div>
           </div>
         </div>
@@ -92,8 +92,8 @@ export function Layout() {
               to={item.to}
               end={item.to === '/'}
               className={({ isActive }) =>
-                `flex min-h-[44px] items-center gap-3 rounded-xl px-3 text-sm font-medium ${
-                  isActive ? 'bg-maroon text-on-accent' : 'text-ink-soft hover:bg-paper'
+                `flex min-h-[44px] items-center gap-3 rounded-xl px-3 text-body font-medium ${
+                  isActive ? 'bg-accent text-on-accent' : 'text-ink-soft hover:bg-paper'
                 }`
               }
             >
@@ -106,20 +106,20 @@ export function Layout() {
           <button
             type="button"
             onClick={() => setNotifOpen(true)}
-            className="flex min-h-[44px] w-full items-center gap-3 rounded-xl px-3 text-sm font-medium text-ink-soft hover:bg-paper"
+            className="flex min-h-[44px] w-full items-center gap-3 rounded-xl px-3 text-body font-medium text-ink-soft hover:bg-paper"
           >
             <Icon name="bell" size={20} /> Notifications
             {unreadNotifications > 0 && (
-              <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-maroon px-1.5 text-caption font-bold text-on-accent">
+              <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-ink px-1.5 text-caption font-bold text-paper">
                 {unreadNotifications > 9 ? '9+' : unreadNotifications}
               </span>
             )}
           </button>
-          <p className="truncate px-3 pt-1 text-xs text-ink-faint">{profile?.display_name || 'Traveler'}</p>
+          <p className="truncate px-3 pt-1 text-caption text-ink-faint">{profile?.display_name || 'Traveler'}</p>
           <button
             type="button"
             onClick={doSignOut}
-            className="mt-1 flex min-h-[44px] w-full items-center gap-3 rounded-xl px-3 text-sm font-medium text-ink-soft hover:bg-paper"
+            className="mt-1 flex min-h-[44px] w-full items-center gap-3 rounded-xl px-3 text-body font-medium text-ink-soft hover:bg-paper"
           >
             <Icon name="logout" size={20} /> Sign out
           </button>
@@ -128,11 +128,11 @@ export function Layout() {
 
       <div className="flex min-h-dvh flex-1 flex-col">
         {/* Mobile top bar */}
-        <header className="sticky top-0 z-40 flex items-center justify-between border-b border-line bg-paper/95 px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))] backdrop-blur lg:hidden">
+        <header className="plane-chrome sticky top-0 z-chrome flex items-center justify-between border-b border-line px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))] lg:hidden">
           <div className="flex min-w-0 items-center gap-2">
             <img src="/icons/icon-192.png" alt="" width={26} height={26} className="h-[26px] w-[26px] rounded-md" />
             <div className="min-w-0">
-              <p className="text-sm font-bold leading-tight text-maroon">MockPacker</p>
+              <p className="text-body font-bold leading-tight text-ink">MockPacker</p>
               {activeTrip && (
                 <p className="truncate text-caption leading-tight text-ink-faint">{activeTrip.name}</p>
               )}
@@ -156,7 +156,7 @@ export function Layout() {
             >
               <Icon name="bell" size={20} />
               {unreadNotifications > 0 && (
-                <span className="absolute right-1.5 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-maroon px-1 text-caption font-bold text-on-accent">
+                <span className="absolute right-1.5 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-ink px-1 text-caption font-bold text-paper">
                   {unreadNotifications > 9 ? '9+' : unreadNotifications}
                 </span>
               )}
@@ -165,13 +165,13 @@ export function Layout() {
         </header>
 
         {activeTrip?.is_demo && (
-          <div role="status" className="flex items-center justify-center gap-2 bg-maroon px-4 py-2 text-center text-xs font-semibold text-on-accent">
+          <div role="status" className="flex items-center justify-center gap-2 border-b border-line bg-cream px-4 py-2 text-center text-label text-ink-soft">
             <Icon name="sparkle" size={16} /> Demo trip — sample data so you can explore. Delete it anytime from Trips.
           </div>
         )}
 
         {offline && (
-          <div role="status" className="bg-warning/15 px-4 py-2 text-center text-xs font-semibold text-warning">
+          <div role="status" className="bg-warning/15 px-4 py-2 text-center text-label font-semibold text-warning">
             You're offline — showing the latest saved data.
           </div>
         )}
@@ -185,7 +185,7 @@ export function Layout() {
         {/* Mobile bottom navigation — 4 primary tabs + More */}
         <nav
           aria-label="Main"
-          className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-card pb-[env(safe-area-inset-bottom)] lg:hidden"
+          className="plane-chrome fixed inset-x-0 bottom-0 z-chrome border-t border-line pb-[env(safe-area-inset-bottom)] lg:hidden"
         >
           <div className="mx-auto flex max-w-lg items-stretch justify-around">
             {MOBILE_ITEMS.map((item) => (
@@ -195,7 +195,7 @@ export function Layout() {
                 end={item.to === '/'}
                 className={({ isActive }) =>
                   `flex min-h-[56px] min-w-[60px] flex-col items-center justify-center gap-0.5 px-1 text-caption font-medium ${
-                    isActive ? 'text-maroon' : 'text-ink-faint'
+                    isActive ? 'text-accent' : 'text-ink-faint'
                   }`
                 }
               >
@@ -226,7 +226,7 @@ export function Layout() {
                 setMoreOpen(false);
                 navigate(item.to);
               }}
-              className="flex min-h-[48px] items-center gap-3 rounded-xl px-3 text-left text-sm font-medium text-ink-soft hover:bg-cream"
+              className="flex min-h-[48px] items-center gap-3 rounded-xl px-3 text-left text-body font-medium text-ink-soft hover:bg-cream"
             >
               <Icon name={item.icon} size={20} />
               {item.label}
@@ -238,7 +238,7 @@ export function Layout() {
               setMoreOpen(false);
               doSignOut();
             }}
-            className="flex min-h-[48px] items-center gap-3 rounded-xl px-3 text-left text-sm font-medium text-ink-soft hover:bg-cream"
+            className="flex min-h-[48px] items-center gap-3 rounded-xl px-3 text-left text-body font-medium text-ink-soft hover:bg-cream"
           >
             <Icon name="logout" size={20} /> Sign out
           </button>
@@ -248,7 +248,7 @@ export function Layout() {
       {/* Notifications */}
       <Modal open={notifOpen} onClose={() => setNotifOpen(false)} title="Notifications">
         {notifications.length === 0 ? (
-          <p className="text-sm text-ink-faint">
+          <p className="text-body text-ink-faint">
             Nothing yet — you'll see trip invitations, assignments, shipping updates, and packing
             reminders here.
           </p>
@@ -258,7 +258,7 @@ export function Layout() {
               <button
                 type="button"
                 onClick={() => void markAllNotificationsRead()}
-                className="mb-3 text-xs font-semibold text-ink-soft underline underline-offset-2"
+                className="mb-3 text-label font-semibold text-ink-soft underline underline-offset-2"
               >
                 Mark all as read
               </button>
@@ -274,10 +274,10 @@ export function Layout() {
                       setNotifOpen(false);
                     }}
                   >
-                    <p className={`text-sm ${n.read_at ? 'text-ink-faint' : 'font-semibold text-ink'}`}>
+                    <p className={`text-body ${n.read_at ? 'text-ink-faint' : 'font-semibold text-ink'}`}>
                       {n.title}
                     </p>
-                    {n.body && <p className="text-xs text-ink-faint">{n.body}</p>}
+                    {n.body && <p className="text-caption text-ink-faint">{n.body}</p>}
                     <p className="mt-0.5 text-caption text-ink-faint">{timeAgo(n.created_at)}</p>
                   </button>
                 </li>

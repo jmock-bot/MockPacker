@@ -77,7 +77,7 @@ export function GroupPage() {
         icon="users"
         title="No trip selected"
         body="Group tools live inside a trip."
-        action={<Link to="/trips" className="text-sm font-semibold text-maroon underline underline-offset-2">Go to Trips →</Link>}
+        action={<Link to="/trips" className="inline-flex min-h-[44px] items-center text-body font-semibold text-accent underline underline-offset-2">Go to Trips →</Link>}
       />
     );
   if (loading) return <Spinner label="Loading the group" />;
@@ -105,12 +105,21 @@ export function GroupPage() {
 
   return (
     <div className="flex flex-col gap-5">
+      {/* Hero: how many of the group have joined. */}
+      <header className="hero-glide pt-2">
+        <h1 className="text-label text-ink-soft">Group · {activeTrip.name}</h1>
+        <p className="mt-1 text-ink">
+          <span className="text-display tabular-nums">{members.filter((m) => m.joined).length}</span>{' '}
+          <span className="text-body font-semibold text-ink-soft">of {members.length} joined</span>
+        </p>
+      </header>
+
       {/* ── Travelers ── */}
       <section aria-label="Travelers">
         <SectionTitle
           action={
             canOrganize && (
-              <Button className="!min-h-[38px] px-3 text-xs" onClick={() => { setInviteOpen(true); setInviteLink(null); }}>
+              <Button className="px-3 text-caption" onClick={() => { setInviteOpen(true); setInviteLink(null); }}>
                 <Icon name="plus" size={16} /> Invite
               </Button>
             )
@@ -122,23 +131,23 @@ export function GroupPage() {
           {members.map((m) => {
             const isSelf = m.user_id === session?.user.id;
             return (
-              <Card key={m.id} className="flex items-center gap-3 !p-3">
+              <Card key={m.id} className="flex flex-wrap items-center gap-3 !p-3">
                 <MemberDot member={m} size={36} />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold text-ink">
-                    {m.name} {isSelf && <span className="text-xs font-normal text-ink-faint">(you)</span>}
+                <div className="min-w-[8rem] flex-1">
+                  <p className="truncate text-body font-semibold text-ink">
+                    {m.name} {isSelf && <span className="text-caption font-normal text-ink-faint">(you)</span>}
                   </p>
-                  <p className="text-xs text-ink-faint">
+                  <p className="text-caption text-ink-faint">
                     {ROLE_META[m.role].label}
                     {!m.joined && m.role !== 'owner' && ' · invited, not joined yet'}
                   </p>
                 </div>
                 {canOrganize && m.role !== 'owner' && (
-                  <div className="flex shrink-0 items-center gap-1">
+                  <div className="ml-auto flex min-w-0 flex-wrap items-center justify-end gap-1">
                     {!m.joined && (
                       <Button
-                        variant="ghost"
-                        className="!min-h-[34px] px-2 text-xs"
+                        variant="tertiary"
+                        className="px-2 text-caption"
                         onClick={() => void copy(`${window.location.origin}/join/${m.invite_code}`)}
                       >
                         Copy link
@@ -148,7 +157,7 @@ export function GroupPage() {
                       value={m.role}
                       onChange={(e) => void updateMember(m.id, { role: e.target.value as TripRole })}
                       aria-label={`${m.name} role`}
-                      className="!min-h-[34px] max-w-[110px] !text-xs"
+                      className="max-w-[110px] !text-caption"
                     >
                       <option value="organizer">Organizer</option>
                       <option value="traveler">Traveler</option>
@@ -158,7 +167,7 @@ export function GroupPage() {
                       type="button"
                       onClick={() => setRemoveTarget(m)}
                       aria-label={`Remove ${m.name}`}
-                      className="flex h-11 w-11 items-center justify-center rounded-lg text-ink-faint hover:bg-ink/5"
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-ink-faint hover:bg-ink/5"
                     >
                       <Icon name="x" size={16} />
                     </button>
@@ -169,7 +178,7 @@ export function GroupPage() {
           })}
         </div>
         {myRole && (
-          <p className="mt-2 text-xs text-ink-faint">
+          <p className="mt-2 text-caption text-ink-faint">
             Your role: <strong>{ROLE_META[myRole].label}</strong> — {ROLE_META[myRole].blurb}.
           </p>
         )}
@@ -180,7 +189,7 @@ export function GroupPage() {
         <SectionTitle
           action={
             canContribute && (
-              <Button className="!min-h-[38px] px-3 text-xs" onClick={() => { setEditingTheme(null); setThemeOpen(true); }}>
+              <Button className="px-3 text-caption" onClick={() => { setEditingTheme(null); setThemeOpen(true); }}>
                 <Icon name="plus" size={16} /> New theme
               </Button>
             )
@@ -205,20 +214,20 @@ export function GroupPage() {
                 ? outfits.filter((o) => o.date === t.date && o.chosen)
                 : [];
               return (
-                <Card key={t.id} accent="rgb(var(--color-accent))">
+                <Card key={t.id}>
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div>
-                      <p className="flex items-center gap-1.5 font-bold text-ink"><Icon name="palette" size={16} className="text-maroon" /> {t.name}</p>
-                      <p className="text-xs text-ink-faint">
+                      <p className="flex items-center gap-1.5 text-body font-bold text-ink"><Icon name="palette" size={16} className="text-ink-soft" /> {t.name}</p>
+                      <p className="text-caption text-ink-faint">
                         {t.date ? dayLabel(t.date) : 'Date TBD'}
                         {t.colors && <> · Palette: {t.colors}</>}
                       </p>
                     </div>
                     <Chip className={THEME_STATUS_META[t.status].chip}>{THEME_STATUS_META[t.status].label}</Chip>
                   </div>
-                  {t.description && <p className="mt-1 text-sm text-ink-soft">{t.description}</p>}
+                  {t.description && <p className="mt-1 text-body text-ink-soft">{t.description}</p>}
                   {(t.suggested_clothing || t.required_accessories) && (
-                    <p className="mt-1 text-xs text-ink-faint">
+                    <p className="mt-1 text-caption text-ink-faint">
                       {t.suggested_clothing && <>Wear: {t.suggested_clothing}. </>}
                       {t.required_accessories && <>Accessories: {t.required_accessories}.</>}
                     </p>
@@ -227,7 +236,7 @@ export function GroupPage() {
                   {/* Coordination board */}
                   {boardOutfits.length > 0 && (
                     <div className="mt-3">
-                      <p className="mb-1.5 text-xs font-bold uppercase tracking-wide text-ink-faint">
+                      <p className="mb-1.5 text-label font-bold uppercase tracking-wide text-ink-faint">
                         Coordination board
                       </p>
                       <div className="flex gap-2 overflow-x-auto pb-1">
@@ -264,13 +273,13 @@ export function GroupPage() {
 
                   {canContribute && (
                     <div className="mt-3 flex flex-wrap gap-1.5">
-                      <Button variant="secondary" className="!min-h-[34px] px-2.5 text-xs" onClick={() => void toggleVote('theme', t.id)}>
+                      <Button variant="secondary" className="px-2.5 text-caption" onClick={() => void toggleVote('theme', t.id)}>
                         {iVoted ? <><Icon name="check" size={14} /> Voted</> : <><Icon name="vote" size={14} /> Vote</>} {voteCount > 0 && `(${voteCount})`}
                       </Button>
                       {canOrganize && t.status !== 'approved' && (
                         <Button
-                          variant="success"
-                          className="!min-h-[34px] px-2.5 text-xs"
+                          variant="primary"
+                          className="px-2.5 text-caption"
                           onClick={() => {
                             void saveTheme({ id: t.id, name: t.name, status: 'approved' }).then(() => {
                               void postFeed('theme', `approved the ${t.name} theme`);
@@ -281,16 +290,16 @@ export function GroupPage() {
                           Approve
                         </Button>
                       )}
-                      <Button variant="ghost" className="!min-h-[34px] px-2.5 text-xs" onClick={() => { setEditingTheme(t); setThemeOpen(true); }}>
+                      <Button variant="tertiary" className="px-2.5 text-caption" onClick={() => { setEditingTheme(t); setThemeOpen(true); }}>
                         Edit
                       </Button>
                       {canOrganize && (
-                        <Button variant="ghost" className="!min-h-[34px] px-2.5 text-xs text-danger" onClick={() => setDeleteThemeTarget(t)}>
+                        <Button variant="tertiary" className="px-2.5 text-caption text-danger" onClick={() => setDeleteThemeTarget(t)}>
                           Delete
                         </Button>
                       )}
                       {t.date && (
-                        <Link to={`/days/${t.date}`} className="ml-auto self-center text-xs font-semibold text-maroon underline underline-offset-2">
+                        <Link to={`/days/${t.date}`} className="inline-flex min-h-[44px] items-center ml-auto self-center text-label font-semibold text-accent underline underline-offset-2">
                           Plan outfits →
                         </Link>
                       )}
@@ -311,7 +320,7 @@ export function GroupPage() {
         <SectionTitle
           action={
             canContribute && (
-              <Button className="!min-h-[38px] px-3 text-xs" onClick={() => setPhotoOpen(true)}>
+              <Button className="px-3 text-caption" onClick={() => setPhotoOpen(true)}>
                 <Icon name="plus" size={16} /> Upload photo
               </Button>
             )
@@ -319,7 +328,7 @@ export function GroupPage() {
         >
           Photos
         </SectionTitle>
-        <p className="-mt-2 mb-2 flex items-center gap-1 text-xs text-ink-faint">
+        <p className="-mt-2 mb-2 flex items-center gap-1 text-caption text-ink-faint">
           <Icon name="lock" size={13} /> Photos are stored privately and only visible to people on this trip.
         </p>
         {photos.length === 0 ? (
@@ -353,11 +362,11 @@ export function GroupPage() {
         <SectionTitle>Recent activity</SectionTitle>
         <Card>
           {feed.length === 0 ? (
-            <p className="text-sm text-ink-faint">Group updates will appear here.</p>
+            <p className="text-body text-ink-faint">Group updates will appear here.</p>
           ) : (
             <ul className="flex flex-col gap-2">
               {feed.slice(0, 15).map((f) => (
-                <li key={f.id} className="flex items-start gap-2 text-sm text-ink-soft">
+                <li key={f.id} className="flex items-start gap-2 text-body text-ink-soft">
                   <span className="min-w-0 flex-1">
                     <strong className="font-semibold text-ink">{f.actor_name}</strong> {f.message}
                   </span>
@@ -373,18 +382,18 @@ export function GroupPage() {
       <Modal open={inviteOpen} onClose={() => setInviteOpen(false)} title="Invite a traveler">
         {inviteLink ? (
           <div className="flex flex-col gap-3">
-            <p className="text-sm text-ink-soft">
+            <p className="text-body text-ink-soft">
               Share this link with <strong>{inviteName}</strong> — opening it (after signing in)
               joins them to the trip:
             </p>
-            <code className="break-all rounded-xl bg-cream p-3 text-xs text-ink">{inviteLink}</code>
+            <code className="break-all rounded-xl bg-cream p-3 text-caption text-ink">{inviteLink}</code>
             <div className="flex gap-2">
               <Button className="flex-1" onClick={() => void copy(inviteLink)}>
                 Copy link
               </Button>
               {inviteEmail.trim() && (
                 <a
-                  className="flex min-h-[44px] flex-1 items-center justify-center rounded-xl border border-line bg-card px-4 text-sm font-semibold text-ink"
+                  className="flex min-h-[44px] flex-1 items-center justify-center rounded-xl border border-line bg-card px-4 text-body font-semibold text-ink"
                   href={`mailto:${encodeURIComponent(inviteEmail)}?subject=${encodeURIComponent(`Join our trip: ${activeTrip.name}`)}&body=${encodeURIComponent(`You're invited to ${activeTrip.name} on MockPacker!\n\nJoin here: ${inviteLink}`)}`}
                 >
                   <Icon name="mail" size={16} /> Email it
@@ -392,7 +401,7 @@ export function GroupPage() {
               )}
             </div>
             <div className="text-center">
-              <p className="mb-2 text-xs text-ink-faint">Or scan to join:</p>
+              <p className="mb-2 text-caption text-ink-faint">Or scan to join:</p>
               <img
                 src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(inviteLink)}`}
                 alt={`QR code for the invitation link for ${inviteName}`}
@@ -545,7 +554,7 @@ function ThemeFormModal({
                 key={idea}
                 type="button"
                 onClick={() => setName(idea)}
-                className="rounded-full border border-line bg-card px-2.5 py-1 text-xs text-ink-soft hover:border-maroon hover:text-maroon"
+                className="rounded-full border border-line bg-card px-2.5 py-1 text-caption text-ink-soft hover:border-accent hover:text-accent"
               >
                 {idea}
               </button>
@@ -654,7 +663,7 @@ function PhotoUploadModal({
               type="file"
               accept="image/*"
               onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-              className="text-sm text-ink-soft file:mr-3 file:rounded-xl file:border-0 file:bg-maroon file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-on-accent"
+              className="text-body text-ink-soft file:mr-3 file:rounded-xl file:border-0 file:bg-accent file:px-4 file:py-2.5 file:text-body file:font-semibold file:text-on-accent"
             />
           )}
         </Field>

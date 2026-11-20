@@ -35,9 +35,9 @@ function RequireAuth({ children }: { children: ReactNode }) {
 function SetupHelp() {
   return (
     <div className="mx-auto flex min-h-dvh max-w-lg flex-col items-center justify-center gap-4 p-6 text-center">
-      <Icon name="bag" size={40} className="text-maroon" />
-      <h1 className="text-xl font-bold text-maroon">MockPacker needs a database</h1>
-      <p className="text-sm text-ink-soft">
+      <Icon name="bag" size={40} className="text-accent" />
+      <h1 className="text-body font-bold text-accent">MockPacker needs a database</h1>
+      <p className="text-body text-ink-soft">
         Supabase environment variables are missing. Copy <code>.env.example</code> to{' '}
         <code>.env</code>, fill in <code>VITE_SUPABASE_URL</code> and{' '}
         <code>VITE_SUPABASE_ANON_KEY</code>, run the SQL migrations in{' '}
