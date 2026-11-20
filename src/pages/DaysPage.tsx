@@ -22,7 +22,7 @@ export function DaysPage() {
         icon="calendar"
         title="No trip selected"
         body="Daily plans appear once you create or open a trip."
-        action={<Link to="/trips" className="text-sm font-semibold text-maroon underline underline-offset-2">Go to Trips →</Link>}
+        action={<Link to="/trips" className="inline-flex min-h-[44px] items-center text-body font-semibold text-accent underline underline-offset-2">Go to Trips →</Link>}
       />
     );
   if (loading) return <Spinner label="Loading daily plans" />;
@@ -31,12 +31,16 @@ export function DaysPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div>
-        <h1 className="text-xl font-bold text-ink">Daily Plans</h1>
-        <p className="text-sm text-ink-faint">
-          {activeTrip.city} · {shortDate(activeTrip.start_date)} – {shortDate(activeTrip.end_date)}
+      {/* Hero: how many days are planned. */}
+      <header className="hero-glide pt-2">
+        <h1 className="text-label text-ink-soft">Daily Plans · {activeTrip.city}</h1>
+        <p className="mt-1 text-ink">
+          <span className="text-display tabular-nums">{tripDays.length}</span>{' '}
+          <span className="text-body font-semibold text-ink-soft">
+            day{tripDays.length === 1 ? '' : 's'} · {shortDate(activeTrip.start_date)} – {shortDate(activeTrip.end_date)}
+          </span>
         </p>
-      </div>
+      </header>
       <div className="grid gap-3 sm:grid-cols-2">
         {tripDays.map((d) => {
           const w = weather.find((x) => x.date === d);
@@ -45,27 +49,27 @@ export function DaysPage() {
           const chosen = outfits.filter((o) => o.date === d && o.chosen);
           return (
             <Link key={d} to={`/days/${d}`} className="group">
-              <Card className={`h-full transition-colors group-hover:border-maroon ${d === today ? '!border-maroon' : ''}`}>
-                <div className="flex items-start justify-between gap-2">
-                  <p className="font-bold text-ink">
+              <Card interactive className="h-full group-hover:border-accent">
+                <div className="flex flex-wrap items-start justify-between gap-2">
+                  <p className="text-body font-bold text-ink">
                     {dayLabel(d)}
-                    {d === today && <Chip className="ml-2 bg-maroon text-on-accent">Today</Chip>}
+                    {d === today && <Chip className="ml-2 bg-ink text-paper">Today</Chip>}
                   </p>
                   <WeatherBadge day={w} compact />
                 </div>
                 {theme && (
-                  <p className="mt-1 flex items-center gap-1 text-sm font-semibold text-maroon">
+                  <p className="mt-1 flex items-center gap-1 text-body font-semibold text-ink">
                     <Icon name="palette" size={15} /> {theme.name}
                   </p>
                 )}
                 {dayActs.length > 0 ? (
                   <ul className="mt-2 flex flex-col gap-1">
                     {dayActs.map((a) => (
-                      <li key={a.id} className="flex items-center gap-2 text-sm text-ink-soft">
-                        <span aria-hidden="true">{activityIcon(a.kind)}</span>
+                      <li key={a.id} className="flex flex-wrap items-center gap-x-2 text-body text-ink-soft">
+                        <Icon name={activityIcon(a.kind)} size={16} className="shrink-0 text-ink-soft" />
                         <span className="truncate">{a.name}</span>
                         {a.start_time && (
-                          <span className="ml-auto shrink-0 text-xs tabular-nums text-ink-faint">
+                          <span className="ml-auto shrink-0 text-caption tabular-nums text-ink-faint">
                             {a.start_time.slice(0, 5)}
                           </span>
                         )}
@@ -73,9 +77,9 @@ export function DaysPage() {
                     ))}
                   </ul>
                 ) : (
-                  <p className="mt-2 text-sm text-ink-faint">Free day — no plans yet</p>
+                  <p className="mt-2 text-body text-ink-faint">Free day — no plans yet</p>
                 )}
-                <p className="mt-2 flex items-center gap-1 text-xs text-ink-faint">
+                <p className="mt-2 flex items-center gap-1 text-caption text-ink-faint">
                   <Icon name="shirt" size={13} /> {chosen.length}/{members.filter((m) => m.role !== 'viewer').length} outfits chosen
                 </p>
               </Card>
@@ -142,41 +146,41 @@ export function DayDetailPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Day header + prev/next */}
-      <div className="flex items-center justify-between gap-2">
-        <Button variant="ghost" disabled={idx <= 0} onClick={() => navigate(`/days/${tripDays[idx - 1]}`)} aria-label="Previous day">
+      {/* Hero: the date numeral, flanked by prev / next. */}
+      <header className="hero-glide flex items-center justify-between gap-2 pt-2">
+        <Button variant="tertiary" disabled={idx <= 0} onClick={() => navigate(`/days/${tripDays[idx - 1]}`)} aria-label="Previous day">
           <Icon name="chevron-right" size={20} className="rotate-180" />
         </Button>
         <div className="text-center">
-          <h1 className="text-lg font-bold text-ink">{dayLabel(date)}</h1>
-          <p className="text-xs text-ink-faint">
-            Day {idx + 1} of {tripDays.length} · {activeTrip.city}
-          </p>
+          <h1 className="text-label text-ink-soft">
+            {dayLabel(date)} · Day {idx + 1} of {tripDays.length} · {activeTrip.city}
+          </h1>
+          <p className="mt-1 text-display tabular-nums text-ink">{Number(date.slice(8, 10))}</p>
         </div>
-        <Button variant="ghost" disabled={idx >= tripDays.length - 1} onClick={() => navigate(`/days/${tripDays[idx + 1]}`)} aria-label="Next day">
+        <Button variant="tertiary" disabled={idx >= tripDays.length - 1} onClick={() => navigate(`/days/${tripDays[idx + 1]}`)} aria-label="Next day">
           <Icon name="chevron-right" size={20} />
         </Button>
-      </div>
+      </header>
 
       {/* Weather */}
       <Card>
         <SectionTitle>Weather</SectionTitle>
         {w && w.tMax != null ? (
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-            <p className="text-3xl" aria-hidden="true">{weatherLabel(w.code).icon}</p>
+            <Icon name={weatherLabel(w.code).icon} size={32} className="text-ink-soft" />
             <div>
-              <p className="text-lg font-bold tabular-nums text-ink">
+              <p className="text-body font-bold tabular-nums text-ink">
                 {Math.round(w.tMin ?? 0)}° – {Math.round(w.tMax)}°F
               </p>
-              <p className="text-sm text-ink-faint">{weatherLabel(w.code).label}</p>
+              <p className="text-body text-ink-faint">{weatherLabel(w.code).label}</p>
             </div>
-            <div className="text-sm text-ink-soft">
+            <div className="text-body text-ink-soft">
               <p className="flex items-center gap-1"><Icon name="droplet" size={14} /> Rain: {w.precipProb != null ? `${Math.round(w.precipProb)}%` : '—'}</p>
               <p className="flex items-center gap-1"><Icon name="wind" size={14} /> Wind: {w.windMax != null ? `${Math.round(w.windMax)} mph` : '—'}</p>
             </div>
           </div>
         ) : (
-          <p className="text-sm text-ink-faint">
+          <p className="text-body text-ink-faint">
             Forecast isn't available this far out yet — check back closer to the trip.
           </p>
         )}
@@ -184,17 +188,17 @@ export function DayDetailPage() {
 
       {/* Theme */}
       {theme && (
-        <Card accent="rgb(var(--color-accent))">
-          <SectionTitle action={<Chip className="bg-maroon-tint text-maroon">Group theme</Chip>}>
+        <Card>
+          <SectionTitle action={<Chip tone="info">Group theme</Chip>}>
             <span className="inline-flex items-center gap-1.5"><Icon name="palette" size={18} /> {theme.name}</span>
           </SectionTitle>
-          {theme.description && <p className="text-sm text-ink-soft">{theme.description}</p>}
+          {theme.description && <p className="text-body text-ink-soft">{theme.description}</p>}
           <div className="mt-2 flex flex-wrap gap-1.5">
             {theme.colors && <Chip tone="neutral">Colors: {theme.colors}</Chip>}
             {theme.dress_code && <Chip tone="neutral">{theme.dress_code}</Chip>}
           </div>
           {theme.required_accessories && (
-            <p className="mt-2 text-xs text-ink-faint">Accessories: {theme.required_accessories}</p>
+            <p className="mt-2 text-caption text-ink-faint">Accessories: {theme.required_accessories}</p>
           )}
         </Card>
       )}
@@ -203,15 +207,15 @@ export function DayDetailPage() {
       <Card>
         <SectionTitle>Activities</SectionTitle>
         {dayActs.length === 0 ? (
-          <p className="text-sm text-ink-faint">Free day — nothing scheduled.</p>
+          <p className="text-body text-ink-faint">Free day — nothing scheduled.</p>
         ) : (
           <ul className="flex flex-col gap-3">
             {dayActs.map((a) => (
               <li key={a.id} className="flex items-start gap-3">
-                <span aria-hidden="true" className="text-xl">{activityIcon(a.kind)}</span>
+                <Icon name={activityIcon(a.kind)} size={20} className="mt-0.5 shrink-0 text-ink-soft" />
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-ink">{a.name}</p>
-                  <p className="text-xs text-ink-faint">
+                  <p className="text-body font-semibold text-ink">{a.name}</p>
+                  <p className="text-caption text-ink-faint">
                     {[
                       a.start_time && a.end_time
                         ? `${a.start_time.slice(0, 5)}–${a.end_time.slice(0, 5)}`
@@ -222,12 +226,12 @@ export function DayDetailPage() {
                       .join(' · ')}
                   </p>
                   <div className="mt-1 flex flex-wrap gap-1.5">
-                    {a.dress_code && <Chip className="bg-maroon-tint text-maroon">{a.dress_code}</Chip>}
+                    {a.dress_code && <Chip tone="info">{a.dress_code}</Chip>}
                     <Chip tone="neutral">{a.setting}</Chip>
                     {a.intensity === 'high' && <Chip tone="warning">Very active</Chip>}
                     {a.equipment && <Chip tone="info"><Icon name="bag" size={12} /> {a.equipment}</Chip>}
                   </div>
-                  {a.notes && <p className="mt-1 text-xs text-ink-faint">{a.notes}</p>}
+                  {a.notes && <p className="mt-1 text-caption text-ink-faint">{a.notes}</p>}
                 </div>
               </li>
             ))}
@@ -260,19 +264,19 @@ export function DayDetailPage() {
           });
           const isMe = myMember?.id === m.id;
           return (
-            <Card key={m.id} accent={m.color}>
+            <Card key={m.id} edge={m.color}>
               <div className="mb-2 flex items-center gap-2">
                 <MemberDot member={m} />
-                <p className="font-bold text-ink">{m.name}</p>
+                <p className="text-body font-bold text-ink">{m.name}</p>
                 {isMe && <Chip tone="neutral">you</Chip>}
               </div>
 
               {/* Recommendation */}
               <div className="rounded-xl bg-cream/70 p-3">
-                <p className="text-xs font-bold uppercase tracking-wide text-maroon">What to wear</p>
-                <p className="text-sm font-semibold text-ink">{rec.headline}</p>
+                <p className="text-label uppercase tracking-wide text-ink-soft">What to wear</p>
+                <p className="text-body font-semibold text-ink">{rec.headline}</p>
                 {rec.pieces.length > 0 && (
-                  <p className="text-xs text-ink-soft">{rec.pieces.join(' · ')}</p>
+                  <p className="text-caption text-ink-soft">{rec.pieces.join(' · ')}</p>
                 )}
                 {rec.notes.map((n) => (
                   <p key={n} className="mt-0.5 text-caption text-ink-faint">• {n}</p>
@@ -287,7 +291,7 @@ export function DayDetailPage() {
                       (v) => v.target_kind === 'outfit' && v.target_id === o.id
                     ).length;
                     return (
-                      <li key={o.id} className={`rounded-xl border p-3 ${o.chosen ? 'border-maroon bg-maroon-tint/40' : 'border-line bg-card'}`}>
+                      <li key={o.id} className={`rounded-xl border p-3 ${o.chosen ? 'border-accent bg-accent-tint/40' : 'border-line bg-card'}`}>
                         <div className="flex items-start gap-3">
                           {(o.photo_path || o.external_image_url) && (
                             <TripImage
@@ -297,12 +301,12 @@ export function DayDetailPage() {
                             />
                           )}
                           <div className="min-w-0 flex-1">
-                            <p className="text-sm font-semibold text-ink">
+                            <p className="text-body font-semibold text-ink">
                               {o.title || 'Outfit option'}
-                              {o.chosen && <Chip className="ml-1.5 bg-maroon text-on-accent">Wearing this</Chip>}
+                              {o.chosen && <Chip className="ml-1.5 bg-ink text-paper">Wearing this</Chip>}
                               {o.approved && <Chip tone="success" className="ml-1.5">Approved</Chip>}
                             </p>
-                            <p className="text-xs text-ink-soft">
+                            <p className="text-caption text-ink-soft">
                               {[o.top_item, o.bottom_item, o.shoes, o.outerwear, o.accessories]
                                 .filter(Boolean)
                                 .join(' · ')}
@@ -313,19 +317,19 @@ export function DayDetailPage() {
                         {canContribute && (
                           <div className="mt-2 flex flex-wrap gap-1.5">
                             {!o.chosen && (
-                              <Button variant="secondary" className="!min-h-[34px] px-2.5 text-xs" onClick={() => void chooseOutfit(o)}>
+                              <Button variant="secondary" className=" px-2.5 text-caption" onClick={() => void chooseOutfit(o)}>
                                 Wear this
                               </Button>
                             )}
-                            <Button variant="ghost" className="!min-h-[34px] px-2.5 text-xs" onClick={() => void toggleVote('outfit', o.id)}>
+                            <Button variant="tertiary" className=" px-2.5 text-caption" onClick={() => void toggleVote('outfit', o.id)}>
                               <Icon name="thumbs-up" size={14} /> {voteCount > 0 ? voteCount : 'Vote'}
                             </Button>
                             {(isMe || canContribute) && (
                               <>
-                                <Button variant="ghost" className="!min-h-[34px] px-2.5 text-xs" onClick={() => setEditingOutfit(o)}>
+                                <Button variant="tertiary" className=" px-2.5 text-caption" onClick={() => setEditingOutfit(o)}>
                                   Edit
                                 </Button>
-                                <Button variant="ghost" className="!min-h-[34px] px-2.5 text-xs text-danger" onClick={() => setConfirmDeleteOutfit(o)}>
+                                <Button variant="tertiary" className=" px-2.5 text-caption text-danger" onClick={() => setConfirmDeleteOutfit(o)}>
                                   Delete
                                 </Button>
                               </>
@@ -342,7 +346,7 @@ export function DayDetailPage() {
               )}
 
               {canContribute && (
-                <Button variant="secondary" className="mt-3 w-full !min-h-[38px] text-xs" onClick={() => setOutfitFor(m)}>
+                <Button variant="secondary" className="mt-3 w-full text-caption" onClick={() => setOutfitFor(m)}>
                   <Icon name="plus" size={16} /> Add outfit option for {m.name}
                 </Button>
               )}
@@ -502,7 +506,7 @@ function OutfitFormModal({
               type="file"
               accept="image/*"
               onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-              className="text-sm text-ink-soft file:mr-3 file:rounded-xl file:border-0 file:bg-maroon file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-on-accent"
+              className="text-body text-ink-soft file:mr-3 file:rounded-xl file:border-0 file:bg-accent file:px-4 file:py-2.5 file:text-body file:font-semibold file:text-on-accent"
             />
           )}
         </Field>

@@ -5,14 +5,14 @@ import { useToast } from '../context/ToastContext';
 import { useTheme, type ThemePref } from '../context/ThemeContext';
 import { publicAvatarUrl, uploadAvatar } from '../lib/supabase';
 import { Button, Card, Field, SectionTitle, Select, TextArea, TextInput } from '../components/ui';
-import { Icon } from '../components/Icon';
+import { Icon, type IconName } from '../components/Icon';
 
 const FITS = ['', 'slim', 'regular', 'relaxed', 'oversized'];
 
-const THEME_OPTIONS: { value: ThemePref; label: string; icon: string }[] = [
-  { value: 'light', label: 'Light', icon: '☀️' },
-  { value: 'system', label: 'System', icon: '🖥️' },
-  { value: 'dark', label: 'Dark', icon: '🌙' },
+const THEME_OPTIONS: { value: ThemePref; label: string; icon: IconName }[] = [
+  { value: 'light', label: 'Light', icon: 'sun' },
+  { value: 'system', label: 'System', icon: 'monitor' },
+  { value: 'dark', label: 'Dark', icon: 'moon' },
 ];
 
 export function ProfilePage() {
@@ -90,20 +90,23 @@ export function ProfilePage() {
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-4">
-      <h1 className="text-xl font-bold text-ink">Profile</h1>
+      {/* Hero: who you are. */}
+      <header className="hero-glide pt-2">
+        <h1 className="text-label text-ink-soft">Profile</h1>
+        <p className="mt-1 line-clamp-1 text-display text-ink">{displayName || 'Traveler'}</p>
+      </header>
 
       <Card className="flex items-center gap-4">
         {profile?.avatar_url ? (
           <img src={profile.avatar_url} alt="" className="h-16 w-16 rounded-full object-cover" />
         ) : (
-          <span aria-hidden="true" className="flex h-16 w-16 items-center justify-center rounded-full bg-maroon text-2xl font-bold text-on-accent">
+          <span aria-hidden="true" className="flex h-16 w-16 items-center justify-center rounded-full bg-ink text-body font-bold text-paper">
             {(displayName || '?').slice(0, 1).toUpperCase()}
           </span>
         )}
         <div className="min-w-0 flex-1">
-          <p className="font-bold text-ink">{displayName || 'Traveler'}</p>
-          <p className="truncate text-xs text-ink-faint">{session?.user.email}</p>
-          <label className="mt-1 inline-block cursor-pointer text-xs font-semibold text-maroon underline underline-offset-2">
+          <p className="truncate text-body text-ink-soft">{session?.user.email}</p>
+          <label className="mt-1 inline-block cursor-pointer text-label font-semibold text-accent underline underline-offset-2">
             Change photo
             <input
               type="file"
@@ -117,7 +120,7 @@ export function ProfilePage() {
 
       <Card className="flex flex-col gap-3">
         <SectionTitle>Appearance</SectionTitle>
-        <div role="radiogroup" aria-label="Theme" className="flex gap-1 rounded-xl bg-cream p-1">
+        <div role="radiogroup" aria-label="Theme" className="flex flex-wrap gap-1 rounded-xl bg-cream p-1">
           {THEME_OPTIONS.map((opt) => {
             const active = theme === opt.value;
             return (
@@ -127,17 +130,17 @@ export function ProfilePage() {
                 role="radio"
                 aria-checked={active}
                 onClick={() => setTheme(opt.value)}
-                className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-sm font-semibold transition-colors ${
-                  active ? 'bg-card text-ink shadow-card' : 'text-ink-soft hover:text-ink'
+                className={`flex min-h-[44px] flex-1 basis-[5.5rem] items-center justify-center gap-1.5 rounded-lg py-2 text-body font-semibold ${
+                  active ? 'bg-card text-ink shadow-content' : 'text-ink-soft hover:text-ink'
                 }`}
               >
-                <span aria-hidden="true">{opt.icon}</span>
+                <Icon name={opt.icon} size={16} />
                 {opt.label}
               </button>
             );
           })}
         </div>
-        <p className="text-xs text-ink-faint">
+        <p className="text-caption text-ink-faint">
           {theme === 'system'
             ? 'Matches your device appearance.'
             : `Always ${theme}, regardless of device settings.`}
@@ -179,12 +182,12 @@ export function ProfilePage() {
             )}
           </Field>
         </div>
-        <label className="flex min-h-[44px] cursor-pointer items-center gap-3 text-sm font-medium text-ink-soft">
+        <label className="flex min-h-[44px] cursor-pointer items-center gap-3 text-body font-medium text-ink-soft">
           <input
             type="checkbox"
             checked={genderNeutral}
             onChange={(e) => setGenderNeutral(e.target.checked)}
-            className="h-5 w-5 rounded accent-[#0B6E6E]"
+            className="h-5 w-5 rounded accent-accent"
           />
           Prefer gender-neutral clothing suggestions
         </label>
@@ -214,7 +217,7 @@ export function ProfilePage() {
       </Button>
 
       <Button
-        variant="ghost"
+        variant="tertiary"
         onClick={() => {
           void signOut().then(() => navigate('/login'));
         }}

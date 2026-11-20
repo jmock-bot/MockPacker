@@ -88,19 +88,19 @@ export function WeatherBadge({ day, compact }: { day: WeatherDay | undefined; co
   const { label, icon } = weatherLabel(day.code);
   if (day.tMax == null)
     return (
-      <span className="inline-flex items-center gap-1 text-xs text-ink-faint">
+      <span className="inline-flex items-center gap-1 text-caption text-ink-faint">
         <Icon name="calendar-empty" size={14} /> Forecast soon
       </span>
     );
   return (
-    <span className="inline-flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-ink-soft">
-      <span aria-hidden="true" className="text-base">{icon}</span>
+    <span className="inline-flex flex-wrap items-center gap-x-2 gap-y-0.5 text-caption text-ink-soft">
+      <Icon name={icon} size={18} className="shrink-0" />
       <span className="font-semibold tabular-nums">
         {Math.round(day.tMin ?? 0)}–{Math.round(day.tMax)}°F
       </span>
       {!compact && <span>{label}</span>}
       {(day.precipProb ?? 0) >= 30 && (
-        <span className="inline-flex items-center gap-0.5 font-medium text-maroon">
+        <span className="inline-flex items-center gap-0.5 font-medium text-ink">
           <Icon name="droplet" size={13} /> {Math.round(day.precipProb ?? 0)}%
         </span>
       )}
@@ -163,8 +163,8 @@ export function CommentThread({
                 onClick={() => void toggleReaction(reactionKind, targetId, e)}
                 aria-pressed={mine}
                 aria-label={`React ${e}${count ? `, ${count}` : ''}`}
-                className={`rounded-full border px-2 py-0.5 text-xs ${
-                  mine ? 'border-maroon bg-maroon-tint' : 'border-line bg-card'
+                className={`min-h-[44px] min-w-[44px] rounded-full border px-3 py-0.5 text-caption ${
+                  mine ? 'border-accent bg-accent-tint' : 'border-line bg-card'
                 } disabled:opacity-50`}
               >
                 {e} {count > 0 && <span className="font-semibold tabular-nums">{count}</span>}
@@ -175,13 +175,13 @@ export function CommentThread({
       )}
 
       {thread.length === 0 ? (
-        <p className="text-xs text-ink-faint">{emptyText}</p>
+        <p className="text-caption text-ink-faint">{emptyText}</p>
       ) : (
         <ul className="flex flex-col gap-1.5">
           {thread.map((c) => (
             <li key={c.id} className="rounded-xl bg-cream/70 px-3 py-2">
               <div className="flex items-baseline justify-between gap-2">
-                <p className="text-xs font-bold text-ink">{c.author_name}</p>
+                <p className="text-label font-bold text-ink">{c.author_name}</p>
                 <span className="flex items-center gap-2 text-caption text-ink-faint">
                   {timeAgo(c.created_at)}
                   {c.author_id === session?.user.id && (
@@ -195,7 +195,7 @@ export function CommentThread({
                   )}
                 </span>
               </div>
-              <p className="text-sm text-ink-soft">{c.body}</p>
+              <p className="text-body text-ink-soft">{c.body}</p>
             </li>
           ))}
         </ul>
@@ -230,12 +230,12 @@ export function PhotoCard({ photo, actions }: { photo: Photo; actions?: ReactNod
   const { members } = useTrip();
   const member = members.find((m) => m.id === photo.member_id);
   return (
-    <div className="overflow-hidden rounded-card border border-line bg-card shadow-card">
+    <div className="overflow-hidden rounded-lg border border-line bg-card shadow-content">
       <TripImage photo={photo} alt={photo.caption ?? 'Trip photo'} className="aspect-[4/3] w-full" />
       <div className="flex flex-col gap-2 p-3">
         <div className="flex items-start justify-between gap-2">
           <div>
-            {photo.caption && <p className="text-sm font-medium text-ink">{photo.caption}</p>}
+            {photo.caption && <p className="text-body font-medium text-ink">{photo.caption}</p>}
             <p className="text-caption text-ink-faint">
               {photo.uploader_name}
               {member ? ` · for ${member.name}` : ''} · {timeAgo(photo.created_at)}

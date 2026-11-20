@@ -52,7 +52,7 @@ export function PackingPage() {
         icon="checklist"
         title="No trip selected"
         body="Create or open a trip first — the packing list lives inside a trip."
-        action={<Link to="/trips" className="text-sm font-semibold text-maroon underline underline-offset-2">Go to Trips →</Link>}
+        action={<Link to="/trips" className="inline-flex min-h-[44px] items-center text-body font-semibold text-accent underline underline-offset-2">Go to Trips →</Link>}
       />
     );
   if (loading) return <Spinner label="Loading the packing list" />;
@@ -63,15 +63,19 @@ export function PackingPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      {/* Hero: how much is packed. One dominant number on the canvas. */}
+      <header className="hero-glide flex flex-wrap items-end justify-between gap-3 pt-2">
         <div>
-          <h1 className="text-xl font-bold text-ink">Packing</h1>
-          <p className="text-sm text-ink-faint">
-            {packedCount}/{items.length} packed · {percent(overallPct)}
+          <h1 className="text-label text-ink-soft">Packing</h1>
+          <p className="mt-1 text-ink">
+            <span className="text-display tabular-nums">{packedCount}</span>{' '}
+            <span className="text-body font-semibold text-ink-soft">
+              of {items.length} packed · {percent(overallPct)}
+            </span>
           </p>
         </div>
         {canContribute && <Button onClick={() => setAdding(true)}><Icon name="plus" size={16} /> Add item</Button>}
-      </div>
+      </header>
 
       <ProgressBar value={overallPct} label="Overall packing progress" />
 
@@ -89,7 +93,7 @@ export function PackingPage() {
             <option key={m.id} value={m.id}>{m.name}</option>
           ))}
         </Select>
-        <div role="group" aria-label="Filter by status" className="flex overflow-hidden rounded-xl border border-line bg-card">
+        <div role="group" aria-label="Filter by status" className="plane-content flex overflow-hidden rounded-xl">
           {(
             [
               ['all', 'All'],
@@ -103,8 +107,8 @@ export function PackingPage() {
               type="button"
               onClick={() => setStatusFilter(key)}
               aria-pressed={statusFilter === key}
-              className={`min-h-[44px] px-3 text-sm font-medium ${
-                statusFilter === key ? 'bg-maroon text-on-accent' : 'text-ink-soft'
+              className={`min-h-[44px] min-w-[44px] px-3 text-label ${
+                statusFilter === key ? 'bg-accent text-on-accent' : 'text-ink-soft'
               }`}
             >
               {label}
@@ -115,8 +119,8 @@ export function PackingPage() {
 
       {lastMinute.length > 0 && statusFilter === 'all' && (
         <Card className="!bg-cream">
-          <p className="flex items-center gap-1.5 text-sm font-semibold text-ink"><Icon name="clock" size={16} /> Last-minute items ({lastMinute.length})</p>
-          <p className="text-xs text-ink-faint">
+          <p className="flex items-center gap-1.5 text-body font-semibold text-ink"><Icon name="clock" size={16} /> Last-minute items ({lastMinute.length})</p>
+          <p className="text-caption text-ink-faint">
             {lastMinute.map((i) => i.name).slice(0, 6).join(' · ')}
             {lastMinute.length > 6 ? '…' : ''} — don't pack these until departure day.
           </p>
@@ -133,8 +137,8 @@ export function PackingPage() {
         byCategory.map(([category, catItems]) => (
           <Card key={category} className="!p-0">
             <div className="flex items-center justify-between border-b border-line px-4 py-2.5">
-              <h2 className="text-sm font-bold text-ink">{category}</h2>
-              <span className="text-xs tabular-nums text-ink-faint">
+              <h2 className="text-body font-bold text-ink">{category}</h2>
+              <span className="text-caption tabular-nums text-ink-faint">
                 {catItems.filter((i) => i.packed).length}/{catItems.length}
               </span>
             </div>
@@ -142,22 +146,24 @@ export function PackingPage() {
               {catItems.map((item) => {
                 const member = members.find((m) => m.id === item.member_id);
                 return (
-                  <li key={item.id} className="flex items-start gap-3 px-4 py-2.5">
-                    <input
-                      type="checkbox"
-                      checked={item.packed}
-                      disabled={!canContribute}
-                      onChange={(e) => {
-                        void setItemPacked(item.id, e.target.checked);
-                        if (e.target.checked) void postFeed('packed', `packed ${item.name}`);
-                      }}
-                      aria-label={`Mark ${item.name} as packed`}
-                      className="mt-1 h-6 w-6 shrink-0 rounded accent-[#0B6E6E]"
-                    />
-                    <div className="min-w-0 flex-1">
-                      <p className={`text-sm font-medium ${item.packed ? 'text-ink-faint line-through' : 'text-ink'}`}>
+                  <li key={item.id} className="flex flex-wrap items-start gap-3 px-4 py-2.5">
+                    <label className="-ml-2.5 -mt-1 flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center">
+                      <input
+                        type="checkbox"
+                        checked={item.packed}
+                        disabled={!canContribute}
+                        onChange={(e) => {
+                          void setItemPacked(item.id, e.target.checked);
+                          if (e.target.checked) void postFeed('packed', `packed ${item.name}`);
+                        }}
+                        aria-label={`Mark ${item.name} as packed`}
+                        className="h-6 w-6 rounded accent-accent"
+                      />
+                    </label>
+                    <div className="min-w-[10rem] flex-1">
+                      <p className={`text-body font-medium ${item.packed ? 'text-ink-faint line-through' : 'text-ink'}`}>
                         {item.name}
-                        {item.qty > 1 && <span className="ml-1 text-xs text-ink-faint">×{item.qty}</span>}
+                        {item.qty > 1 && <span className="ml-1 text-caption text-ink-faint">×{item.qty}</span>}
                       </p>
                       <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
                         {member ? <MemberChip member={member} /> : <Chip tone="neutral">Shared</Chip>}
@@ -166,15 +172,15 @@ export function PackingPage() {
                         {item.last_minute && <Chip tone="warning">Last minute</Chip>}
                         {item.day && <Chip tone="info">{shortDate(item.day).replace(/, \d{4}$/, '')}</Chip>}
                       </div>
-                      {item.notes && <p className="mt-0.5 text-xs text-ink-faint">{item.notes}</p>}
+                      {item.notes && <p className="mt-0.5 text-caption text-ink-faint">{item.notes}</p>}
                     </div>
                     {canContribute && (
-                      <div className="flex shrink-0 gap-0.5">
+                      <div className="ml-auto flex shrink-0 gap-0.5">
                         <button
                           type="button"
                           onClick={() => setEditing(item)}
                           aria-label={`Edit ${item.name}`}
-                          className="flex h-11 w-11 items-center justify-center rounded-lg text-ink-faint hover:bg-ink/5"
+                          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-ink-faint hover:bg-ink/5"
                         >
                           <Icon name="edit" size={16} />
                         </button>
@@ -186,7 +192,7 @@ export function PackingPage() {
                             });
                           }}
                           aria-label={`Duplicate ${item.name}`}
-                          className="flex h-11 w-11 items-center justify-center rounded-lg text-ink-faint hover:bg-ink/5"
+                          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-ink-faint hover:bg-ink/5"
                         >
                           <Icon name="file" size={16} />
                         </button>
@@ -194,7 +200,7 @@ export function PackingPage() {
                           type="button"
                           onClick={() => setConfirmDelete(item)}
                           aria-label={`Delete ${item.name}`}
-                          className="flex h-11 w-11 items-center justify-center rounded-lg text-ink-faint hover:bg-ink/5"
+                          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-ink-faint hover:bg-ink/5"
                         >
                           <Icon name="trash" size={16} />
                         </button>

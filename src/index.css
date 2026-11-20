@@ -38,108 +38,151 @@
 }
 
 /* =============================================================================
-   DESIGN TOKENS
-   Colors are stored as space-separated RGB channels so Tailwind's opacity
-   modifiers (e.g. bg-maroon/15) resolve correctly via rgb(var(--x) / <a>).
-   The Tailwind theme in tailwind.config.js maps semantic class names onto
-   these variables.
+   DESIGN TOKENS — the single source for color, type, spacing, radius,
+   elevation and motion. tailwind.config.js maps class names onto these.
 
-   Two rules govern this file:
-     1. Text colors are chosen to clear WCAG AA (4.5:1) against the surface
-        they are used on. Contrast ratios are noted inline — if you change a
-        value, re-check the ratio.
-     2. Elevation is tinted with the ink hue, never pure black. Pure black
-        shadows on a warm background read as dirt.
+   Colors are space-separated RGB channels so Tailwind opacity modifiers
+   (bg-accent/15) resolve through rgb(var(--x) / <alpha>).
+
+   THREE PLANES. Every screen is built from exactly three, each with a fixed
+   role and a fixed elevation:
+     canvas   z-canvas   (0)   fixed atmosphere. Never scrolls, never taps.
+     content  z-content  (10)  scrolling information on lifted surfaces.
+     controls z-controls (30+) buttons, navigation, sheets. Always in front.
+   Elevation tokens belong to a plane; never borrow one plane's shadow for
+   another.
+
+   ONE INTERACTION COLOR. --color-accent means "you can tap this" and nothing
+   else. It is never used in the canvas gradient, in illustration, or as
+   decoration. Semantic state colors (success / warning / danger) are the only
+   other hues, and they must stay visibly different from the accent.
+
+   Text contrast is held at >= 4.5:1 against EVERY canvas stop and against a
+   translucent content surface over the worst stop (ratios noted inline).
+   If you change a value, re-check it.
    ========================================================================== */
 :root {
-  /* Accent — the ONLY brand color. Travel = confident teal. 6.1:1 on white. */
+  /* Accent — interaction only. White label on it: 6.05:1. */
   --color-accent: 11 110 110; /* #0B6E6E */
   --color-accent-hover: 9 90 90; /* #095A5A */
-  --color-accent-deep: 7 71 71; /* darker teal for pressed states */
-  --color-accent-soft: 230 242 242; /* #E6F2F2 tinted backgrounds */
-  --color-on-accent: 255 255 255; /* #FFFFFF */
+  --color-accent-pressed: 7 71 71; /* #074747 — white label 10.5:1 */
+  --color-accent-tint: 230 242 242; /* #E6F2F2 selected-state wash */
+  --color-on-accent: 255 255 255;
 
-  /* Neutrals — warmed toward sand so surfaces feel travel-y, not clinical. */
-  --color-bg: 251 250 247; /* #FBFAF7 app background */
-  --color-surface: 255 255 255; /* #FFFFFF cards, sheets */
-  --color-surface-alt: 244 242 237; /* #F4F2ED secondary surfaces, inputs */
-  --color-border: 228 225 217; /* #E4E1D9 hairline dividers — decorative, no contrast bar */
-  --color-border-strong: 198 194 183; /* #C6C2B7 emphasis dividers, hover states */
-  /* Form-control boundary. WCAG 1.4.11 wants 3:1 for the visual edge of an
-     input, and --color-border is 1.31:1 on white. Inputs sit on
-     --color-surface, which is itself only 1.04:1 against the page, so this
-     border is the ONLY thing that identifies the control. 3.63:1 on #FFFFFF. */
+  /* Canvas — warm, soft, multi-tone. Warm hues only, so the accent stays the
+     single cool color on screen. Stops are used as radial light sources over
+     the base; nothing here ever moves. */
+  --color-bg: 247 242 233; /* #F7F2E9 canvas base */
+  --canvas-glow-a: 251 230 210; /* #FBE6D2 apricot, top-left */
+  --canvas-glow-b: 242 222 212; /* #F2DED4 clay, bottom-right */
+
+  /* Surfaces */
+  --color-surface: 255 255 255; /* #FFFFFF sheets, inputs, menus (always opaque) */
+  --color-surface-alt: 244 242 237; /* #F4F2ED inputs on cards, chips */
+  --color-border: 228 225 217; /* #E4E1D9 hairlines — decorative, no contrast bar */
+  --color-border-strong: 198 194 183; /* #C6C2B7 */
+  /* Form-control edge. WCAG 1.4.11 wants 3:1: 3.63:1 on white, 3.50:1 on a
+     translucent card over the clay stop. */
   --color-border-control: 138 134 124; /* #8A867C */
 
-  --color-text: 26 26 23; /* #1A1A17 primary body text — 16.7:1 */
-  --color-text-muted: 107 106 99; /* #6B6A63 secondary text — 5.2:1 on bg, 4.9:1 on cream */
-  /* 4.6:1 on --color-bg but only 4.25:1 on --color-surface-alt: use
-     --color-text-muted for text sitting on cream. Fine for icons either way
-     (non-text UI clears at 3:1). */
-  --color-text-faint: 117 115 107; /* #75736B captions, metadata */
+  /* Text — each tier clears 4.5:1 on all three canvas stops, on a translucent
+     card over them, and on --color-surface-alt:
+       text   #1A1A17  13.4:1 worst case (clay stop)
+       muted  #5C5B54   5.25:1 worst case
+       faint  #66645C   4.57:1 worst case (clay stop) */
+  --color-text: 26 26 23;
+  --color-text-muted: 92 91 84;
+  --color-text-faint: 102 100 92;
 
-  /* Semantic (used sparingly, only for state) */
-  /* State colors double as their own tinted backgrounds (`bg-success/15
-     text-success`), so each has to clear AA against a 15% wash of ITSELF, not
-     just against the page. #A65E00 managed only 4.08:1 that way; #8F5100 gets
-     5.04:1 on the tint and 6.01:1 on the page, and still reads amber. */
-  --color-success: 31 106 47; /* #1F6A2F — 5.32:1 on its own /15 tint */
-  --color-warning: 143 81 0; /* #8F5100 — 5.04:1 on its own /15 tint */
-  --color-danger: 178 46 35; /* #B22E23 — 5.00:1 on its own /15 tint */
+  /* Semantic — state only. Each clears AA against a 15% wash of itself. */
+  --color-success: 31 106 47; /* #1F6A2F — 5.32:1 */
+  --color-warning: 143 81 0; /* #8F5100 — 5.04:1 */
+  --color-danger: 178 46 35; /* #B22E23 — 5.00:1 */
 
   /* Radii */
   --radius-sm: 10px; /* chips, inputs, small controls */
   --radius-md: 14px; /* buttons, thumbnails */
   --radius-lg: 20px; /* cards */
-  --radius-xl: 28px; /* sheets, modals, hero imagery */
+  --radius-xl: 28px; /* sheets, modals */
   --radius-full: 9999px;
 
-  /* Elevation — ink-tinted, three tiers. */
-  --e1: 0 1px 2px rgba(26, 26, 23, 0.04), 0 2px 6px rgba(26, 26, 23, 0.06);
-  --e2: 0 2px 4px rgba(26, 26, 23, 0.05), 0 8px 20px rgba(26, 26, 23, 0.09);
-  --e3: 0 8px 16px rgba(26, 26, 23, 0.1), 0 24px 56px rgba(26, 26, 23, 0.16);
+  /* Content-plane surface opacity. Restrained: enough that the canvas warms
+     the card, not enough to hurt contrast. Reduced-transparency sets both to 1. */
+  --content-alpha: 0.86;
+  --chrome-alpha: 0.78;
 
-  /* Motion — four named durations, four easings. Everything animated in the
-     app uses one of these; nothing invents its own timing. */
-  --dur-press: 120ms; /* tactile feedback on tap */
-  --dur-reveal: 180ms; /* fades, chips, hovers, exits */
-  --dur-surface: 240ms; /* sheets, modals, panels */
-  --dur-transit: 320ms; /* shared-element / page transitions */
+  /* Elevation. Content = soft and diffuse. Controls = higher and tighter.
+     Ink-tinted (warm), never pure black. */
+  --shadow-content: 0 1px 2px rgb(60 45 25 / 0.05), 0 8px 24px -6px rgb(60 45 25 / 0.12);
+  --shadow-controls: 0 2px 4px rgb(60 45 25 / 0.08), 0 16px 36px -8px rgb(60 45 25 / 0.26);
+  --edge-highlight: inset 0 1px 0 rgb(255 255 255 / 0.9); /* 1px lit top edge */
+
+  /* Spacing is Tailwind's 4px scale; page gutters and plane gaps: */
+  --gutter: 1rem;
+  --plane-gap: 1rem;
+
+  /* Motion — four durations, ease-out only. No bounce, no decorative loops.
+     Only transform and opacity are ever animated. Press scale is .98. */
+  --dur-press: 150ms; /* tactile feedback */
+  --dur-reveal: 180ms; /* fades and exits */
+  --dur-surface: 240ms; /* sheets, modals */
+  --dur-transit: 300ms; /* page transitions */
+  --parallax-max: 10px; /* hero drift against the content plane */
 
   --ease-press: cubic-bezier(0.2, 0, 0, 1);
   --ease-decelerate: cubic-bezier(0, 0, 0, 1); /* entrances */
   --ease-accelerate: cubic-bezier(0.3, 0, 1, 1); /* exits */
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1); /* selection only */
 }
 
-/* Dark palette applies when <html> carries the .dark class. The class is set
-   by the bootstrap script in index.html (pre-paint, no FOUC) and kept in sync
-   by ThemeContext, which resolves the light/dark/system preference.
-
-   Note: shadows are near-invisible on a near-black background, so dark mode
-   expresses elevation through borders and a top inner highlight instead —
-   see .surface-raised / .surface-floating below. */
+/* Dark palette applies when <html> carries .dark (set pre-paint by the script
+   in index.html, kept in sync by ThemeContext). Shadows vanish against near
+   black, so depth is carried by the lit top edge and a hairline border. */
 :root.dark {
   --color-accent: 79 176 176; /* #4FB0B0 */
   --color-accent-hover: 61 149 149; /* #3D9595 */
-  --color-accent-deep: 45 120 120; /* deeper teal for pressed states */
-  --color-accent-soft: 22 48 47; /* #16302F */
-  --color-on-accent: 15 26 26; /* #0F1A1A */
+  --color-accent-pressed: 45 120 120; /* #2D7878 */
+  --color-accent-tint: 22 48 47; /* #16302F */
+  --color-on-accent: 15 26 26; /* #0F1A1A — 6.91:1 on the accent */
 
   --color-bg: 18 18 17; /* #121211 */
+  --canvas-glow-a: 35 27 20; /* #231B14 ember */
+  --canvas-glow-b: 28 27 21; /* #1C1B15 olive dusk */
+
   --color-surface: 27 26 24; /* #1B1A18 */
   --color-surface-alt: 35 34 32; /* #232220 */
-  --color-border: 47 46 42; /* #2F2E2A */
-  --color-border-strong: 62 61 56; /* #3E3D38 */
-  --color-border-control: 112 110 102; /* #706E66 — 3.40:1 on #1B1A18 */
+  --color-border: 47 46 42;
+  --color-border-strong: 62 61 56;
+  --color-border-control: 112 110 102; /* 3.40:1 on #1B1A18 */
 
-  --color-text: 237 237 234; /* #EDEDEA */
-  --color-text-muted: 155 153 143; /* #9B998F */
-  --color-text-faint: 142 140 130; /* #8E8C82 — 5.5:1 on #121211 */
+  /* text 14.5:1+, muted 5.9:1+, faint 5.0:1+ on every dark stop */
+  --color-text: 237 237 234;
+  --color-text-muted: 155 153 143;
+  --color-text-faint: 142 140 130;
 
-  --color-success: 111 207 115; /* #6FCF73 */
-  --color-warning: 224 163 58; /* #E0A33A */
-  --color-danger: 229 115 107; /* #E5736B */
+  --color-success: 111 207 115;
+  --color-warning: 224 163 58;
+  --color-danger: 229 115 107;
+
+  --content-alpha: 0.8;
+  --chrome-alpha: 0.72;
+
+  --shadow-content: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-controls: 0 16px 40px -8px rgb(0 0 0 / 0.65);
+  --edge-highlight: inset 0 1px 0 rgb(255 255 255 / 0.07);
+}
+
+/* Reduced transparency: every translucent surface becomes opaque and the
+   blur is dropped. Declared after :root.dark so it wins in both themes. */
+@media (prefers-reduced-transparency: reduce) {
+  :root,
+  :root.dark {
+    --content-alpha: 1;
+    --chrome-alpha: 1;
+  }
+  .plane-chrome {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }
 
 @layer base {
@@ -148,7 +191,7 @@
     overflow-x: hidden;
   }
   body {
-    @apply bg-paper text-ink antialiased;
+    @apply bg-paper text-body text-ink antialiased;
     overscroll-behavior-y: none;
   }
   /* Prevent iOS zoom-on-focus by keeping inputs at 16px+. */
@@ -161,46 +204,82 @@
     outline: 2px solid rgb(var(--color-accent));
     outline-offset: 2px;
   }
-  /* Kill the grey tap flash on iOS — we provide our own press feedback. */
   a,
   button,
   [role='button'] {
     -webkit-tap-highlight-color: transparent;
   }
+
+  /* PLANE 1 — canvas. A position:fixed layer, not background-attachment:fixed
+     (unreliable on iOS Safari). Two soft radial light sources over the base
+     color; all stops fade to their own transparent so there are no hard edges.
+     It is aria-hidden, inert and never animated. */
+  #canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(70% 55% at 6% 0%, rgb(var(--canvas-glow-a)) 0%, rgb(var(--canvas-glow-a) / 0) 72%),
+      radial-gradient(65% 50% at 100% 100%, rgb(var(--canvas-glow-b)) 0%, rgb(var(--canvas-glow-b) / 0) 72%),
+      rgb(var(--color-bg));
+  }
+  #root {
+    position: relative;
+    z-index: 1;
+  }
 }
 
 @layer components {
-  /* Elevation helpers. In light mode these are shadows; in dark mode they
-     switch to border + inner highlight, which is how depth actually reads
-     against a near-black surface. */
-  .surface-raised {
-    box-shadow: var(--e1);
+  /* PLANE 2 — content. Lifted, softly translucent, lit on its top edge. */
+  .plane-content {
+    background-color: rgb(var(--color-surface) / var(--content-alpha));
+    border: 1px solid rgb(var(--color-border));
+    box-shadow: var(--shadow-content), var(--edge-highlight);
   }
-  .surface-floating {
-    box-shadow: var(--e3);
-  }
-  :root.dark .surface-raised {
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  :root.dark .plane-content {
     border-color: rgb(var(--color-border-strong));
   }
-  :root.dark .surface-floating {
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 16px 48px rgba(0, 0, 0, 0.6);
+
+  /* PLANE 3 chrome — header and tab bar. The ONLY two blurred layers. */
+  .plane-chrome {
+    background-color: rgb(var(--color-surface) / var(--chrome-alpha));
+    -webkit-backdrop-filter: blur(16px) saturate(1.15);
+    backdrop-filter: blur(16px) saturate(1.15);
   }
 }
 
-/* Respect reduced-motion preferences. Durations alone aren't enough — a
-   transform still *happens* instantly and can be disorienting, so neutralize
-   movement itself and leave opacity changes to carry the state change. */
+/* Hero glide: the dominant element drifts a few px against the content plane
+   as the page scrolls. Driven by CSS scroll timelines — no scroll listeners,
+   no JS. Unsupported browsers simply don't drift. */
+@keyframes hero-glide {
+  to {
+    transform: translateY(calc(var(--parallax-max) * -1));
+  }
+}
+@supports (animation-timeline: scroll()) {
+  .hero-glide {
+    animation: hero-glide linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0 220px;
+  }
+}
+
+/* Reduced motion: remove parallax and every scale/translate; opacity fades
+   remain and carry the state change. Spinners and skeleton breathing are
+   functional loading indicators and are kept. */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+  html {
+    scroll-behavior: auto;
   }
   .motion-safe-transform {
     transform: none !important;
+  }
+  .hero-glide {
+    animation: none !important;
+  }
+  .animate-scale-in,
+  .animate-toast-in {
+    animation-name: fade-in;
   }
 }

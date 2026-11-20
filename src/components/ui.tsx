@@ -13,58 +13,45 @@ import { Icon, type IconName } from './Icon';
 
 /* ---------- Buttons ----------
  * One interaction contract shared by every button in the app:
- *   hover   — lifts (-1px) and deepens by one elevation step
- *   press   — scales to .97, drops elevation (tactile "push")
- *   focus   — 2px accent ring, 2px offset, brand-colored
+ *   hover   — lifts 1px
+ *   press   — scales to .98 and drops from controls to content elevation
+ *   focus   — 2px accent ring, 2px offset
  *   disabled— 45% opacity, no pointer events, no hover/press
  *   loading — label swapped for a spinner, width locked so nothing reflows
  *   success — brief check-mark confirmation, then back to the label
- * `ghost` and `danger` are retained as aliases so existing call sites keep
- * working; `tertiary` and `destructive` are the names to use going forward.
+ * Only transform and opacity are animated; color and shadow changes are
+ * instant. Only `primary` carries a shadow — the one dominant action.
  */
 
-type ButtonVariant =
-  | 'primary'
-  | 'secondary'
-  | 'tertiary'
-  | 'destructive'
-  | 'success'
-  | 'ghost' // alias → tertiary
-  | 'danger'; // alias → destructive
+type ButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'destructive' | 'success';
 
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 const BUTTON_STYLES: Record<ButtonVariant, string> = {
   primary:
-    'bg-maroon text-on-accent shadow-e1 hover:bg-maroon-soft hover:shadow-e2 active:bg-maroon-deep active:shadow-none',
-  secondary:
-    'bg-card text-ink border border-line shadow-e1 hover:border-line-strong hover:shadow-e2 active:bg-cream active:shadow-none',
+    'bg-accent text-on-accent shadow-controls hover:bg-accent-hover active:bg-accent-pressed active:shadow-content',
+  secondary: 'bg-card text-ink border border-line-strong hover:bg-cream active:bg-cream',
   tertiary: 'bg-transparent text-ink-soft hover:bg-ink/5 hover:text-ink active:bg-ink/10',
-  ghost: 'bg-transparent text-ink-soft hover:bg-ink/5 hover:text-ink active:bg-ink/10',
   // text-on-accent, not text-white: the state tokens flip to LIGHT tints in
   // dark mode, where white text lands at 3.00:1 (danger), 1.94:1 (success) and
-  // 2.22:1 (warning) — all failing AA on the app's destructive actions.
-  // --color-on-accent already flips to near-black, giving 5.91:1 / 9.17:1.
-  destructive: 'bg-danger text-on-accent shadow-e1 hover:shadow-e2 hover:brightness-110 active:brightness-95 active:shadow-none',
-  danger: 'bg-danger text-on-accent shadow-e1 hover:shadow-e2 hover:brightness-110 active:brightness-95 active:shadow-none',
-  success: 'bg-success text-on-accent shadow-e1 hover:shadow-e2 hover:brightness-110 active:brightness-95 active:shadow-none',
+  // 2.22:1 (warning). --color-on-accent flips to near-black: 5.91:1 / 9.17:1.
+  destructive: 'bg-danger text-on-accent hover:brightness-110 active:brightness-95',
+  success: 'bg-success text-on-accent hover:brightness-110 active:brightness-95',
 };
 
 const BUTTON_SIZES: Record<ButtonSize, string> = {
-  // 44px floor on every size. `sm` was 34px, which put every compact button in
-  // the app under the minimum touch target.
-  sm: 'min-h-[44px] px-3 text-caption gap-1.5',
-  md: 'min-h-[44px] px-4 text-label gap-2',
+  // 44px floor on every size (WCAG 2.2 / iOS minimum touch target).
+  sm: 'min-h-[44px] px-3 text-label gap-1.5',
+  md: 'min-h-[44px] px-4 text-body gap-2',
   lg: 'min-h-[52px] px-5 text-body gap-2',
 };
 
 /** Shared across Button / IconButton / Fab so they feel identical to the touch. */
 const INTERACTION =
   'relative inline-flex items-center justify-center font-semibold select-none ' +
-  'transition-[background-color,border-color,box-shadow,transform,filter,opacity] ' +
-  'duration-reveal ease-press motion-safe-transform ' +
-  'hover:-translate-y-px active:translate-y-0 active:scale-[.97] ' +
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon focus-visible:ring-offset-2 focus-visible:ring-offset-paper ' +
+  'transition-[transform,opacity] duration-press ease-press motion-safe-transform ' +
+  'hover:-translate-y-px active:translate-y-0 active:scale-[.98] ' +
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-paper ' +
   'disabled:pointer-events-none disabled:opacity-45 disabled:shadow-none';
 
 /**
@@ -176,7 +163,7 @@ export function Fab({
     <button
       {...props}
       aria-label={label}
-      className={`${INTERACTION} h-14 gap-2 rounded-full bg-maroon px-5 text-label text-on-accent shadow-e3 hover:shadow-e3 hover:brightness-105 ${className}`}
+      className={`${INTERACTION} h-14 gap-2 rounded-full bg-accent px-5 text-body text-on-accent shadow-controls hover:brightness-105 ${className}`}
     >
       {children}
     </button>
@@ -188,25 +175,31 @@ export function Fab({
 export function Card({
   children,
   className = '',
-  accent,
+  edge,
+  quiet = false,
   interactive = false,
   as: Tag = 'section',
 }: {
   children: ReactNode;
   className?: string;
-  accent?: string;
+  /** No surface — a hairline-divided section. Use for secondary content so
+   *  a screen is not a stack of identical lifted cards. */
+  quiet?: boolean;
+  /** Identity or status color for a 3px top rule (a member's color, a danger
+   *  alert). Never the interaction accent. */
+  edge?: string;
   /** Adds hover lift + press feedback. Use when the whole card is a target. */
   interactive?: boolean;
   as?: 'section' | 'article' | 'div';
 }) {
   return (
     <Tag
-      className={`surface-raised rounded-card border border-line bg-card p-5 ${
+      className={`min-w-0 ${quiet ? 'border-t border-line pt-5' : 'plane-content rounded-lg p-5'} ${
         interactive
-          ? 'motion-safe-transform cursor-pointer transition-[box-shadow,transform,border-color] duration-reveal ease-press hover:-translate-y-0.5 hover:border-line-strong hover:shadow-e2 active:translate-y-0 active:scale-[.99]'
+          ? 'motion-safe-transform cursor-pointer transition-[transform] duration-press ease-press hover:-translate-y-0.5 hover:border-line-strong active:translate-y-0 active:scale-[.98]'
           : ''
       } ${className}`}
-      style={accent ? { borderTopColor: accent, borderTopWidth: 3 } : undefined}
+      style={edge ? { borderTopColor: edge, borderTopWidth: 3 } : undefined}
     >
       {children}
     </Tag>
@@ -215,8 +208,8 @@ export function Card({
 
 export function SectionTitle({ children, action }: { children: ReactNode; action?: ReactNode }) {
   return (
-    <div className="mb-3 flex items-center justify-between gap-3">
-      <h2 className="text-title text-ink">{children}</h2>
+    <div className="mb-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+      <h2 className="text-body font-semibold text-ink">{children}</h2>
       {action}
     </div>
   );
@@ -233,8 +226,8 @@ export function SectionTitle({ children, action }: { children: ReactNode; action
  * sync by hand.
  *
  * Every tone is verified >=4.5:1 against its own tint in both themes.
- * `info` maps to the brand accent rather than introducing a fifth hue —
- * the palette is deliberately one accent plus three states.
+ * `info` is neutral ink, not the accent: chips are labels, and the accent
+ * means "tappable" and nothing else.
  */
 export type ChipTone = 'neutral' | 'success' | 'warning' | 'danger' | 'info';
 
@@ -243,7 +236,7 @@ const CHIP_TONES: Record<ChipTone, string> = {
   success: 'bg-success/15 text-success',
   warning: 'bg-warning/15 text-warning',
   danger: 'bg-danger/15 text-danger',
-  info: 'bg-maroon/15 text-maroon',
+  info: 'bg-ink/10 text-ink',
 };
 
 export function Chip({
@@ -257,14 +250,14 @@ export function Chip({
 }) {
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-overline ${CHIP_TONES[tone]} ${className}`}
+      className={`inline-flex max-w-full items-center gap-1 break-words rounded-full px-2.5 py-0.5 text-caption font-bold ${CHIP_TONES[tone]} ${className}`}
     >
       {children}
     </span>
   );
 }
 
-/** Selectable filter chip. Selection springs; the rest is restrained. */
+/** Selectable filter chip. Selected = the interaction accent. */
 export function FilterChip({
   selected = false,
   count,
@@ -277,9 +270,9 @@ export function FilterChip({
       type="button"
       aria-pressed={selected}
       {...props}
-      className={`motion-safe-transform inline-flex min-h-[38px] shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3.5 text-label transition-[background-color,border-color,color,transform,box-shadow] duration-reveal ease-spring active:scale-[.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon focus-visible:ring-offset-2 focus-visible:ring-offset-paper ${
+      className={`motion-safe-transform inline-flex min-h-[44px] shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3.5 text-label transition-[transform] duration-press ease-press active:scale-[.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-paper ${
         selected
-          ? 'border-maroon bg-maroon text-on-accent shadow-e1'
+          ? 'border-accent bg-accent text-on-accent'
           : 'border-line bg-card text-ink-soft hover:border-line-strong hover:text-ink'
       } ${className}`}
     >
@@ -318,7 +311,7 @@ export function SegmentedControl<T extends string>({
           fading its own background in and out. */}
       <span
         aria-hidden="true"
-        className="motion-safe-transform absolute inset-y-1 left-1 z-0 rounded-[calc(var(--radius-md)-4px)] bg-card shadow-e1 transition-transform duration-surface ease-press"
+        className="absolute inset-y-1 left-1 z-0 rounded-[calc(var(--radius-md)-4px)] bg-card shadow-content motion-safe:transition-transform motion-safe:duration-surface motion-safe:ease-press"
         style={{
           width: `calc((100% - 0.5rem) / ${options.length})`,
           transform: `translateX(calc(${index} * 100%))`,
@@ -333,7 +326,7 @@ export function SegmentedControl<T extends string>({
             role="tab"
             aria-selected={on}
             onClick={() => onChange(o.value)}
-            className={`relative z-10 min-h-[36px] flex-1 rounded-[calc(var(--radius-md)-4px)] px-3 text-label transition-colors duration-reveal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon ${
+            className={`relative min-h-[44px] flex-1 rounded-[calc(var(--radius-md)-4px)] px-3 text-label focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
               on ? 'text-ink' : 'text-ink-faint hover:text-ink-soft'
             }`}
           >
@@ -366,7 +359,7 @@ export function SkeletonText({ lines = 3, className = '' }: { lines?: number; cl
 
 export function SkeletonCard({ className = '' }: { className?: string }) {
   return (
-    <div className={`surface-raised rounded-card border border-line bg-card p-5 ${className}`}>
+    <div className={`plane-content rounded-lg p-5 ${className}`}>
       <Skeleton className="mb-3 h-4 w-1/3" />
       <SkeletonText lines={3} />
     </div>
@@ -428,13 +421,13 @@ export function Collapsible({
   const [open, setOpen] = useState(defaultOpen);
   const id = useId();
   return (
-    <div className="surface-raised overflow-hidden rounded-card border border-line bg-card">
+    <div className="plane-content overflow-hidden rounded-lg">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         aria-controls={id}
-        className="flex min-h-[52px] w-full items-center justify-between gap-3 px-5 text-left text-title text-ink transition-colors duration-reveal hover:bg-cream/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-maroon"
+        className="flex min-h-[52px] w-full items-center justify-between gap-3 px-5 text-left text-body font-semibold text-ink hover:bg-cream/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent"
       >
         {title}
         <svg
@@ -443,17 +436,17 @@ export function Collapsible({
           viewBox="0 0 24 24"
           fill="none"
           aria-hidden="true"
-          className={`motion-safe-transform shrink-0 text-ink-faint transition-transform duration-surface ease-press ${
+          className={`shrink-0 text-ink-faint motion-safe:transition-transform motion-safe:duration-surface motion-safe:ease-press ${
             open ? 'rotate-180' : ''
           }`}
         >
           <path d="m6 9 6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </button>
-      {/* Grid-template-rows 0fr→1fr animates to auto height without JS measurement. */}
+      {/* Rows snap open (layout is never animated); opacity fades. */}
       <div
         id={id}
-        className={`grid transition-[grid-template-rows,opacity] duration-surface ease-press ${
+        className={`grid transition-opacity duration-surface ease-press ${
           open ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
         }`}
       >
@@ -490,7 +483,7 @@ export function Avatar({
       <span
         aria-hidden="true"
         className="inline-flex items-center justify-center rounded-full font-bold text-white"
-        style={{ width: size, height: size, backgroundColor: color, fontSize: size * 0.38 }}
+        style={{ width: size, height: size, backgroundColor: color, fontSize: Math.max(12, size * 0.38) }}
       >
         {initials}
       </span>
@@ -531,7 +524,7 @@ export function AvatarStack({
       {extra > 0 && (
         <span
           className="inline-flex items-center justify-center rounded-full bg-cream font-bold text-ink-soft ring-2 ring-paper"
-          style={{ width: size, height: size, fontSize: size * 0.34, marginLeft: -8 }}
+          style={{ width: size, height: size, fontSize: Math.max(12, size * 0.34), marginLeft: -8 }}
         >
           +{extra}
         </span>
@@ -555,13 +548,13 @@ export function Field({
 }) {
   const id = useId();
   return (
-    <div className="flex flex-col gap-1">
-      <label htmlFor={id} className="text-sm font-medium text-ink-soft">
+    <div className="flex min-w-0 flex-col gap-1">
+      <label htmlFor={id} className="text-label text-ink-soft">
         {label}
         {required && <span aria-hidden="true" className="text-danger"> *</span>}
       </label>
       {children(id)}
-      {hint && <p className="text-xs text-ink-faint">{hint}</p>}
+      {hint && <p className="text-caption text-ink-faint">{hint}</p>}
     </div>
   );
 }
@@ -574,8 +567,8 @@ export function Field({
 // so a dead field reads as dead. Without it a disabled input was pixel-identical
 // to a live one, and the only feedback was that typing did nothing.
 const inputClass =
-  'min-h-[44px] w-full rounded-xl border border-line-control bg-card px-3 text-base text-ink placeholder:text-ink-soft ' +
-  'focus:border-maroon focus:outline-none focus:ring-2 focus:ring-maroon/15 ' +
+  'min-h-[44px] w-full min-w-0 rounded-xl border border-line-control bg-card px-3 text-body text-ink placeholder:text-ink-soft ' +
+  'focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/15 ' +
   'disabled:cursor-not-allowed disabled:opacity-45 disabled:bg-cream';
 
 export function TextInput(props: InputHTMLAttributes<HTMLInputElement>) {
@@ -623,7 +616,7 @@ export function TextArea(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {
     <textarea
       rows={3}
       {...props}
-      className={`w-full rounded-xl border border-line-control bg-card px-3 py-2 text-base text-ink placeholder:text-ink-soft focus:border-maroon focus:outline-none focus:ring-2 focus:ring-maroon/15 ${props.className ?? ''}`}
+      className={`w-full rounded-xl border border-line-control bg-card px-3 py-2 text-body text-ink placeholder:text-ink-soft focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/15 ${props.className ?? ''}`}
     />
   );
 }
@@ -649,18 +642,18 @@ export function Stepper({
         type="button"
         aria-label={`Decrease ${label}`}
         onClick={() => onChange(Math.max(min, value - 1))}
-        className="flex h-11 w-11 items-center justify-center rounded-xl border border-line bg-card text-xl font-bold text-ink active:bg-paper"
+        className="flex h-11 w-11 items-center justify-center rounded-xl border border-line bg-card text-body font-bold text-ink active:bg-paper"
       >
         −
       </button>
-      <span className="min-w-[2.5rem] text-center text-lg font-bold tabular-nums" aria-live="polite">
+      <span className="min-w-[2.5rem] text-center text-body font-bold tabular-nums" aria-live="polite">
         {value}
       </span>
       <button
         type="button"
         aria-label={`Increase ${label}`}
         onClick={() => onChange(Math.min(max, value + 1))}
-        className="flex h-11 w-11 items-center justify-center rounded-xl border border-line bg-card text-xl font-bold text-ink active:bg-paper"
+        className="flex h-11 w-11 items-center justify-center rounded-xl border border-line bg-card text-body font-bold text-ink active:bg-paper"
       >
         +
       </button>
@@ -690,8 +683,8 @@ export function ProgressBar({
       className="h-2.5 w-full overflow-hidden rounded-full bg-line"
     >
       <div
-        className="h-full rounded-full transition-[width] duration-300"
-        style={{ width: `${clamped}%`, backgroundColor: color ?? 'rgb(var(--color-accent))' }}
+        className="h-full rounded-full"
+        style={{ width: `${clamped}%`, backgroundColor: color ?? 'rgb(var(--color-text-muted))' }}
       />
     </div>
   );
@@ -729,10 +722,9 @@ export function ReadinessRing({ value, size = 96 }: { value: number; size?: numb
           strokeLinecap="round"
           strokeDasharray={c}
           strokeDashoffset={c * (1 - clamped / 100)}
-          className="transition-[stroke-dashoffset] duration-500"
         />
       </svg>
-      <span className="absolute text-lg font-bold tabular-nums" style={{ color: tone }}>
+      <span className="absolute text-body font-bold tabular-nums" style={{ color: tone }}>
         {Math.round(clamped)}%
       </span>
     </div>
@@ -808,7 +800,7 @@ export function Modal({
 
   if (!mounted) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
+    <div className="fixed inset-0 z-overlay flex items-end justify-center sm:items-center">
       <div
         className={`absolute inset-0 bg-black/50 transition-opacity ease-press ${
           shown ? 'opacity-100 duration-surface' : 'opacity-0 duration-reveal'
@@ -822,7 +814,7 @@ export function Modal({
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}
-        className={`surface-floating motion-safe-transform relative z-10 max-h-[92dvh] w-full overflow-y-auto rounded-t-xl bg-paper p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] outline-none transition-[transform,opacity] sm:rounded-xl ${
+        className={`motion-safe-transform relative max-h-[92dvh] w-full overflow-y-auto rounded-t-xl border border-line bg-paper p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-controls outline-none transition-[transform,opacity] sm:rounded-xl ${
           wide ? 'sm:max-w-2xl' : 'sm:max-w-lg'
         } ${
           shown
@@ -833,7 +825,7 @@ export function Modal({
         {/* Grab handle — signals "this is a sheet you can dismiss" on mobile. */}
         <div aria-hidden="true" className="mx-auto mb-3 h-1 w-9 rounded-full bg-line-strong sm:hidden" />
         <div className="mb-4 flex items-start justify-between gap-4">
-          <h2 id={titleId} className="text-title-lg text-ink">
+          <h2 id={titleId} className="text-body font-bold text-ink">
             {title}
           </h2>
           <IconButton label="Close dialog" onClick={onClose} className="-mr-1 shrink-0">
@@ -867,13 +859,13 @@ export function ConfirmDialog({
 }) {
   return (
     <Modal open={open} onClose={onClose} title={title}>
-      {body && <p className="mb-4 text-sm text-ink-soft">{body}</p>}
+      {body && <p className="mb-4 text-body text-ink-soft">{body}</p>}
       <div className="flex gap-2">
         <Button variant="secondary" className="flex-1" onClick={onClose}>
           Cancel
         </Button>
         <Button
-          variant="danger"
+          variant="destructive"
           className="flex-1"
           onClick={() => {
             onConfirm();
@@ -906,15 +898,14 @@ export function EmptyState({
   action?: ReactNode;
 }) {
   return (
-    <div className="surface-raised flex animate-fade-in flex-col items-center gap-3 rounded-card border border-line bg-card px-6 py-12 text-center">
+    <div className="plane-content flex animate-fade-in flex-col items-center gap-3 rounded-lg px-6 py-12 text-center">
       {icon && (
         <span className="relative flex h-16 w-16 items-center justify-center">
-          <span aria-hidden="true" className="absolute inset-0 rounded-full bg-maroon-tint" />
-          <span aria-hidden="true" className="absolute inset-2 rounded-full bg-maroon/10" />
-          <Icon name={icon} size={28} className="relative text-maroon" />
+          <span aria-hidden="true" className="absolute inset-0 rounded-full bg-cream" />
+          <Icon name={icon} size={28} className="relative text-ink-soft" />
         </span>
       )}
-      <p className="text-title-lg text-ink">{title}</p>
+      <p className="text-body font-bold text-ink">{title}</p>
       {body && <p className="max-w-sm text-body text-ink-soft">{body}</p>}
       {action && <div className="mt-2">{action}</div>}
     </div>
@@ -942,31 +933,8 @@ export function Warning({ children, tone = 'amber' }: { children: ReactNode; ton
 export function Spinner({ label = 'Loading' }: { label?: string }) {
   return (
     <div className="flex items-center justify-center gap-3 py-10 text-ink-faint" role="status">
-      <span className="h-5 w-5 animate-spin rounded-full border-2 border-line border-t-maroon" aria-hidden="true" />
-      <span className="text-sm">{label}…</span>
-    </div>
-  );
-}
-
-/* ---------- Stat tile ---------- */
-
-export function Stat({
-  label,
-  value,
-  sub,
-  tone,
-}: {
-  label: string;
-  value: string;
-  sub?: string;
-  tone?: 'good' | 'bad' | 'neutral';
-}) {
-  const valueColor = tone === 'bad' ? 'text-danger' : tone === 'good' ? 'text-success' : 'text-ink';
-  return (
-    <div className="surface-raised rounded-card border border-line bg-card p-4">
-      <p className="text-overline uppercase text-ink-faint">{label}</p>
-      <p className={`mt-1.5 text-title-lg tabular-nums ${valueColor}`}>{value}</p>
-      {sub && <p className="mt-0.5 text-caption text-ink-faint">{sub}</p>}
+      <span className="h-5 w-5 animate-spin rounded-full border-2 border-line border-t-ink" aria-hidden="true" />
+      <span className="text-body">{label}…</span>
     </div>
   );
 }

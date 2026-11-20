@@ -68,15 +68,29 @@ export function SearchPage() {
     );
   };
 
+  const prices = (results ?? []).flatMap((r) => (r.price != null ? [r.price] : []));
+  const cheapest = prices.length > 0 ? Math.min(...prices) : null;
+
   return (
     <div className="flex flex-col gap-4">
-      <div>
-        <h1 className="text-xl font-bold text-ink">Shop for items</h1>
-        <p className="text-sm text-ink-faint">
+      {/* Hero: the lowest price found once there are results, otherwise the page itself. */}
+      <header className="hero-glide pt-2">
+        <h1 className="text-label text-ink-soft">Shop for items</h1>
+        <p className="mt-1 text-ink">
+          {cheapest != null ? (
+            <>
+              <span className="text-display tabular-nums">{money(cheapest)}</span>{' '}
+              <span className="text-body font-semibold text-ink-soft">lowest of {results?.length} results</span>
+            </>
+          ) : (
+            <span className="text-display">Shop</span>
+          )}
+        </p>
+        <p className="mt-1 text-body text-ink-soft">
           Search real products, then save them to {activeTrip ? `“${activeTrip.name}”` : 'your trip'} and
           your Bag. Buying happens at the retailer.
         </p>
-      </div>
+      </header>
 
       <form onSubmit={(e) => void search(e)} className="flex flex-col gap-3">
         <div className="flex gap-2">
@@ -93,7 +107,7 @@ export function SearchPage() {
         <button
           type="button"
           onClick={() => setShowFilters((s) => !s)}
-          className="self-start text-xs font-semibold text-maroon underline underline-offset-2"
+          className="inline-flex min-h-[44px] items-center self-start text-label font-semibold text-accent underline underline-offset-2"
           aria-expanded={showFilters}
         >
           {showFilters ? 'Hide filters' : 'Filters (price, brand, size, color, store…)'}
@@ -132,14 +146,14 @@ export function SearchPage() {
 
       {/* Compare tray */}
       {compare.length >= 2 && (
-        <Card accent="rgb(var(--color-accent))">
-          <p className="mb-2 text-sm font-bold text-ink">Comparing {compare.length} products</p>
+        <Card>
+          <p className="mb-2 text-body font-bold text-ink">Comparing {compare.length} products</p>
           <div className="grid gap-2 sm:grid-cols-3">
             {compare.map((r) => (
               <div key={r.id} className="rounded-xl border border-line p-2 text-center">
                 {r.imageUrl && <img src={r.imageUrl} alt="" className="mx-auto h-20 object-contain" loading="lazy" />}
-                <p className="mt-1 line-clamp-2 text-xs font-medium text-ink">{r.name}</p>
-                <p className="text-sm font-bold tabular-nums text-maroon">{money(r.price)}</p>
+                <p className="mt-1 line-clamp-2 text-label font-medium text-ink">{r.name}</p>
+                <p className="text-body font-bold tabular-nums text-ink">{money(r.price)}</p>
                 <p className="text-caption text-ink-faint">{r.store}</p>
                 {r.rating != null && <p className="flex items-center justify-center gap-0.5 text-caption text-ink-soft"><Icon name="star" size={11} /> {r.rating}{r.reviewCount ? ` (${r.reviewCount})` : ''}</p>}
                 <p className="text-caption text-ink-faint">
@@ -148,7 +162,7 @@ export function SearchPage() {
               </div>
             ))}
           </div>
-          <Button variant="ghost" className="mt-2 !min-h-[34px] text-xs" onClick={() => setCompare([])}>
+          <Button variant="tertiary" className="mt-2 text-caption" onClick={() => setCompare([])}>
             Clear comparison
           </Button>
         </Card>
@@ -173,13 +187,13 @@ export function SearchPage() {
                   )}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="line-clamp-2 text-sm font-medium text-ink">{r.name}</p>
-                  <p className="text-xs text-ink-faint">{r.store}</p>
+                  <p className="line-clamp-2 text-body font-medium text-ink">{r.name}</p>
+                  <p className="text-caption text-ink-faint">{r.store}</p>
                   <p className="mt-0.5">
-                    <span className="text-base font-bold tabular-nums text-maroon">{money(r.price)}</span>
+                    <span className="text-body font-bold tabular-nums text-ink">{money(r.price)}</span>
                     {r.originalPrice != null && r.price != null && r.originalPrice > r.price && (
                       <>
-                        <span className="ml-1.5 text-xs text-ink-faint line-through">{money(r.originalPrice)}</span>
+                        <span className="ml-1.5 text-caption text-ink-faint line-through">{money(r.originalPrice)}</span>
                         {r.discountPercent != null && (
                           <Chip tone="success" className="ml-1.5">-{r.discountPercent}%</Chip>
                         )}
@@ -204,7 +218,7 @@ export function SearchPage() {
                     </span>
                   </p>
                   <div className="mt-1.5 flex flex-wrap gap-1.5">
-                    <Button className="!min-h-[34px] px-2.5 text-xs" onClick={() => startSave(r)}>
+                    <Button className=" px-2.5 text-caption" onClick={() => startSave(r)}>
                       <Icon name="bag" size={14} /> Add to Bag
                     </Button>
                     {r.url && (
@@ -212,14 +226,14 @@ export function SearchPage() {
                         href={r.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex min-h-[34px] items-center rounded-xl border border-line bg-card px-2.5 text-xs font-semibold text-ink"
+                        className="inline-flex min-h-[34px] items-center rounded-xl border border-line bg-card px-2.5 text-label font-semibold text-ink"
                       >
                         Retailer ↗
                       </a>
                     )}
                     <Button
-                      variant="ghost"
-                      className="!min-h-[34px] px-2 text-xs"
+                      variant="tertiary"
+                      className=" px-2 text-caption"
                       aria-pressed={compare.some((x) => x.id === r.id)}
                       onClick={() => toggleCompare(r)}
                     >
@@ -234,7 +248,7 @@ export function SearchPage() {
       )}
 
       {results && results.length > 0 && (
-        <p className="text-center text-xs text-ink-faint">
+        <p className="text-center text-caption text-ink-faint">
           Prices come from the search provider and can change at the retailer — verify before buying.
         </p>
       )}

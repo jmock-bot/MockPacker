@@ -4,7 +4,7 @@ import { useTrip } from '../context/TripContext';
 import { useToast } from '../context/ToastContext';
 import { BAG_STATUSES, BAG_STATUS_META } from '../lib/statuses';
 import { money } from '../lib/format';
-import { Button, Card, Chip, EmptyState, Select, Spinner, Stat } from '../components/ui';
+import { Button, Card, Chip, EmptyState, Select, Spinner } from '../components/ui';
 import { MemberChip, TripImage } from '../components/shared';
 import { Icon } from '../components/Icon';
 import { ItemFormModal } from '../components/ItemFormModal';
@@ -40,7 +40,7 @@ export function BagPage() {
         icon="bag"
         title="No trip selected"
         body="The Bag shows a trip's inventory — open a trip first."
-        action={<Link to="/trips" className="text-sm font-semibold text-maroon underline underline-offset-2">Go to Trips →</Link>}
+        action={<Link to="/trips" className="inline-flex min-h-[44px] items-center text-body font-semibold text-accent underline underline-offset-2">Go to Trips →</Link>}
       />
     );
   if (loading) return <Spinner label="Opening the bag" />;
@@ -51,21 +51,21 @@ export function BagPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      {/* Hero: what's left to spend. */}
+      <header className="hero-glide flex flex-wrap items-end justify-between gap-3 pt-2">
         <div>
-          <h1 className="text-xl font-bold text-ink">Bag</h1>
-          <p className="text-sm text-ink-faint">
-            Trip inventory — own it, need it, ordered it, got it.
+          <h1 className="text-label text-ink-soft">Bag</h1>
+          <p className="mt-1 text-ink">
+            <span className="text-display tabular-nums">{money(estSpend)}</span>{' '}
+            <span className="text-body font-semibold text-ink-soft">to spend</span>
+          </p>
+          <p className="mt-1 text-body text-ink-soft">
+            <span className={`font-bold ${toBuy.length ? 'text-danger' : 'text-success'}`}>{toBuy.length}</span> to buy ·{' '}
+            <span className="font-bold text-ink">{inTransit.length}</span> on the way
           </p>
         </div>
         <Button onClick={() => navigate('/search')}><Icon name="search" size={18} /> Shop for items</Button>
-      </div>
-
-      <div className="grid grid-cols-3 gap-2">
-        <Stat label="To buy" value={String(toBuy.length)} tone={toBuy.length ? 'bad' : 'good'} />
-        <Stat label="On the way" value={String(inTransit.length)} />
-        <Stat label="Est. to spend" value={money(estSpend)} sub="for needed items" />
-      </div>
+      </header>
 
       {/* Status pipeline filter */}
       <div className="flex gap-1.5 overflow-x-auto pb-1" role="group" aria-label="Filter by bag status">
@@ -73,8 +73,8 @@ export function BagPage() {
           type="button"
           onClick={() => setStatusFilter('all')}
           aria-pressed={statusFilter === 'all'}
-          className={`min-h-[38px] shrink-0 rounded-full border px-3 text-xs font-semibold ${
-            statusFilter === 'all' ? 'border-maroon bg-maroon text-on-accent' : 'border-line bg-card text-ink-soft'
+          className={`min-h-[44px] shrink-0 rounded-full border px-3 text-label font-semibold ${
+            statusFilter === 'all' ? 'border-accent bg-accent text-on-accent' : 'border-line bg-card text-ink-soft'
           }`}
         >
           All ({items.length})
@@ -87,8 +87,8 @@ export function BagPage() {
               type="button"
               onClick={() => setStatusFilter(s)}
               aria-pressed={statusFilter === s}
-              className={`min-h-[38px] shrink-0 rounded-full border px-3 text-xs font-semibold ${
-                statusFilter === s ? 'border-maroon bg-maroon text-on-accent' : 'border-line bg-card text-ink-soft'
+              className={`min-h-[44px] shrink-0 rounded-full border px-3 text-label font-semibold ${
+                statusFilter === s ? 'border-accent bg-accent text-on-accent' : 'border-line bg-card text-ink-soft'
               }`}
             >
               {BAG_STATUS_META[s].label} ({count})
@@ -121,7 +121,7 @@ export function BagPage() {
           {filtered.map((item) => {
             const member = members.find((m) => m.id === item.member_id);
             return (
-              <Card key={item.id} className="flex items-start gap-3 !p-3">
+              <Card key={item.id} className="flex flex-wrap items-start gap-3 !p-3 sm:flex-nowrap">
                 {item.external_image_url ? (
                   <TripImage
                     photo={{ external_url: item.external_image_url }}
@@ -134,9 +134,9 @@ export function BagPage() {
                   </div>
                 )}
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-ink">
+                  <p className="text-body font-semibold text-ink">
                     {item.name}
-                    {item.qty > 1 && <span className="ml-1 text-xs font-normal text-ink-faint">×{item.qty}</span>}
+                    {item.qty > 1 && <span className="ml-1 text-caption font-normal text-ink-faint">×{item.qty}</span>}
                   </p>
                   <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
                     {member && <MemberChip member={member} />}
@@ -144,7 +144,7 @@ export function BagPage() {
                     {item.packed && <Chip tone="success"><Icon name="check" size={12} /> Packed</Chip>}
                     {item.store && <Chip tone="neutral">{item.store}</Chip>}
                     {item.est_price != null && (
-                      <span className="text-xs font-semibold tabular-nums text-ink">{money(item.est_price)}</span>
+                      <span className="text-label font-semibold tabular-nums text-ink">{money(item.est_price)}</span>
                     )}
                   </div>
                   {item.product_url && (
@@ -152,13 +152,13 @@ export function BagPage() {
                       href={item.product_url}
                       target="_blank"
                       rel="noreferrer"
-                      className="mt-0.5 inline-block text-xs font-semibold text-maroon underline underline-offset-2"
+                      className="inline-flex min-h-[44px] items-center mt-0.5 inline-block text-label font-semibold text-accent underline underline-offset-2"
                     >
                       View at retailer ↗
                     </a>
                   )}
                 </div>
-                <div className="flex shrink-0 flex-col items-end gap-1.5">
+                <div className="flex w-full shrink-0 flex-row flex-wrap items-center justify-between gap-1.5 sm:w-auto sm:flex-col sm:items-end">
                   <Select
                     value={item.status}
                     onChange={(e) => {
@@ -169,7 +169,7 @@ export function BagPage() {
                       });
                     }}
                     aria-label={`${item.name} status`}
-                    className="!min-h-[36px] max-w-[140px] !text-xs"
+                    className="max-w-[140px] !text-caption"
                   >
                     {BAG_STATUSES.map((s) => (
                       <option key={s} value={s}>{BAG_STATUS_META[s].label}</option>
@@ -177,18 +177,18 @@ export function BagPage() {
                   </Select>
                   <div className="flex gap-1">
                     <Button
-                      variant={item.packed ? 'secondary' : 'success'}
+                      variant="secondary"
                       className="px-3 text-caption"
                       onClick={() => void setItemPacked(item.id, !item.packed)}
                     >
                       {item.packed ? 'Unpack' : 'Mark packed'}
                     </Button>
-                    <Button variant="ghost" className="px-3 text-caption" onClick={() => setEditing(item)}>
+                    <Button variant="tertiary" className="px-3 text-caption" onClick={() => setEditing(item)}>
                       Edit
                     </Button>
                   </div>
                   {(item.status === 'ordered' || item.status === 'shipped') && (
-                    <Link to="/shipments" className="text-caption font-semibold text-maroon underline underline-offset-2">
+                    <Link to="/shipments" className="inline-flex min-h-[44px] items-center text-caption font-semibold text-accent underline underline-offset-2">
                       Track it →
                     </Link>
                   )}
@@ -199,7 +199,7 @@ export function BagPage() {
         </div>
       )}
 
-      <p className="text-center text-xs text-ink-faint">
+      <p className="text-center text-caption text-ink-faint">
         MockPacker doesn't process purchases — product links take you to the retailer to buy.
       </p>
 

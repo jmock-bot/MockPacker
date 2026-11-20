@@ -153,7 +153,7 @@ export function ImportChatModal({ open, onClose }: { open: boolean; onClose: () 
     <Modal open={open} onClose={close} title={step === 0 ? 'Create a trip from a group chat' : step === 1 ? 'We found a trip' : 'Trip created!'}>
       {step === 0 && (
         <div className="flex flex-col gap-3">
-          <p className="text-sm text-ink-soft">
+          <p className="text-body text-ink-soft">
             Paste your group's chat — MockPacker looks for dates, a destination, who's going, and
             anything you mentioned needing.
           </p>
@@ -167,7 +167,7 @@ export function ImportChatModal({ open, onClose }: { open: boolean; onClose: () 
           <button
             type="button"
             onClick={() => setRaw(EXAMPLE_CHAT_TEXT)}
-            className="self-start text-xs font-semibold text-maroon underline underline-offset-2"
+            className="self-start text-label font-semibold text-accent underline underline-offset-2"
           >
             Try an example
           </button>
@@ -179,7 +179,7 @@ export function ImportChatModal({ open, onClose }: { open: boolean; onClose: () 
 
       {step === 1 && (
         <div className="flex flex-col gap-4">
-          <p className="text-sm text-ink-soft">
+          <p className="text-body text-ink-soft">
             Here's what we picked up — edit anything before creating the trip.
           </p>
           <Field label="Trip name" required>
@@ -260,10 +260,10 @@ export function ImportChatModal({ open, onClose }: { open: boolean; onClose: () 
           </Field>
           {detectedActivities.length > 0 && (
             <div>
-              <p className="mb-1.5 text-sm font-medium text-ink-soft">Detected</p>
+              <p className="mb-1.5 text-body font-medium text-ink-soft">Detected</p>
               <div className="flex flex-wrap gap-1.5">
                 {detectedActivities.map((a) => (
-                  <Chip key={a.label} className="bg-maroon-tint text-maroon">
+                  <Chip key={a.label} tone="info">
                     {a.label}
                   </Chip>
                 ))}
@@ -288,8 +288,8 @@ export function ImportChatModal({ open, onClose }: { open: boolean; onClose: () 
           <span className="flex h-[52px] w-[52px] items-center justify-center rounded-full bg-success/15">
             <Icon name="check" size={26} className="text-success" />
           </span>
-          <h3 className="text-base font-bold text-ink">{createdName} is ready</h3>
-          <p className="text-sm text-ink-soft">
+          <h3 className="text-body font-bold text-ink">{createdName} is ready</h3>
+          <p className="text-body text-ink-soft">
             The packing list and trip chat are already synced with what was in your group chat.
           </p>
           <Button

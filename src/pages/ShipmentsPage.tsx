@@ -41,29 +41,35 @@ export function ShipmentsPage() {
         icon="truck"
         title="No trip selected"
         body="Shipment tracking lives inside a trip."
-        action={<Link to="/trips" className="text-sm font-semibold text-maroon underline underline-offset-2">Go to Trips →</Link>}
+        action={<Link to="/trips" className="inline-flex min-h-[44px] items-center text-body font-semibold text-accent underline underline-offset-2">Go to Trips →</Link>}
       />
     );
   if (loading) return <Spinner label="Loading shipments" />;
 
   const hasRisk =
     risk.late.length > 0 || risk.close.length > 0 || risk.noTracking.length > 0 || risk.notOrdered.length > 0;
+  const onTheWay = shipments.filter((s) => s.status !== 'delivered').length;
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      {/* Hero: how many packages are still on the way. */}
+      <header className="hero-glide flex flex-wrap items-end justify-between gap-3 pt-2">
         <div>
-          <h1 className="text-xl font-bold text-ink">Shipments</h1>
-          <p className="text-sm text-ink-faint">
+          <h1 className="text-label text-ink-soft">Shipments</h1>
+          <p className="mt-1 text-ink">
+            <span className="text-display tabular-nums">{onTheWay}</span>{' '}
+            <span className="text-body font-semibold text-ink-soft">on the way</span>
+          </p>
+          <p className="mt-1 text-body text-ink-soft">
             Departure {shortDate(activeTrip.start_date)} — everything needs to land before then.
           </p>
         </div>
         <Button onClick={() => { setEditing(null); setFormOpen(true); }}><Icon name="plus" size={16} /> Add shipment</Button>
-      </div>
+      </header>
 
       {/* Delivery risk */}
       {hasRisk && (
-        <Card accent="rgb(var(--color-danger))">
+        <Card edge="rgb(var(--color-danger))">
           <SectionTitle><span className="inline-flex items-center gap-1.5"><Icon name="alert" size={16} /> Delivery Risk</span></SectionTitle>
           <div className="flex flex-col gap-2">
             {risk.late.map((s) => (
@@ -121,9 +127,9 @@ export function ShipmentsPage() {
               <Card key={s.id} className="!p-3">
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-ink">
+                    <p className="text-body font-semibold text-ink">
                       {s.retailer || carrierName(s.carrier)}
-                      {s.order_number && <span className="ml-1.5 text-xs font-normal text-ink-faint">#{s.order_number}</span>}
+                      {s.order_number && <span className="ml-1.5 text-caption font-normal text-ink-faint">#{s.order_number}</span>}
                     </p>
                     <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
                       <Chip className={meta.chip}>{meta.label}</Chip>
@@ -132,7 +138,7 @@ export function ShipmentsPage() {
                       {item && <Chip tone="info"><Icon name="bag" size={12} /> {item.name}</Chip>}
                     </div>
                   </div>
-                  <div className="text-right text-xs text-ink-faint">
+                  <div className="text-right text-caption text-ink-faint">
                     {s.eta_date && (
                       <p className={s.eta_date >= activeTrip.start_date ? 'font-bold text-danger' : ''}>
                         ETA {shortDate(s.eta_date)}
@@ -148,18 +154,18 @@ export function ShipmentsPage() {
                     {[0, 1, 2, 3, 4, 5].map((i) => (
                       <span
                         key={i}
-                        className={`h-1.5 flex-1 rounded-full ${i <= progress ? (s.status === 'delivered' ? 'bg-success' : 'bg-maroon') : 'bg-line'}`}
+                        className={`h-1.5 flex-1 rounded-full ${i <= progress ? (s.status === 'delivered' ? 'bg-success' : 'bg-ink') : 'bg-line'}`}
                       />
                     ))}
                   </div>
                 )}
                 {meta.problem && (
-                  <p className="mt-1.5 text-xs font-semibold text-danger">
+                  <p className="mt-1.5 text-label font-semibold text-danger">
                     Needs attention — check with the carrier or retailer.
                   </p>
                 )}
                 {s.last_scan && (
-                  <p className="mt-1.5 flex items-center gap-1 text-xs text-ink-faint"><Icon name="pin" size={13} /> Latest scan: {s.last_scan}</p>
+                  <p className="mt-1.5 flex items-center gap-1 text-caption text-ink-faint"><Icon name="pin" size={13} /> Latest scan: {s.last_scan}</p>
                 )}
 
                 <div className="mt-2 flex flex-wrap gap-1.5">
@@ -168,15 +174,15 @@ export function ShipmentsPage() {
                       href={link}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex min-h-[34px] items-center rounded-xl border border-line bg-card px-2.5 text-xs font-semibold text-ink"
+                      className="inline-flex min-h-[44px] items-center rounded-md border border-line-strong bg-card px-3 text-label text-ink"
                     >
                       Track on {carrierName(s.carrier)} ↗
                     </a>
                   )}
                   {s.status !== 'delivered' && (
                     <Button
-                      variant="success"
-                      className="!min-h-[34px] px-2.5 text-xs"
+                      variant="secondary"
+                      className="px-2.5 text-caption"
                       onClick={() => {
                         void saveShipment({ id: s.id, status: 'delivered', packing_item_id: s.packing_item_id }).then(() => {
                           void postFeed('shipping', `${s.retailer ?? carrierName(s.carrier)} package was delivered`);
@@ -187,10 +193,10 @@ export function ShipmentsPage() {
                       <Icon name="check" size={14} /> Delivered
                     </Button>
                   )}
-                  <Button variant="ghost" className="!min-h-[34px] px-2.5 text-xs" onClick={() => { setEditing(s); setFormOpen(true); }}>
+                  <Button variant="tertiary" className="px-2.5 text-caption" onClick={() => { setEditing(s); setFormOpen(true); }}>
                     Edit
                   </Button>
-                  <Button variant="ghost" className="!min-h-[34px] px-2.5 text-xs text-danger" onClick={() => setDeleteTarget(s)}>
+                  <Button variant="tertiary" className="px-2.5 text-caption text-danger" onClick={() => setDeleteTarget(s)}>
                     Delete
                   </Button>
                 </div>
@@ -200,7 +206,7 @@ export function ShipmentsPage() {
         </div>
       )}
 
-      <p className="text-center text-xs text-ink-faint">
+      <p className="text-center text-caption text-ink-faint">
         Live carrier tracking uses a secure server-side integration (see{' '}
         <code>netlify/functions/track-shipment.ts</code>) — statuses can also be updated manually.
       </p>

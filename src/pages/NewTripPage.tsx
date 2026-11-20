@@ -156,16 +156,20 @@ export function NewTripPage() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <h1 className="text-xl font-bold text-ink">Plan a Trip</h1>
+      {/* Hero: the current step. */}
+      <header className="hero-glide pt-2">
+        <h1 className="text-label text-ink-soft">Plan a Trip · Step {step + 1} of {STEPS.length}</h1>
+        <p className="mt-1 text-display text-ink">{STEPS[step]}</p>
+      </header>
       {/* Step indicator */}
       <ol className="my-4 flex items-center gap-1" aria-label={`Step ${step + 1} of ${STEPS.length}: ${STEPS[step]}`}>
         {STEPS.map((label, i) => (
           <li key={label} className="flex flex-1 flex-col items-center gap-1">
             <span
               aria-hidden="true"
-              className={`h-1.5 w-full rounded-full ${i <= step ? 'bg-maroon' : 'bg-line'}`}
+              className={`h-1.5 w-full rounded-full ${i <= step ? 'bg-ink' : 'bg-line'}`}
             />
-            <span className={`text-caption font-semibold ${i === step ? 'text-maroon' : 'text-ink-faint'}`}>
+            <span className="sr-only">
               {label}
             </span>
           </li>
@@ -226,12 +230,12 @@ export function NewTripPage() {
                 <TextInput id={id} value={departLocation} onChange={(e) => setDepartLocation(e.target.value)} placeholder="Atlanta, GA" />
               )}
             </Field>
-            <label className="flex min-h-[44px] cursor-pointer items-center gap-3 text-sm font-medium text-ink-soft">
+            <label className="flex min-h-[44px] cursor-pointer items-center gap-3 text-body font-medium text-ink-soft">
               <input
                 type="checkbox"
                 checked={laundry}
                 onChange={(e) => setLaundry(e.target.checked)}
-                className="h-5 w-5 rounded accent-[#0B6E6E]"
+                className="h-5 w-5 rounded accent-accent"
               />
               Laundry will be available (packs lighter)
             </label>
@@ -277,7 +281,7 @@ export function NewTripPage() {
             <Field label="Trip notes (optional)" hint="Multiple stops? List them here — multi-destination support carries them with the trip.">
               {(id) => <TextArea id={id} value={notes} onChange={(e) => setNotes(e.target.value)} />}
             </Field>
-            <p className="flex items-center gap-1 text-xs text-ink-faint">
+            <p className="flex items-center gap-1 text-caption text-ink-faint">
               <Icon name="cloud" size={14} /> MockPacker uses the destination to pull the weather forecast and tailor the packing
               list.
             </p>
@@ -286,7 +290,7 @@ export function NewTripPage() {
 
         {step === 2 && (
           <>
-            <p className="text-sm text-ink-soft">
+            <p className="text-body text-ink-soft">
               Add the people traveling with you. They'll each get their own packing checklist, and
               you can send invitation links from the Group page after the trip is created.
             </p>
@@ -327,8 +331,8 @@ export function NewTripPage() {
                     <option value="viewer">Viewer</option>
                   </Select>
                   <Button
-                    variant="ghost"
-                    className="!min-h-[36px] px-2 text-xs text-danger"
+                    variant="tertiary"
+                    className=" px-2 text-caption text-danger"
                     onClick={() => setTravelers((prev) => prev.filter((_, j) => j !== i))}
                   >
                     Remove
@@ -347,7 +351,7 @@ export function NewTripPage() {
 
         {step === 3 && (
           <>
-            <p className="text-sm text-ink-soft">
+            <p className="text-body text-ink-soft">
               What's on the agenda? Pick everything that applies — the packing engine uses this to
               add gear, outfits, and equipment.
             </p>
@@ -360,11 +364,11 @@ export function NewTripPage() {
                     type="button"
                     onClick={() => toggleKind(k.id)}
                     aria-pressed={on}
-                    className={`flex min-h-[48px] items-center gap-2 rounded-xl border px-3 text-left text-sm font-medium transition-colors ${
-                      on ? 'border-maroon bg-maroon-tint text-maroon' : 'border-line bg-card text-ink-soft'
+                    className={`flex min-h-[48px] items-center gap-2 rounded-xl border px-3 text-left text-body font-medium ${
+                      on ? 'border-accent bg-accent-tint text-accent' : 'border-line bg-card text-ink-soft'
                     }`}
                   >
-                    <span aria-hidden="true">{k.icon}</span>
+                    <Icon name={k.icon} size={18} className="shrink-0" />
                     {k.label}
                   </button>
                 );
@@ -377,7 +381,7 @@ export function NewTripPage() {
             </Field>
             {[...selectedKinds].length > 0 && (
               <div className="flex flex-col gap-3">
-                <p className="text-sm font-semibold text-ink">Add details (optional)</p>
+                <p className="text-body font-semibold text-ink">Add details (optional)</p>
                 {[...selectedKinds].map((id) => {
                   const kind = ACTIVITY_KINDS.find((k) => k.id === id);
                   if (!kind) return null;
@@ -386,8 +390,8 @@ export function NewTripPage() {
                     setActivityDetails((prev) => ({ ...prev, [id]: { ...prev[id], ...patch } }));
                   return (
                     <details key={id} className="rounded-xl border border-line bg-card p-3">
-                      <summary className="cursor-pointer text-sm font-semibold text-ink">
-                        {kind.icon} {kind.label}
+                      <summary className="cursor-pointer text-body font-semibold text-ink">
+                        <span className="inline-flex items-center gap-2"><Icon name={kind.icon} size={16} /> {kind.label}</span>
                       </summary>
                       <div className="mt-3 grid gap-3 sm:grid-cols-2">
                         <TextInput type="date" value={d.date ?? ''} min={startDate} max={endDate} onChange={(e) => set({ date: e.target.value || null })} aria-label={`${kind.label} date`} />
@@ -422,13 +426,13 @@ export function NewTripPage() {
 
         {step === 4 && (
           <>
-            <p className="text-sm text-ink-soft">Ready? Here's what MockPacker will set up:</p>
-            <ul className="flex flex-col gap-1.5 text-sm text-ink-soft">
-              <li className="flex items-start gap-2"><Icon name="briefcase" size={16} className="mt-0.5 shrink-0 text-maroon" /> <span><strong className="text-ink">{name || 'Your trip'}</strong> — {city}{region ? `, ${region}` : ''} · {startDate} → {endDate}</span></li>
-              <li className="flex items-start gap-2"><Icon name="users" size={16} className="mt-0.5 shrink-0 text-maroon" /> <span>{travelers.filter((t) => t.name.trim()).length + 1} traveler(s), each with their own checklist</span></li>
-              <li className="flex items-start gap-2"><Icon name="target" size={16} className="mt-0.5 shrink-0 text-maroon" /> <span>{buildActivities().length} planned activit{buildActivities().length === 1 ? 'y' : 'ies'}</span></li>
-              <li className="flex items-start gap-2"><Icon name="cloud" size={16} className="mt-0.5 shrink-0 text-maroon" /> <span>Weather forecast for each day (when in range)</span></li>
-              <li className="flex items-start gap-2"><Icon name="bag" size={16} className="mt-0.5 shrink-0 text-maroon" /> <span>A personalized packing list generated from all of the above — edit anything afterwards</span></li>
+            <p className="text-body text-ink-soft">Ready? Here's what MockPacker will set up:</p>
+            <ul className="flex flex-col gap-1.5 text-body text-ink-soft">
+              <li className="flex items-start gap-2"><Icon name="briefcase" size={16} className="mt-0.5 shrink-0 text-ink-soft" /> <span><strong className="text-ink">{name || 'Your trip'}</strong> — {city}{region ? `, ${region}` : ''} · {startDate} → {endDate}</span></li>
+              <li className="flex items-start gap-2"><Icon name="users" size={16} className="mt-0.5 shrink-0 text-ink-soft" /> <span>{travelers.filter((t) => t.name.trim()).length + 1} traveler(s), each with their own checklist</span></li>
+              <li className="flex items-start gap-2"><Icon name="target" size={16} className="mt-0.5 shrink-0 text-ink-soft" /> <span>{buildActivities().length} planned activit{buildActivities().length === 1 ? 'y' : 'ies'}</span></li>
+              <li className="flex items-start gap-2"><Icon name="cloud" size={16} className="mt-0.5 shrink-0 text-ink-soft" /> <span>Weather forecast for each day (when in range)</span></li>
+              <li className="flex items-start gap-2"><Icon name="bag" size={16} className="mt-0.5 shrink-0 text-ink-soft" /> <span>A personalized packing list generated from all of the above — edit anything afterwards</span></li>
             </ul>
           </>
         )}
